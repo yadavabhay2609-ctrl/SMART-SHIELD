@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Shield — Civic Grievance, Women Safety &amp; Legal Aid Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Public+Sans:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   SMART SHIELD — DESIGN TOKENS
+   ============================================================ */
+:root{
+  --ink:#3A1220;
+  --ink-2:#4B1B2C;
+  --ink-3:#602739;
+  --paper:#E9ECE7;
+  --paper-2:#F3F5F0;
+  --card:#FFFFFF;
+  --line:#D8DCD0;
+  --line-dark:rgba(243,236,231,0.16);
+  --text:#211613;
+  --text-soft:#5C5049;
+  --text-inverse:#F3ECE8;
+  --text-inverse-soft:#CBADA6;
+  --brass:#2E8C82;
+  --brass-deep:#1E5E57;
+  --brass-tint:#D9EBE8;
+  --signal:#CC7A1E;
+  --signal-tint:#F6E3C7;
+  --review:#6E4A78;
+  --review-tint:#EBE1EC;
+  --ok:#3E7A50;
+  --ok-tint:#DCEBDE;
+  --radius-sm:4px;
+  --radius-md:8px;
+  --display:'Libre Caslon Display', Georgia, serif;
+  --serif:'Libre Caslon Text', Georgia, serif;
+  --sans:'Public Sans', -apple-system, sans-serif;
+  --mono:'Courier Prime', monospace;
+  --fs-scale:1;
+}
+html{font-size:calc(16px * var(--fs-scale));}
+*,*::before,*::after{box-sizing:border-box;}
+body{margin:0;font-family:var(--sans);color:var(--text);background:var(--paper);-webkit-font-smoothing:antialiased;}
+img,svg{display:block;max-width:100%;}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+a{color:inherit;}
+h1,h2,h3,h4{font-family:var(--serif);margin:0;font-weight:700;letter-spacing:-0.01em;}
+p{margin:0;}
+.view{width:100%;}
+.view[hidden]{display:none !important;}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){*{animation-duration:0.001ms !important;transition-duration:0.001ms !important;}}
+
+/* ============================================================
+   LANDING — NAV
+   ============================================================ */
+.landing-nav{
+  position:sticky;top:0;z-index:40;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 48px;background:rgba(11,29,46,0.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line-dark);
+}
+.brand{display:flex;align-items:center;gap:10px;color:var(--text-inverse);text-decoration:none;}
+.brand svg{width:30px;height:30px;flex:none;}
+.brand-word{font-family:var(--serif);font-size:1.15rem;font-weight:600;letter-spacing:0.01em;}
+.brand-word b{color:var(--brass);font-weight:600;}
+.nav-links{display:flex;gap:34px;list-style:none;margin:0;padding:0;}
+.nav-links a{color:var(--text-inverse-soft);text-decoration:none;font-size:0.92rem;transition:color .15s;}
+.nav-links a:hover{color:var(--text-inverse);}
+.nav-actions{display:flex;align-items:center;gap:12px;}
+.btn{
+  border:1px solid transparent;border-radius:var(--radius-sm);
+  padding:10px 20px;font-size:0.92rem;font-weight:600;
+  display:inline-flex;align-items:center;gap:8px;justify-content:center;
+  transition:transform .12s ease, background .15s, border-color .15s, color .15s;
+  white-space:nowrap;
+}
+.btn:active{transform:translateY(1px);}
+.btn-ghost{background:transparent;border-color:rgba(234,240,244,0.35);color:var(--text-inverse);}
+.btn-ghost:hover{border-color:var(--brass);color:var(--brass-tint);}
+.btn-brass{background:var(--brass);color:var(--ink);border-color:var(--brass);}
+.btn-brass:hover{background:#BE9A44;}
+.btn-dark{background:var(--ink);color:var(--text-inverse);border-color:var(--ink);}
+.btn-dark:hover{background:var(--ink-3);}
+.btn-outline-dark{background:transparent;border-color:var(--ink);color:var(--ink);}
+.btn-outline-dark:hover{background:var(--ink);color:var(--text-inverse);}
+.btn-signal{background:var(--signal);color:#fff;border-color:var(--signal);}
+.btn-signal:hover{background:#8F2F29;}
+.btn-block{width:100%;}
+.btn-sm{padding:7px 14px;font-size:0.82rem;}
+.hamburger{display:none;background:none;border:none;color:var(--text-inverse);padding:6px;}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{
+  background:
+    radial-gradient(ellipse at 78% 15%, rgba(169,130,47,0.16), transparent 55%),
+    var(--ink);
+  color:var(--text-inverse);
+  position:relative;overflow:hidden;
+  padding:96px 48px 100px;
+}
+.hero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:0.5;
+  background-image:
+    linear-gradient(rgba(234,240,244,0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(234,240,244,0.055) 1px, transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(ellipse at 70% 30%, black, transparent 70%);
+}
+.hero-inner{
+  position:relative;max-width:1240px;margin:0 auto;
+  display:grid;grid-template-columns:1.05fr 0.85fr;gap:56px;align-items:center;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:0.78rem;color:var(--brass-tint);
+  border:1px solid rgba(169,130,47,0.45);border-radius:999px;padding:6px 14px;margin-bottom:26px;
+}
+.hero-eyebrow span.dot{width:6px;height:6px;border-radius:50%;background:var(--brass);display:inline-block;}
+.hero h1{
+  font-family:var(--display);font-weight:400;
+  font-size:clamp(2.2rem, 3.6vw, 3.4rem);line-height:1.14;max-width:15ch;
+  color:#fff;
+}
+.hero h1 em{font-style:normal;color:var(--brass-tint);}
+.hero-sub{margin-top:22px;font-size:1.08rem;line-height:1.65;color:var(--text-inverse-soft);max-width:46ch;}
+.hero-cta{margin-top:36px;display:flex;gap:14px;flex-wrap:wrap;}
+.hero-stats{margin-top:52px;display:flex;gap:0;border-top:1px solid var(--line-dark);padding-top:24px;max-width:34rem;}
+.hero-stat{flex:1;padding-right:22px;border-right:1px solid var(--line-dark);}
+.hero-stat:last-child{border-right:none;padding-right:0;}
+.hero-stat b{display:block;font-family:var(--serif);font-size:1.5rem;color:#fff;}
+.hero-stat span{display:block;font-size:0.8rem;color:var(--text-inverse-soft);margin-top:4px;line-height:1.4;}
+
+/* hero emblem */
+.emblem-wrap{position:relative;display:flex;align-items:center;justify-content:center;}
+.emblem{width:min(420px, 100%);height:auto;}
+.emblem .draw{stroke-dasharray:900;stroke-dashoffset:900;animation:draw 1.8s ease forwards;}
+.emblem .draw2{stroke-dasharray:500;stroke-dashoffset:500;animation:draw 1.8s .3s ease forwards;}
+.emblem .fadein{opacity:0;animation:fadein 1s .9s ease forwards;}
+@keyframes draw{to{stroke-dashoffset:0;}}
+@keyframes fadein{to{opacity:1;}}
+.emblem-tag{
+  position:absolute;background:rgba(18,40,63,0.92);border:1px solid var(--line-dark);
+  border-radius:var(--radius-sm);padding:9px 13px;font-size:0.76rem;color:var(--text-inverse-soft);
+  font-family:var(--mono);opacity:0;animation:fadein .6s ease forwards;pointer-events:none;
+}
+.tag-a{top:6%;left:-4%;animation-delay:1.3s;}
+.tag-b{bottom:20%;right:-6%;animation-delay:1.55s;}
+.tag-c{bottom:0%;left:8%;animation-delay:1.8s;}
+
+/* ============================================================
+   SECTION SHELLS
+   ============================================================ */
+.section{padding:96px 48px;}
+.section-tight{padding:72px 48px;}
+.section-inner{max-width:1240px;margin:0 auto;}
+.section-head{max-width:640px;margin-bottom:52px;}
+.section-kicker{font-family:var(--mono);font-size:0.78rem;color:var(--brass-deep);margin-bottom:12px;}
+.section-head h2{font-size:clamp(1.6rem,2.4vw,2.2rem);line-height:1.25;}
+.section-head p{margin-top:14px;color:var(--text-soft);font-size:1.02rem;line-height:1.6;}
+.on-dark{background:var(--ink);color:var(--text-inverse);}
+.on-dark .section-head p{color:var(--text-inverse-soft);}
+.on-dark .section-kicker{color:var(--brass-tint);}
+
+/* PROBLEM */
+.problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.problem-card{background:var(--paper-2);padding:34px 30px;}
+.problem-num{font-family:var(--mono);color:var(--brass-deep);font-size:0.85rem;margin-bottom:16px;display:block;}
+.problem-card h3{font-size:1.08rem;margin-bottom:12px;}
+.problem-card p{color:var(--text-soft);font-size:0.94rem;line-height:1.65;}
+
+/* MODULES — asymmetric, not identical cards */
+.modules-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:22px;}
+.modules-side{display:grid;grid-template-rows:1fr 1fr;gap:22px;}
+.module-panel{
+  background:var(--card);border:1px solid var(--line);padding:38px;position:relative;
+  display:flex;flex-direction:column;justify-content:flex-end;min-height:340px;
+}
+.module-panel.lead{min-height:auto;border-left:3px solid var(--brass);}
+.module-panel.b{border-top:3px solid var(--review);min-height:200px;}
+.module-panel.c{border-top:3px solid var(--signal);min-height:200px;}
+.module-icon{width:44px;height:44px;margin-bottom:22px;color:var(--ink);}
+.module-panel h3{font-size:1.28rem;margin-bottom:10px;}
+.module-panel p{color:var(--text-soft);font-size:0.94rem;line-height:1.6;max-width:46ch;}
+.module-panel .feat-list{margin-top:16px;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px;}
+.module-panel .feat-list li{font-size:0.86rem;color:var(--text-soft);padding-left:16px;position:relative;}
+.module-panel .feat-list li::before{content:"";position:absolute;left:0;top:0.55em;width:6px;height:1px;background:var(--brass-deep);}
+
+/* HOW IT WORKS */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;}
+.step{padding:0 26px 0 0;position:relative;}
+.step:not(:last-child)::after{content:"";position:absolute;top:22px;right:-1px;width:1px;height:calc(100% - 22px);background:var(--line-dark);}
+.step-index{font-family:var(--mono);font-size:0.82rem;color:var(--brass-tint);margin-bottom:16px;display:block;}
+.step h3{font-size:1.02rem;color:#fff;margin-bottom:10px;}
+.step p{font-size:0.88rem;color:var(--text-inverse-soft);line-height:1.6;}
+
+/* SDG mapping */
+.sdg-list{display:flex;flex-direction:column;border-top:1px solid var(--line);}
+.sdg-row{display:grid;grid-template-columns:280px 1fr;gap:28px;padding:20px 0;border-bottom:1px solid var(--line);align-items:baseline;}
+.sdg-feat{font-weight:600;font-size:0.95rem;}
+.sdg-feat::before{content:"";display:inline-block;width:8px;height:8px;background:var(--brass);margin-right:10px;transform:translateY(-1px);}
+.sdg-target{color:var(--text-soft);font-size:0.92rem;line-height:1.6;}
+
+/* TEAM / FOOTER */
+.landing-footer{background:var(--ink);color:var(--text-inverse-soft);padding:56px 48px 30px;}
+.footer-top{max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;padding-bottom:34px;border-bottom:1px solid var(--line-dark);}
+.footer-brand{max-width:340px;}
+.footer-brand .brand-word{color:var(--text-inverse);}
+.footer-brand p{margin-top:14px;font-size:0.88rem;line-height:1.6;}
+.footer-team{display:flex;gap:56px;flex-wrap:wrap;}
+.footer-col h4{font-family:var(--sans);font-size:0.76rem;color:var(--text-inverse-soft);text-transform:none;letter-spacing:0.02em;margin-bottom:14px;font-weight:600;}
+.footer-col ul{list-style:none;margin:0;padding:0;font-size:0.88rem;line-height:2;}
+.footer-bottom{max-width:1240px;margin:22px auto 0;display:flex;justify-content:space-between;font-size:0.8rem;flex-wrap:wrap;gap:8px;}
+
+/* ============================================================
+   LOGIN VIEW
+   ============================================================ */
+#view-login{min-height:100vh;background:var(--ink);display:flex;}
+.login-shell{display:grid;grid-template-columns:1fr 1fr;width:100%;min-height:100vh;}
+.login-brand{
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(169,130,47,0.18), transparent 55%), var(--ink);
+  color:var(--text-inverse);padding:64px;display:flex;flex-direction:column;justify-content:space-between;
+  border-right:1px solid var(--line-dark);position:relative;overflow:hidden;
+}
+.login-brand::before{
+  content:"";position:absolute;inset:0;opacity:0.4;
+  background-image:linear-gradient(rgba(234,240,244,0.05) 1px, transparent 1px),linear-gradient(90deg, rgba(234,240,244,0.05) 1px, transparent 1px);
+  background-size:56px 56px;
+}
+.login-quote{position:relative;max-width:32ch;font-family:var(--display);font-weight:400;font-size:1.5rem;line-height:1.5;color:#fff;}
+.login-quote span{display:block;margin-top:18px;font-family:var(--sans);font-size:0.82rem;color:var(--text-inverse-soft);}
+.login-panel{background:var(--paper-2);display:flex;align-items:center;justify-content:center;padding:40px;}
+.login-card{width:100%;max-width:380px;}
+.login-card h2{font-size:1.5rem;margin-bottom:8px;}
+.login-card>p.sub{color:var(--text-soft);font-size:0.92rem;margin-bottom:34px;}
+.field{margin-bottom:18px;}
+.field label{display:block;font-size:0.82rem;font-weight:600;margin-bottom:7px;color:var(--text);}
+.field input,.field select,.field textarea{
+  width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:var(--radius-sm);
+  background:var(--card);font-size:0.92rem;color:var(--text);transition:border-color .15s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brass);}
+.field-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;font-size:0.82rem;}
+.field-row a{color:var(--brass-deep);text-decoration:none;font-weight:600;}
+.login-alt{margin-top:22px;text-align:center;font-size:0.86rem;color:var(--text-soft);}
+.login-alt a{color:var(--brass-deep);font-weight:600;text-decoration:none;cursor:pointer;}
+.login-back{position:absolute;top:32px;left:32px;color:var(--text-inverse-soft);text-decoration:none;font-size:0.84rem;display:flex;align-items:center;gap:6px;}
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+#view-dashboard, #view-admin{display:flex;min-height:100vh;}
+.sidebar{
+  width:248px;flex:none;background:var(--ink);color:var(--text-inverse);
+  display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
+}
+.sidebar-brand{padding:24px 22px;border-bottom:1px solid var(--line-dark);display:flex;align-items:center;gap:10px;}
+.sidebar-brand svg{width:26px;height:26px;}
+.sidebar-brand .brand-word{font-size:1.02rem;}
+.sidebar-nav{flex:1;padding:18px 12px;overflow-y:auto;}
+.sn-group-label{font-family:var(--mono);font-size:0.7rem;color:var(--text-inverse-soft);padding:8px 12px 6px;}
+.sn-item{
+  display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:var(--radius-sm);
+  color:var(--text-inverse-soft);text-decoration:none;font-size:0.9rem;margin-bottom:2px;
+  border:none;background:none;width:100%;text-align:left;transition:background .15s,color .15s;
+}
+.sn-item svg{width:18px;height:18px;flex:none;}
+.sn-item:hover{background:rgba(234,240,244,0.06);color:var(--text-inverse);}
+.sn-item.active{background:rgba(169,130,47,0.16);color:#fff;box-shadow:inset 3px 0 0 var(--brass);}
+.sidebar-foot{padding:16px;border-top:1px solid var(--line-dark);}
+.user-chip{display:flex;align-items:center;gap:10px;padding:8px;border-radius:var(--radius-sm);}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:var(--brass);color:var(--ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.86rem;flex:none;}
+.user-meta{overflow:hidden;}
+.user-meta b{display:block;font-size:0.86rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.user-meta span{font-size:0.74rem;color:var(--text-inverse-soft);}
+.logout-btn{margin-top:10px;width:100%;background:none;border:1px solid var(--line-dark);color:var(--text-inverse-soft);padding:9px;border-radius:var(--radius-sm);font-size:0.82rem;display:flex;align-items:center;justify-content:center;gap:8px;}
+.logout-btn:hover{border-color:var(--signal);color:#fff;}
+
+.dash-main{flex:1;display:flex;flex-direction:column;min-width:0;}
+.topbar{
+  height:70px;flex:none;background:var(--card);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:20;gap:20px;
+}
+.topbar h1{font-size:1.18rem;}
+.topbar-search{flex:1;max-width:360px;position:relative;}
+.topbar-search input{width:100%;padding:9px 13px 9px 36px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--paper-2);font-size:0.88rem;}
+.topbar-search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text-soft);}
+.topbar-right{display:flex;align-items:center;gap:14px;flex:none;}
+.icon-btn{background:none;border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px;color:var(--text-soft);display:flex;}
+.icon-btn:hover{border-color:var(--ink);color:var(--ink);}
+.icon-btn svg{width:18px;height:18px;}
+
+.dash-content{padding:28px;overflow-y:auto;flex:1;}
+.dash-section{display:none;}
+.dash-section.active{display:block;}
+.section-title-row{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:22px;flex-wrap:wrap;}
+.section-title-row h2{font-size:1.3rem;}
+.section-title-row p{color:var(--text-soft);font-size:0.88rem;margin-top:4px;}
+
+/* stat cards */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{background:var(--card);border:1px solid var(--line);padding:20px;border-top:3px solid var(--ink-3);}
+.stat-card.s-pending{border-top-color:var(--brass);}
+.stat-card.s-review{border-top-color:var(--review);}
+.stat-card.s-resolved{border-top-color:var(--ok);}
+.stat-card.s-sos{border-top-color:var(--signal);}
+.stat-card .label{font-size:0.8rem;color:var(--text-soft);margin-bottom:10px;}
+.stat-card .value{font-family:var(--mono);font-size:1.9rem;font-weight:600;}
+
+.panel{background:var(--card);border:1px solid var(--line);}
+.panel-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:12px;}
+.panel-head h3{font-size:1rem;}
+.panel-body{padding:0;}
+.panel-body.pad{padding:20px;}
+
+/* table */
+.table-toolbar{display:flex;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap;align-items:center;}
+.table-toolbar .topbar-search{max-width:280px;}
+.table-toolbar select{padding:9px 12px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--paper-2);font-size:0.86rem;}
+table.data-table{width:100%;border-collapse:collapse;font-size:0.88rem;}
+table.data-table th{text-align:left;padding:12px 20px;background:var(--paper-2);color:var(--text-soft);font-weight:600;font-size:0.78rem;border-bottom:1px solid var(--line);white-space:nowrap;}
+table.data-table td{padding:14px 20px;border-bottom:1px solid var(--line);vertical-align:middle;}
+table.data-table tr:last-child td{border-bottom:none;}
+.cell-id{font-family:var(--mono);font-size:0.82rem;color:var(--text-soft);}
+.cell-desc{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:0.76rem;font-weight:600;}
+.badge::before{content:"";width:6px;height:6px;border-radius:50%;}
+.badge-pending{background:var(--brass-tint);color:var(--brass-deep);}
+.badge-pending::before{background:var(--brass-deep);}
+.badge-review{background:var(--review-tint);color:var(--review);}
+.badge-review::before{background:var(--review);}
+.badge-resolved{background:var(--ok-tint);color:var(--ok);}
+.badge-resolved::before{background:var(--ok);}
+.badge-escalated{background:var(--signal-tint);color:var(--signal);}
+.badge-escalated::before{background:var(--signal);}
+.status-select{border:1px solid var(--line);border-radius:var(--radius-sm);padding:6px 8px;font-size:0.8rem;background:var(--paper-2);}
+
+.empty-state{padding:60px 24px;text-align:center;}
+.empty-state svg{width:46px;height:46px;margin:0 auto 18px;color:var(--line);}
+.empty-state h4{font-size:1rem;margin-bottom:8px;}
+.empty-state p{color:var(--text-soft);font-size:0.88rem;max-width:34ch;margin:0 auto 20px;line-height:1.6;}
+
+/* quick actions */
+.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px;}
+.quick-card{background:var(--card);border:1px solid var(--line);padding:22px;text-align:left;display:flex;flex-direction:column;gap:12px;transition:border-color .15s;}
+.quick-card:hover{border-color:var(--brass);}
+.quick-card svg{width:24px;height:24px;color:var(--ink);}
+.quick-card b{font-size:0.94rem;}
+.quick-card span{font-size:0.82rem;color:var(--text-soft);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(11,29,46,0.6);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;}
+.modal-overlay[hidden]{display:none;}
+.modal-box{background:var(--card);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;border-top:3px solid var(--brass);}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start;padding:22px 24px;border-bottom:1px solid var(--line);}
+.modal-head h3{font-size:1.15rem;}
+.modal-head p{font-size:0.84rem;color:var(--text-soft);margin-top:6px;}
+.modal-close{background:none;border:none;color:var(--text-soft);padding:4px;}
+.modal-body{padding:22px 24px;}
+.field-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.modal-foot{padding:18px 24px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:12px;}
+
+/* SAFETY VIEW */
+.safety-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.sos-panel{background:var(--ink);color:var(--text-inverse);padding:40px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;overflow:hidden;}
+.sos-panel::before{content:"";position:absolute;inset:0;opacity:0.35;background-image:radial-gradient(circle at 50% 0%, rgba(169,59,52,0.35), transparent 60%);}
+.sos-ring-wrap{position:relative;width:180px;height:180px;margin:10px 0 26px;}
+.sos-ring-wrap svg{width:100%;height:100%;transform:rotate(-90deg);}
+.sos-ring-bg{fill:none;stroke:rgba(234,240,244,0.14);stroke-width:6;}
+.sos-ring-fg{fill:none;stroke:var(--signal);stroke-width:6;stroke-linecap:round;stroke-dasharray:502;stroke-dashoffset:502;transition:stroke-dashoffset .05s linear;}
+.sos-btn{
+  position:absolute;inset:16px;border-radius:50%;background:var(--signal);color:#fff;border:none;
+  font-family:var(--sans);font-weight:700;font-size:0.92rem;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:4px;user-select:none;transition:transform .15s;
+}
+.sos-btn:active{transform:scale(0.96);}
+.sos-btn small{font-weight:400;font-size:0.72rem;opacity:0.85;}
+.sos-status{font-size:0.86rem;color:var(--text-inverse-soft);min-height:20px;position:relative;}
+.sos-alert-box{margin-top:22px;width:100%;background:rgba(234,240,244,0.06);border:1px solid var(--line-dark);border-radius:var(--radius-sm);padding:16px;text-align:left;font-size:0.84rem;color:var(--text-inverse-soft);display:none;}
+.sos-alert-box.show{display:block;}
+.sos-alert-box b{color:#fff;}
+.contact-list{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;}
+.contact-list li{display:flex;justify-content:space-between;}
+
+.route-form{display:flex;flex-direction:column;gap:14px;}
+.route-result{margin-top:18px;border:1px solid var(--line);background:var(--paper-2);padding:18px;display:none;}
+.route-result.show{display:block;}
+.score-bar-track{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:10px 0 14px;}
+.score-bar-fill{height:100%;background:var(--ok);border-radius:99px;transition:width .5s ease;}
+.route-tips{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;font-size:0.86rem;color:var(--text-soft);}
+.route-tips li{padding-left:16px;position:relative;}
+.route-tips li::before{content:"";position:absolute;left:0;top:0.55em;width:6px;height:1px;background:var(--brass-deep);}
+
+.map-frame{width:100%;height:210px;border:1px solid var(--line);margin-top:16px;overflow:hidden;background:var(--paper-2);}
+.map-frame iframe{width:100%;height:100%;border:0;display:block;}
+.footfall-row{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:0.84rem;color:var(--text-soft);}
+.rate-block{margin-top:20px;padding-top:20px;border-top:1px dashed var(--line);display:none;}
+.rate-block.show{display:block;}
+.rate-block>b{font-size:0.9rem;}
+.star-row{display:flex;gap:4px;margin:10px 0;}
+.star-btn{background:none;border:none;font-size:1.55rem;line-height:1;color:var(--line);padding:2px;transition:color .1s;}
+.star-btn.filled{color:var(--signal);}
+.rating-summary{margin-top:14px;font-size:0.82rem;color:var(--text-soft);padding:10px 12px;background:var(--paper-2);border:1px solid var(--line);}
+.rating-summary b{color:var(--text);}
+.route-mini-table{width:100%;border-collapse:collapse;font-size:0.86rem;margin-top:18px;}
+.route-mini-table th{text-align:left;padding:10px 14px;background:var(--paper-2);color:var(--text-soft);font-size:0.76rem;font-weight:600;border-bottom:1px solid var(--line);}
+.route-mini-table td{padding:11px 14px;border-bottom:1px solid var(--line);}
+
+.admin-banner{background:var(--review-tint);border:1px solid var(--review);color:var(--review);padding:16px 20px;font-size:0.86rem;line-height:1.6;margin-bottom:24px;}
+.admin-banner b{color:var(--review);}
+.badge-source{background:var(--paper-2);color:var(--text-soft);border:1px solid var(--line);}
+.badge-source.auto{background:var(--review-tint);color:var(--review);border-color:transparent;}
+
+/* LEGAL AI */
+.chat-shell{display:flex;flex-direction:column;height:560px;}
+.chat-log{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:14px;}
+.msg{max-width:72%;padding:12px 15px;border-radius:var(--radius-md);font-size:0.9rem;line-height:1.55;}
+.msg-bot{background:var(--paper-2);border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:2px;}
+.msg-user{background:var(--ink);color:var(--text-inverse);align-self:flex-end;border-bottom-right-radius:2px;}
+.msg-disclaimer{font-size:0.72rem;color:var(--text-soft);align-self:flex-start;max-width:80%;}
+.chat-suggestions{display:flex;gap:8px;padding:0 22px 14px;flex-wrap:wrap;}
+.chip{background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:0.8rem;color:var(--text-soft);}
+.chip:hover{border-color:var(--brass);color:var(--text);}
+.chat-input-row{display:flex;gap:10px;padding:16px 22px;border-top:1px solid var(--line);}
+.chat-input-row input{flex:1;padding:11px 14px;border:1px solid var(--line);border-radius:var(--radius-sm);font-size:0.9rem;}
+
+/* SETTINGS */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid var(--line);gap:20px;}
+.setting-row:last-child{border-bottom:none;}
+.setting-row b{display:block;font-size:0.92rem;}
+.setting-row span.desc{display:block;font-size:0.8rem;color:var(--text-soft);margin-top:4px;}
+.seg-control{display:flex;border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;flex:none;}
+.seg-btn{background:var(--paper-2);border:none;padding:9px 16px;font-size:0.84rem;color:var(--text-soft);border-right:1px solid var(--line);}
+.seg-btn:last-child{border-right:none;}
+.seg-btn.active{background:var(--ink);color:#fff;}
+
+/* TOASTS */
+.toast-root{position:fixed;bottom:24px;right:24px;z-index:200;display:flex;flex-direction:column;gap:10px;}
+.toast{background:var(--ink);color:#fff;padding:14px 18px;border-radius:var(--radius-sm);font-size:0.86rem;border-left:3px solid var(--brass);box-shadow:0 8px 24px rgba(0,0,0,0.25);min-width:260px;animation:toastin .25s ease;}
+.toast.err{border-left-color:var(--signal);}
+@keyframes toastin{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:1080px){
+  .hero-inner{grid-template-columns:1fr;}
+  .emblem-wrap{order:-1;max-width:280px;margin:0 auto;}
+  .modules-grid{grid-template-columns:1fr;}
+  .modules-side{grid-template-rows:none;grid-template-columns:1fr 1fr;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .safety-grid{grid-template-columns:1fr;}
+  .settings-grid{grid-template-columns:1fr;}
+}
+@media (max-width:880px){
+  .nav-links{display:none;}
+  .hamburger{display:block;}
+  .landing-nav,.hero,.section,.section-tight{padding-left:22px;padding-right:22px;}
+  .problem-grid{grid-template-columns:1fr;}
+  .steps{grid-template-columns:1fr;gap:22px;}
+  .step:not(:last-child)::after{display:none;}
+  .modules-side{grid-template-columns:1fr;}
+  .login-shell{grid-template-columns:1fr;}
+  .login-brand{display:none;}
+  .sidebar{position:fixed;left:-248px;z-index:60;transition:left .2s ease;box-shadow:2px 0 18px rgba(0,0,0,0.3);}
+  .sidebar.open{left:0;}
+  .dash-content{padding:18px;}
+  .stat-grid{grid-template-columns:1fr 1fr;}
+  .quick-grid{grid-template-columns:1fr;}
+  .field-2col{grid-template-columns:1fr;}
+  .topbar{padding:0 16px;}
+  .topbar-search{display:none;}
+  .sn-toggle{display:flex !important;}
+}
+.sn-toggle{display:none;background:none;border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px;color:var(--text-soft);}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     LANDING VIEW
+     ============================================================ -->
+<div id="view-landing" class="view">
+
+  <nav class="landing-nav">
+    <a href="#" class="brand">
+      <svg viewBox="0 0 40 40" fill="none"><path d="M20 3 L35 9 V19 C35 29 28 35.5 20 38 C12 35.5 5 29 5 19 V9 Z" stroke="#2E8C82" stroke-width="2"/><path d="M20 12 L27 16 V22 C27 27 24 30.5 20 32 C16 30.5 13 27 13 22 V16 Z" fill="#2E8C82" opacity="0.9"/></svg>
+      <span class="brand-word">Smart <b>Shield</b></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#modules">Modules</a></li>
+      <li><a href="#howit">How it works</a></li>
+      <li><a href="#sdg">SDG mapping</a></li>
+      <li><a href="#team">Team</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn btn-ghost btn-sm" onclick="goTo('login')">Login</button>
+      <button class="btn btn-brass btn-sm" onclick="goTo('login')">Enter platform</button>
+      <button class="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-eyebrow"><span class="dot"></span> 2026-27 · CSE MPID001 · ABES Institute of Technology</div>
+        <h1>One platform for civic complaints, personal safety, and <em>knowing your rights.</em></h1>
+        <p class="hero-sub">Smart Shield brings together a public grievance tracker, a women's safety response system, and a legal guidance assistant — so a citizen never has to work out which office, app, or helpline to turn to first.</p>
+        <div class="hero-cta">
+          <button class="btn btn-brass" onclick="goTo('login')">Enter platform</button>
+          <a href="#modules" class="btn btn-ghost">See how it works</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><b>3</b><span>Services, one login — grievance, safety, legal aid</span></div>
+          <div class="hero-stat"><b>SDG 16</b><span>Mapped to peace, justice &amp; strong institutions</span></div>
+          <div class="hero-stat"><b>24/7</b><span>Safety module designed for always-on response</span></div>
+        </div>
+      </div>
+      <div class="emblem-wrap">
+        <svg class="emblem" viewBox="0 0 400 460" fill="none">
+          <path class="draw" d="M200 20 L360 78 V210 C360 320 292 400 200 440 C108 400 40 320 40 210 V78 Z" stroke="#2E8C82" stroke-width="2.5"/>
+          <path class="draw2" d="M200 60 L320 104 V206 C320 292 268 352 200 384 C132 352 80 292 80 206 V104 Z" stroke="#F3ECE8" stroke-width="1" opacity="0.5"/>
+          <g class="fadein">
+            <circle cx="200" cy="150" r="34" fill="#4B1B2C" stroke="#2E8C82" stroke-width="1.5"/>
+            <path d="M188 150 l8 8 l16 -18" stroke="#F3ECE8" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="128" cy="255" r="34" fill="#4B1B2C" stroke="#CC7A1E" stroke-width="1.5"/>
+            <path d="M128 238 v18 M128 268 h0.1" stroke="#F3ECE8" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="272" cy="255" r="34" fill="#4B1B2C" stroke="#2E8C82" stroke-width="1.5"/>
+            <path d="M258 248 h28 M272 248 v22 M262 255 q10 12 20 0" stroke="#F3ECE8" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </g>
+        </svg>
+        <div class="emblem-tag tag-a">Grievance filed → tracked</div>
+        <div class="emblem-tag tag-b">SOS → live alert</div>
+        <div class="emblem-tag tag-c">Query → legal guidance</div>
+      </div>
+    </div>
+  </header>
+
+  <section class="section" id="problem-section">
+    <div class="section-inner">
+      <div class="section-head">
+        <div class="section-kicker">the gap today</div>
+        <h2>Three problems that are usually handled by three different, disconnected systems.</h2>
+        <p>Citizens today juggle separate portals for civic complaints, safety helplines, and legal information — each with its own process, and none of them talking to each other.</p>
+      </div>
+      <div class="problem-grid">
+        <div class="problem-card">
+          <span class="problem-num">01 — grievances</span>
+          <h3>Complaints go unresolved</h3>
+          <p>Civic issues like broken infrastructure, sanitation or negligence are reported through slow, manual channels with little visibility into what happens after filing.</p>
+        </div>
+        <div class="problem-card">
+          <span class="problem-num">02 — safety</span>
+          <h3>Reporting incidents is hard</h3>
+          <p>Many hesitate to report unsafe situations because reporting tools are fragmented, unclear, or don't offer real-time support when it matters most.</p>
+        </div>
+        <div class="problem-card">
+          <span class="problem-num">03 — legal literacy</span>
+          <h3>Rights stay out of reach</h3>
+          <p>Legal language and unclear procedures keep people from understanding their rights or the correct steps to seek justice.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="modules" style="background:var(--paper-2)">
+    <div class="section-inner">
+      <div class="section-head">
+        <div class="section-kicker">what's inside</div>
+        <h2>Three modules, built to work as one shield.</h2>
+        <p>Each module solves one problem on its own — together, they close the loop between reporting, responding, and understanding your rights.</p>
+      </div>
+      <div class="modules-grid">
+        <div class="module-panel lead">
+          <svg class="module-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3h9l5 5v13a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M14 3v5h5"/><path d="M8 13h8M8 17h5"/></svg>
+          <h3>Smart Public Grievance Portal</h3>
+          <p>Citizens submit civic complaints online, attach evidence, and track the exact status of their case in real time — with automatic escalation if it sits unresolved past a set deadline.</p>
+          <ul class="feat-list">
+            <li>Structured complaint form with category, location &amp; priority</li>
+            <li>Live status tracking — pending, in review, resolved</li>
+            <li>Auto-escalation for cases past their deadline</li>
+          </ul>
+        </div>
+        <div class="modules-side">
+          <div class="module-panel b">
+            <svg class="module-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l8 3v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V5z"/><path d="M12 8v5M12 16h.01"/></svg>
+            <h3>Women Safety Module</h3>
+            <p>A one-touch SOS sends live location to emergency contacts, alongside safe-route suggestions and secure incident reporting.</p>
+          </div>
+          <div class="module-panel c">
+            <svg class="module-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M5 8l-3 6a4 4 0 008 0zM19 8l-3 6a4 4 0 008 0zM5 8h14M9 3h6"/></svg>
+            <h3>AI Legal Assistant</h3>
+            <p>Describe a problem in plain language and get informational guidance on relevant rights, laws, and how to file a complaint.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section on-dark" id="howit">
+    <div class="section-inner">
+      <div class="section-head">
+        <div class="section-kicker">the grievance flow</div>
+        <h2 style="color:#fff">From report to resolution, in four steps.</h2>
+      </div>
+      <div class="steps">
+        <div class="step"><span class="step-index">01</span><h3>Report</h3><p>File a complaint with category, description, location and supporting evidence in under a minute.</p></div>
+        <div class="step"><span class="step-index">02</span><h3>Route</h3><p>The complaint is logged with a unique ID and routed for review, visible to the citizen at every step.</p></div>
+        <div class="step"><span class="step-index">03</span><h3>Track</h3><p>Status updates — pending, in review, resolved — are visible on the dashboard in real time.</p></div>
+        <div class="step"><span class="step-index">04</span><h3>Escalate</h3><p>Cases left unresolved past a set window are automatically flagged for escalation.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="sdg">
+    <div class="section-inner">
+      <div class="section-head">
+        <div class="section-kicker">alignment</div>
+        <h2>Mapped against UN Sustainable Development Goal 16</h2>
+        <p>Peace, justice and strong institutions — every feature in Smart Shield is tied back to a specific institutional target.</p>
+      </div>
+      <div class="sdg-list">
+        <div class="sdg-row"><div class="sdg-feat">Smart grievance portal</div><div class="sdg-target">Promotes transparent, accountable and responsive institutions.</div></div>
+        <div class="sdg-row"><div class="sdg-feat">Women safety module</div><div class="sdg-target">Ensures public safety and equal access to protection for women.</div></div>
+        <div class="sdg-row"><div class="sdg-feat">AI legal assistant</div><div class="sdg-target">Increases legal awareness and access to justice for all citizens.</div></div>
+        <div class="sdg-row"><div class="sdg-feat">Complaint tracking</div><div class="sdg-target">Improves transparency and accountability in grievance resolution.</div></div>
+        <div class="sdg-row"><div class="sdg-feat">Analytics &amp; reporting</div><div class="sdg-target">Supports informed decision-making and institutional improvement.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="landing-footer" id="team">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="brand"><span class="brand-word">Smart <b>Shield</b></span></a>
+        <p>A grievance, safety and legal-aid platform built as a Computer Science &amp; Engineering mini project — session 2026-27.</p>
+      </div>
+      <div class="footer-team">
+        <div class="footer-col">
+          <h4>Presented by</h4>
+          <ul>
+            <li>Abhay Yadav — 2502900100006</li>
+            <li>Abhinav Choudhary — 2502900100007</li>
+            <li>Aarush Verma — 2502900100004</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Institution</h4>
+          <ul>
+            <li>ABES Institute of Technology, Ghaziabad</li>
+            <li>Dept. of Computer Science &amp; Engineering</li>
+            <li>Affiliated to Dr. A.P.J. Abdul Kalam Technical University</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>Project code 2026-27CSEMPID001</span>
+      <span>Session 2026-27</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ============================================================
+     LOGIN VIEW
+     ============================================================ -->
+<div id="view-login" class="view" hidden>
+  <div class="login-shell">
+    <div class="login-brand">
+      <a class="login-back" onclick="goTo('landing')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to home
+      </a>
+      <div class="brand" style="margin-top:60px;">
+        <svg viewBox="0 0 40 40" fill="none"><path d="M20 3 L35 9 V19 C35 29 28 35.5 20 38 C12 35.5 5 29 5 19 V9 Z" stroke="#2E8C82" stroke-width="2"/></svg>
+        <span class="brand-word">Smart <b>Shield</b></span>
+      </div>
+      <p class="login-quote">"A citizen shouldn't need to know which department to call. They should just need to ask."<span>— design principle, Smart Shield</span></p>
+    </div>
+    <div class="login-panel">
+      <div class="login-card">
+        <h2>Sign in to your account</h2>
+        <p class="sub">Access your grievances, safety tools and legal assistant.</p>
+        <div class="field"><label for="login-email">Email address</label><input id="login-email" type="email" placeholder="you@example.com"></div>
+        <div class="field"><label for="login-pass">Password</label><input id="login-pass" type="password" placeholder="••••••••"></div>
+        <div class="field-row"><label style="display:flex;align-items:center;gap:7px;font-weight:400;color:var(--text-soft)"><input type="checkbox" style="width:auto"> Remember me</label><a href="#">Forgot password?</a></div>
+        <button class="btn btn-dark btn-block" onclick="doLogin()">Sign in</button>
+        <p class="login-alt">New here? <a onclick="doLogin()">Continue as guest to explore the demo</a></p>
+        <p class="login-alt" style="margin-top:8px;border-top:1px solid var(--line);padding-top:16px;">Are you the developer? <a onclick="goTo('adminlogin')">Enter the admin console</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     DASHBOARD VIEW
+     ============================================================ -->
+<div id="view-dashboard" class="view" hidden>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <svg viewBox="0 0 40 40" fill="none"><path d="M20 3 L35 9 V19 C35 29 28 35.5 20 38 C12 35.5 5 29 5 19 V9 Z" stroke="#2E8C82" stroke-width="2"/></svg>
+      <span class="brand-word">Smart <b>Shield</b></span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sn-group-label">Main</div>
+      <button class="sn-item active" data-sec="overview" onclick="showSection('overview')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        <span data-i18n="nav_overview">Overview</span>
+      </button>
+      <button class="sn-item" data-sec="grievances" onclick="showSection('grievances')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3h9l5 5v13a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M14 3v5h5M8 13h8M8 17h5"/></svg>
+        <span data-i18n="nav_grievances">My Grievances</span>
+      </button>
+      <button class="sn-item" data-sec="grievances" onclick="openComplaintModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5v14M5 12h14"/></svg>
+        <span data-i18n="nav_raise">Raise Complaint</span>
+      </button>
+      <div class="sn-group-label" data-i18n="nav_group_safety">Protection</div>
+      <button class="sn-item" data-sec="safety" onclick="showSection('safety')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2l8 3v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V5z"/><path d="M12 8v5M12 16h.01"/></svg>
+        <span data-i18n="nav_safety">Women Safety</span>
+      </button>
+      <button class="sn-item" data-sec="legal" onclick="showSection('legal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v18M5 8l-3 6a4 4 0 008 0zM19 8l-3 6a4 4 0 008 0zM5 8h14M9 3h6"/></svg>
+        <span data-i18n="nav_legal">Legal Assistant</span>
+      </button>
+      <div class="sn-group-label">Account</div>
+      <button class="sn-item" data-sec="settings" onclick="showSection('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.34 1.87l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.7 1.7 0 00-1.87-.34 1.7 1.7 0 00-1 1.55V21a2 2 0 11-4 0v-.09a1.7 1.7 0 00-1-1.55 1.7 1.7 0 00-1.87.34l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.7 1.7 0 00.34-1.87 1.7 1.7 0 00-1.55-1H3a2 2 0 110-4h.09a1.7 1.7 0 001.55-1 1.7 1.7 0 00-.34-1.87l-.06-.06a2 2 0 112.83-2.83l.06.06a1.7 1.7 0 001.87.34H9a1.7 1.7 0 001-1.55V3a2 2 0 114 0v.09a1.7 1.7 0 001 1.55 1.7 1.7 0 001.87-.34l.06-.06a2 2 0 112.83 2.83l-.06.06a1.7 1.7 0 00-.34 1.87V9a1.7 1.7 0 001.55 1H21a2 2 0 110 4h-.09a1.7 1.7 0 00-1.55 1z"/></svg>
+        <span data-i18n="nav_settings">Settings</span>
+      </button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="user-chip">
+        <div class="user-avatar">AY</div>
+        <div class="user-meta"><b>Guest Citizen</b><span>ABES Institute of Technology</span></div>
+      </div>
+      <button class="logout-btn" onclick="goTo('landing')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        <span data-i18n="nav_logout">Log out</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <header class="topbar">
+      <button class="sn-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')" aria-label="Menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <h1 id="topbar-title" data-i18n="nav_overview">Overview</h1>
+      <div class="topbar-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="global-search" type="text" data-i18n-ph="search_ph" placeholder="Search complaints…" oninput="onSearch(this.value)">
+      </div>
+      <div class="topbar-right">
+        <button class="icon-btn" title="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+        </button>
+        <button class="icon-btn" title="Settings" onclick="showSection('settings')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.34 1.87"/></svg>
+        </button>
+        <div class="user-avatar" style="width:32px;height:32px;font-size:0.76rem;">AY</div>
+      </div>
+    </header>
+
+    <main class="dash-content">
+
+      <!-- OVERVIEW -->
+      <section class="dash-section active" id="sec-overview">
+        <div class="section-title-row">
+          <div><h2 data-i18n="ov_title">Welcome back</h2><p data-i18n="ov_sub">Here's the current state of your reports and safety tools.</p></div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="label" data-i18n="stat_total">Total complaints</div><div class="value" id="stat-total">0</div></div>
+          <div class="stat-card s-pending"><div class="label" data-i18n="stat_pending">Pending</div><div class="value" id="stat-pending">0</div></div>
+          <div class="stat-card s-resolved"><div class="label" data-i18n="stat_resolved">Resolved</div><div class="value" id="stat-resolved">0</div></div>
+          <div class="stat-card s-sos"><div class="label" data-i18n="stat_sos">Active SOS alerts</div><div class="value" id="stat-sos">0</div></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3 data-i18n="recent_title">Recent complaints</h3>
+            <button class="btn btn-outline-dark btn-sm" onclick="openComplaintModal()" data-i18n="btn_raise">Raise complaint</button>
+          </div>
+          <div class="panel-body" id="recent-table-wrap"></div>
+        </div>
+
+        <div class="quick-grid">
+          <button class="quick-card" onclick="openComplaintModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5v14M5 12h14"/></svg>
+            <b data-i18n="qa_raise_t">Raise a complaint</b>
+            <span data-i18n="qa_raise_d">Report a civic issue and track it end to end.</span>
+          </button>
+          <button class="quick-card" onclick="showSection('safety')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l8 3v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V5z"/></svg>
+            <b data-i18n="qa_sos_t">Try the SOS demo</b>
+            <span data-i18n="qa_sos_d">See how an emergency alert would be sent.</span>
+          </button>
+          <button class="quick-card" onclick="showSection('legal')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M5 8l-3 6a4 4 0 008 0zM19 8l-3 6a4 4 0 008 0zM5 8h14M9 3h6"/></svg>
+            <b data-i18n="qa_legal_t">Ask the legal assistant</b>
+            <span data-i18n="qa_legal_d">Get general guidance on your rights.</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- GRIEVANCES -->
+      <section class="dash-section" id="sec-grievances">
+        <div class="section-title-row">
+          <div><h2 data-i18n="mg_title">My Grievances</h2><p data-i18n="mg_sub">All complaints you've filed, with live status.</p></div>
+          <button class="btn btn-brass" onclick="openComplaintModal()" data-i18n="btn_raise">Raise complaint</button>
+        </div>
+        <div class="panel">
+          <div class="table-toolbar">
+            <div class="topbar-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="grv-search" type="text" data-i18n-ph="search_ph" placeholder="Search complaints…" oninput="onSearch(this.value)">
+            </div>
+            <select id="status-filter" onchange="renderGrievanceTable()">
+              <option value="all" data-i18n="filter_all">All statuses</option>
+              <option value="Pending" data-i18n="filter_pending">Pending</option>
+              <option value="In Review" data-i18n="filter_review">In review</option>
+              <option value="Resolved" data-i18n="filter_resolved">Resolved</option>
+              <option value="Escalated" data-i18n="filter_escalated">Escalated</option>
+            </select>
+          </div>
+          <div class="panel-body" id="grievance-table-wrap"></div>
+        </div>
+      </section>
+
+      <!-- SAFETY -->
+      <section class="dash-section" id="sec-safety">
+        <div class="section-title-row">
+          <div><h2 data-i18n="ws_title">Women Safety</h2><p data-i18n="ws_sub">Emergency alerts and safe-route guidance — interactive demo.</p></div>
+        </div>
+        <div class="safety-grid">
+          <div class="sos-panel">
+            <span class="badge badge-escalated" style="align-self:flex-start;position:relative;z-index:1" data-i18n="ws_live_badge">Demo mode — no real alert is sent</span>
+            <div class="sos-ring-wrap" style="margin-top:26px">
+              <svg viewBox="0 0 180 180"><circle class="sos-ring-bg" cx="90" cy="90" r="80"/><circle class="sos-ring-fg" id="sos-ring" cx="90" cy="90" r="80"/></svg>
+              <button class="sos-btn" id="sos-btn"
+                onmousedown="sosStart()" onmouseup="sosCancel()" onmouseleave="sosCancel()"
+                ontouchstart="sosStart()" ontouchend="sosCancel()">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 3v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V5z"/></svg>
+                <span data-i18n="ws_hold">HOLD</span>
+                <small data-i18n="ws_hold_sub">press &amp; hold 3s</small>
+              </button>
+            </div>
+            <div class="sos-status" id="sos-status" data-i18n="ws_status_idle">No active alert</div>
+            <div class="sos-alert-box" id="sos-alert-box">
+              <b data-i18n="ws_sent_title">Alert sent</b> — <span id="sos-time"></span><br>
+              <span data-i18n="ws_sent_body">Live location shared with your emergency contacts and nearest response unit.</span>
+              <ul class="contact-list">
+                <li><span data-i18n="ws_contact1">Emergency contact 1</span><span>Notified ✓</span></li>
+                <li><span data-i18n="ws_contact2">Emergency contact 2</span><span>Notified ✓</span></li>
+                <li><span data-i18n="ws_contact3">Local response unit</span><span>Notified ✓</span></li>
+              </ul>
+              <button class="btn btn-ghost btn-sm" style="margin-top:14px" onclick="sosReset()" data-i18n="ws_cancel">Cancel alert</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3 data-i18n="ws_route_title">Safe route check</h3></div>
+            <div class="panel-body pad">
+              <div class="route-form">
+                <div class="field"><label data-i18n="ws_from">From</label><input id="route-from" type="text" placeholder="e.g. Sector 62, Ghaziabad"></div>
+                <div class="field" style="margin-bottom:0"><label data-i18n="ws_to">To</label><input id="route-to" type="text" placeholder="e.g. Vaishali Metro Station"></div>
+                <button class="btn btn-dark" onclick="checkRoute()" data-i18n="ws_check">Check route safety</button>
+              </div>
+
+              <div class="map-frame" id="map-frame" style="display:none;">
+                <iframe id="map-iframe" src="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              </div>
+
+              <div class="route-result" id="route-result">
+                <div class="footfall-row"><span data-i18n="ws_footfall_label">Foot traffic on this route:</span> <span class="badge" id="footfall-badge"></span></div>
+                <p style="font-size:0.86rem;color:var(--text-soft);margin-top:14px" data-i18n="ws_score_label">Estimated safety score</p>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div class="score-bar-track" style="flex:1"><div class="score-bar-fill" id="score-fill"></div></div>
+                  <b id="score-num" style="font-family:var(--mono)"></b>
+                </div>
+                <ul class="route-tips">
+                  <li data-i18n="ws_tip1">Prefer well-lit main roads over shortcuts after dark.</li>
+                  <li data-i18n="ws_tip2">Share your live location with a trusted contact.</li>
+                  <li data-i18n="ws_tip3">Keep the SOS button one tap away on this route.</li>
+                </ul>
+
+                <div class="rate-block" id="rate-block">
+                  <b data-i18n="ws_rate_title">Used this route? Rate how safe it felt</b>
+                  <div class="star-row" id="star-row">
+                    <button class="star-btn" onclick="setStar(1)">★</button>
+                    <button class="star-btn" onclick="setStar(2)">★</button>
+                    <button class="star-btn" onclick="setStar(3)">★</button>
+                    <button class="star-btn" onclick="setStar(4)">★</button>
+                    <button class="star-btn" onclick="setStar(5)">★</button>
+                  </div>
+                  <div class="field" style="margin-bottom:10px"><textarea id="rate-comment" rows="2" data-i18n-ph="ws_rate_ph" placeholder="Optional — what made it feel safe or unsafe?"></textarea></div>
+                  <button class="btn btn-outline-dark btn-sm" onclick="submitRouteRating()" data-i18n="ws_rate_submit">Submit rating</button>
+                  <div class="rating-summary" id="rating-summary" style="display:none;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:20px;">
+          <div class="panel-head"><h3 data-i18n="ws_community_title">Community-reported route safety</h3></div>
+          <div class="panel-body" id="citizen-route-table-wrap">
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 2l8 3v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V5z"/></svg>
+              <h4 data-i18n="ws_no_routes_title">No routes rated yet</h4>
+              <p data-i18n="ws_no_routes_body">Once citizens rate a route, its average safety score and patrol status will appear here.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- LEGAL AI -->
+      <section class="dash-section" id="sec-legal">
+        <div class="section-title-row">
+          <div><h2 data-i18n="ai_title">AI Legal Assistant</h2><p data-i18n="ai_sub">Informational guidance only — this is a working demo, not legal advice.</p></div>
+        </div>
+        <div class="panel">
+          <div class="chat-shell">
+            <div class="chat-log" id="chat-log">
+              <div class="msg msg-bot" data-i18n="ai_welcome">Hi, I can explain general rights, laws and complaint procedures in plain language. What's on your mind?</div>
+            </div>
+            <div class="chat-suggestions">
+              <button class="chip" onclick="askAssistant('How do I file a police complaint?')">How do I file a police complaint?</button>
+              <button class="chip" onclick="askAssistant('What are my rights as a woman facing harassment?')">Women's safety rights</button>
+              <button class="chip" onclick="askAssistant('How do I report a cybercrime?')">Report a cybercrime</button>
+            </div>
+            <div class="chat-input-row">
+              <input id="chat-input" type="text" placeholder="Describe your situation…" onkeydown="if(event.key==='Enter')sendChat()">
+              <button class="btn btn-dark" onclick="sendChat()" data-i18n="ai_send">Ask</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="dash-section" id="sec-settings">
+        <div class="section-title-row">
+          <div><h2 data-i18n="set_title">Settings</h2><p data-i18n="set_sub">Personalise how Smart Shield looks and reads.</p></div>
+        </div>
+        <div class="settings-grid">
+          <div class="panel">
+            <div class="panel-head"><h3 data-i18n="set_display">Display</h3></div>
+            <div class="panel-body pad">
+              <div class="setting-row">
+                <div><b data-i18n="set_fontsize">Font size</b><span class="desc" data-i18n="set_fontsize_d">Adjust text size across the dashboard.</span></div>
+                <div class="seg-control">
+                  <button class="seg-btn" data-fs="0.9" onclick="setFontSize(0.9,this)" data-i18n="fs_small">Small</button>
+                  <button class="seg-btn active" data-fs="1" onclick="setFontSize(1,this)" data-i18n="fs_medium">Medium</button>
+                  <button class="seg-btn" data-fs="1.15" onclick="setFontSize(1.15,this)" data-i18n="fs_large">Large</button>
+                </div>
+              </div>
+              <div class="setting-row">
+                <div><b data-i18n="set_lang">Language</b><span class="desc" data-i18n="set_lang_d">Choose the interface language.</span></div>
+                <div class="seg-control">
+                  <button class="seg-btn active" data-lang="en" onclick="setLang('en',this)">English</button>
+                  <button class="seg-btn" data-lang="hi" onclick="setLang('hi',this)">हिंदी</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3 data-i18n="set_account">Account</h3></div>
+            <div class="panel-body pad">
+              <div class="field"><label data-i18n="set_name">Name</label><input type="text" value="Guest Citizen"></div>
+              <div class="field"><label data-i18n="set_inst">Institution</label><input type="text" value="ABES Institute of Technology, Ghaziabad"></div>
+              <div class="field" style="margin-bottom:0"><label data-i18n="set_notif">Notifications</label>
+                <div class="seg-control" style="width:fit-content">
+                  <button class="seg-btn active" data-i18n="set_on">On</button>
+                  <button class="seg-btn" data-i18n="set_off">Off</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- COMPLAINT MODAL -->
+  <div class="modal-overlay" id="modal-complaint" hidden>
+    <div class="modal-box">
+      <div class="modal-head">
+        <div><h3 data-i18n="modal_title">Raise a new complaint</h3><p data-i18n="modal_sub">This creates a tracked case with its own ID.</p></div>
+        <button class="modal-close" onclick="closeComplaintModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="field-2col">
+          <div class="field"><label data-i18n="modal_category">Category</label>
+            <select id="c-category">
+              <option>Sanitation</option><option>Road &amp; infrastructure</option>
+              <option>Water supply</option><option>Electricity</option>
+              <option>Corruption</option><option>Public safety</option><option>Other</option>
+            </select>
+          </div>
+          <div class="field"><label data-i18n="modal_priority">Priority</label>
+            <select id="c-priority"><option>Low</option><option selected>Medium</option><option>High</option></select>
+          </div>
+        </div>
+        <div class="field"><label data-i18n="modal_location">Location</label><input id="c-location" type="text" placeholder="e.g. Sector 4, Ghaziabad"></div>
+        <div class="field"><label data-i18n="modal_desc">Description</label><textarea id="c-desc" rows="4" placeholder="Describe the issue in detail…"></textarea></div>
+        <div class="field" style="margin-bottom:0"><label data-i18n="modal_evidence">Evidence (optional)</label><input type="file"></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost btn-outline-dark" onclick="closeComplaintModal()" data-i18n="modal_cancel">Cancel</button>
+        <button class="btn btn-brass" onclick="submitComplaint()" data-i18n="modal_submit">Submit complaint</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-root" id="toast-root"></div>
+</div>
+
+<!-- ============================================================
+     ADMIN LOGIN
+     ============================================================ -->
+<div id="view-adminlogin" class="view" hidden>
+  <div class="login-panel" style="min-height:100vh;background:var(--paper-2);">
+    <div class="login-card">
+      <a class="login-back" style="position:static;color:var(--text-soft);margin-bottom:24px;display:inline-flex;" onclick="goTo('login')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to citizen login
+      </a>
+      <h2>Admin console sign-in</h2>
+      <p class="sub">Developer &amp; platform-operations access — separate from the citizen-facing app.</p>
+      <div class="field"><label>Admin ID</label><input type="text" placeholder="admin@smartshield"></div>
+      <div class="field"><label>Password</label><input type="password" placeholder="••••••••"></div>
+      <button class="btn btn-dark btn-block" onclick="goTo('admin'); renderAdminAll();">Enter admin console</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ADMIN / DEVELOPER CONSOLE
+     ============================================================ -->
+<div id="view-admin" class="view" hidden>
+  <aside class="sidebar" id="admin-sidebar">
+    <div class="sidebar-brand">
+      <svg viewBox="0 0 40 40" fill="none"><path d="M20 3 L35 9 V19 C35 29 28 35.5 20 38 C12 35.5 5 29 5 19 V9 Z" stroke="#2E8C82" stroke-width="2"/></svg>
+      <span class="brand-word">Shield <b>Console</b></span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sn-group-label">Platform</div>
+      <button class="sn-item active" data-adm="overview" onclick="showAdminSection('overview')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        <span>Overview</span>
+      </button>
+      <button class="sn-item" data-adm="complaints" onclick="showAdminSection('complaints')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3h9l5 5v13a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M14 3v5h5M8 13h8M8 17h5"/></svg>
+        <span>All complaints</span>
+      </button>
+      <button class="sn-item" data-adm="routes" onclick="showAdminSection('routes')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2l8 3v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V5z"/></svg>
+        <span>Route safety monitor</span>
+      </button>
+      <div class="sn-group-label">Platform config</div>
+      <button class="sn-item" data-adm="settings" onclick="showAdminSection('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.34 1.87l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.7 1.7 0 00-1.87-.34 1.7 1.7 0 00-1 1.55V21a2 2 0 11-4 0v-.09a1.7 1.7 0 00-1-1.55 1.7 1.7 0 00-1.87.34l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.7 1.7 0 00.34-1.87 1.7 1.7 0 00-1.55-1H3a2 2 0 110-4h.09a1.7 1.7 0 001.55-1 1.7 1.7 0 00-.34-1.87l-.06-.06a2 2 0 112.83-2.83l.06.06a1.7 1.7 0 001.87.34H9a1.7 1.7 0 001-1.55V3a2 2 0 114 0v.09a1.7 1.7 0 001 1.55 1.7 1.7 0 001.87-.34l.06-.06a2 2 0 112.83 2.83l-.06.06a1.7 1.7 0 00-.34 1.87V9a1.7 1.7 0 001.55 1H21a2 2 0 110 4h-.09a1.7 1.7 0 00-1.55 1z"/></svg>
+        <span>System settings</span>
+      </button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="user-chip">
+        <div class="user-avatar">DV</div>
+        <div class="user-meta"><b>Developer</b><span>Smart Shield Console</span></div>
+      </div>
+      <button class="logout-btn" onclick="goTo('landing')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        <span>Exit console</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <header class="topbar">
+      <button class="sn-toggle" onclick="document.getElementById('admin-sidebar').classList.toggle('open')" aria-label="Menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <h1 id="admin-topbar-title">Overview</h1>
+      <div style="flex:1"></div>
+      <div class="topbar-right">
+        <button class="btn btn-ghost btn-outline-dark btn-sm" onclick="goTo('dashboard')">View as citizen →</button>
+      </div>
+    </header>
+    <main class="dash-content">
+
+      <section class="dash-section active" id="adm-sec-overview">
+        <div class="admin-banner">
+          <b>How this connects:</b> this console and the citizen app read and write the same live data — a complaint, an SOS trigger, or a route rating shows up on both sides instantly. Right now that shared data lives in this browser tab only. Once a real backend and database are wired in, the exact same admin controls here will manage that data across every citizen's device.
+        </div>
+        <div class="stat-grid" id="admin-stat-grid">
+          <div class="stat-card"><div class="label">Total complaints</div><div class="value" id="adm-stat-total">0</div></div>
+          <div class="stat-card s-review"><div class="label">Auto-filed by system</div><div class="value" id="adm-stat-auto">0</div></div>
+          <div class="stat-card s-sos"><div class="label">SOS alerts triggered</div><div class="value" id="adm-stat-sos">0</div></div>
+          <div class="stat-card s-pending"><div class="label">Flagged routes</div><div class="value" id="adm-stat-flagged">0</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Latest activity</h3></div>
+          <div class="panel-body" id="admin-recent-wrap"></div>
+        </div>
+      </section>
+
+      <section class="dash-section" id="adm-sec-complaints">
+        <div class="section-title-row"><div><h2>All complaints</h2><p>Every case filed by a citizen or auto-generated by the system.</p></div></div>
+        <div class="panel">
+          <div class="table-toolbar">
+            <div class="topbar-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="adm-search" type="text" placeholder="Search all complaints…" oninput="renderAdminComplaints()">
+            </div>
+            <select id="adm-status-filter" onchange="renderAdminComplaints()">
+              <option value="all">All statuses</option><option value="Pending">Pending</option>
+              <option value="In Review">In review</option><option value="Resolved">Resolved</option><option value="Escalated">Escalated</option>
+            </select>
+            <select id="adm-source-filter" onchange="renderAdminComplaints()">
+              <option value="all">All sources</option><option value="citizen">Citizen-filed</option><option value="system">Auto-filed</option>
+            </select>
+          </div>
+          <div class="panel-body" id="admin-complaints-wrap"></div>
+        </div>
+      </section>
+
+      <section class="dash-section" id="adm-sec-routes">
+        <div class="section-title-row"><div><h2>Route safety monitor</h2><p>Every route citizens have rated, with its live average and patrol status.</p></div></div>
+        <div class="panel">
+          <div class="panel-body" id="admin-routes-wrap"></div>
+        </div>
+      </section>
+
+      <section class="dash-section" id="adm-sec-settings">
+        <div class="section-title-row"><div><h2>System settings</h2><p>Controls that apply immediately to the citizen app.</p></div></div>
+        <div class="settings-grid">
+          <div class="panel">
+            <div class="panel-head"><h3>Auto-complaint rules</h3></div>
+            <div class="panel-body pad">
+              <div class="setting-row">
+                <div><b>Auto-file complaints for low-rated routes</b><span class="desc">When off, poor ratings are recorded but no complaint is generated.</span></div>
+                <div class="seg-control">
+                  <button class="seg-btn active" id="auto-file-on" onclick="setAutoFile(true)">On</button>
+                  <button class="seg-btn" id="auto-file-off" onclick="setAutoFile(false)">Off</button>
+                </div>
+              </div>
+              <div class="setting-row">
+                <div><b>Auto-file threshold</b><span class="desc">File a patrolling complaint when a route's average rating falls at or below this value.</span></div>
+                <input id="threshold-input" type="number" step="0.1" min="1" max="5" value="2.5" style="width:80px;padding:9px 10px;border:1px solid var(--line);border-radius:var(--radius-sm)" onchange="setThreshold(this.value)">
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>Maps &amp; live data</h3></div>
+            <div class="panel-body pad">
+              <div class="field"><label>Google Maps API key</label><input id="maps-key-input" type="text" placeholder="Add a billing-enabled Maps JavaScript API key" onchange="saveMapsKey(this.value)"></div>
+              <p style="font-size:0.82rem;color:var(--text-soft);line-height:1.6;margin-top:-6px;">The citizen app currently uses a keyless Google Maps embed for the route preview, and a simulated foot-traffic score for safety scoring. Adding a real API key here (once billing is set up) is where you'd wire in live traffic and crowd-density data — the route logic already reads from <code>window.mapsApiKey</code>.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   STATE
+   ============================================================ */
+let complaints = [];
+let complaintCounter = 0;
+let currentSection = 'overview';
+let currentLang = 'en';
+
+/* route safety + admin-controlled config (shared "backend-in-waiting" state) */
+let routeRatings = {};        // key: "from||to" -> {ratings:[{stars,comment,date}], autoFiled:false, autoComplaintId:null}
+let currentRouteKey = null;
+let selectedStars = 0;
+let autoFileEnabled = true;
+let autoComplaintThreshold = 2.5;
+window.mapsApiKey = '';
+let sosCount = 0;
+
+/* ============================================================
+   VIEW ROUTING
+   ============================================================ */
+const viewIds = {landing:'view-landing', login:'view-login', dashboard:'view-dashboard', adminlogin:'view-adminlogin', admin:'view-admin'};
+function goTo(view){
+  Object.keys(viewIds).forEach(v=>{ document.getElementById(viewIds[v]).hidden = (v!==view); });
+  window.scrollTo(0,0);
+}
+function doLogin(){ goTo('dashboard'); showSection('overview'); }
+function toggleMobileNav(){ /* placeholder hook for future mobile drawer on landing */ }
+
+/* ============================================================
+   DASHBOARD SECTION SWITCHING
+   ============================================================ */
+const sectionTitles = {
+  overview:'nav_overview', grievances:'nav_grievances', safety:'nav_safety', legal:'nav_legal', settings:'nav_settings'
+};
+function showSection(sec){
+  currentSection = sec;
+  document.querySelectorAll('.dash-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+sec).classList.add('active');
+  document.querySelectorAll('.sn-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.sn-item[data-sec="'+sec+'"]').forEach(b=>b.classList.add('active'));
+  document.getElementById('topbar-title').setAttribute('data-i18n', sectionTitles[sec]);
+  applyLang();
+  document.getElementById('sidebar').classList.remove('open');
+  if(sec==='grievances') renderGrievanceTable();
+}
+
+/* ============================================================
+   COMPLAINTS DATA + RENDERING
+   ============================================================ */
+function pad4(n){ return n.toString().padStart(4,'0'); }
+
+function submitComplaint(){
+  const category = document.getElementById('c-category').value;
+  const priority = document.getElementById('c-priority').value;
+  const location = document.getElementById('c-location').value.trim();
+  const desc = document.getElementById('c-desc').value.trim();
+  if(!location || !desc){ showToast('Please add a location and description.', true); return; }
+  complaintCounter++;
+  const complaint = {
+    id: 'SS-2026-'+pad4(complaintCounter),
+    category, priority, location, desc,
+    status: 'Pending', source:'citizen',
+    date: new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})
+  };
+  complaints.unshift(complaint);
+  closeComplaintModal();
+  renderStats();
+  renderRecentTable();
+  renderGrievanceTable();
+  showToast('Complaint '+complaint.id+' submitted successfully.');
+  document.getElementById('c-location').value='';
+  document.getElementById('c-desc').value='';
+}
+
+function openComplaintModal(){ document.getElementById('modal-complaint').hidden = false; }
+function closeComplaintModal(){ document.getElementById('modal-complaint').hidden = true; }
+
+function statusBadge(status){
+  const map = {Pending:'badge-pending', 'In Review':'badge-review', Resolved:'badge-resolved', Escalated:'badge-escalated'};
+  const keyMap = {Pending:'filter_pending','In Review':'filter_review',Resolved:'filter_resolved',Escalated:'filter_escalated'};
+  return '<span class="badge '+map[status]+'">'+ (translations[currentLang][keyMap[status]] || status) +'</span>';
+}
+function sourceBadge(source){
+  return source==='system'
+    ? '<span class="badge badge-source auto">Auto-filed</span>'
+    : '<span class="badge badge-source">Citizen</span>';
+}
+
+function emptyStateHTML(){
+  const t = translations[currentLang];
+  return '<div class="empty-state">'+
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 3h9l5 5v13a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M14 3v5h5M8 13h8M8 17h5"/></svg>'+
+    '<h4>'+t.empty_title+'</h4>'+
+    '<p>'+t.empty_body+'</p>'+
+    '<button class="btn btn-brass btn-sm" onclick="openComplaintModal()">'+t.btn_raise+'</button>'+
+  '</div>';
+}
+
+function tableHTML(list, limit){
+  if(list.length===0) return emptyStateHTML();
+  const t = translations[currentLang];
+  const rows = (limit? list.slice(0,limit): list).map(c=>{
+    return '<tr>'+
+      '<td class="cell-id">'+c.id+'</td>'+
+      '<td>'+c.category+'</td>'+
+      '<td class="cell-desc" title="'+c.desc.replace(/"/g,'&quot;')+'">'+c.desc+'</td>'+
+      '<td>'+c.location+'</td>'+
+      '<td>'+c.date+'</td>'+
+      '<td>'+sourceBadge(c.source)+'</td>'+
+      '<td>'+statusBadge(c.status)+'</td>'+
+      '<td><select class="status-select" onchange="updateStatus(\''+c.id+'\', this.value)">'+
+        ['Pending','In Review','Resolved','Escalated'].map(s=>'<option '+(s===c.status?'selected':'')+'>'+s+'</option>').join('')+
+      '</select></td>'+
+    '</tr>';
+  }).join('');
+  return '<table class="data-table"><thead><tr>'+
+    '<th>'+t.th_id+'</th><th>'+t.th_category+'</th><th>'+t.th_desc+'</th><th>'+t.th_location+'</th><th>'+t.th_date+'</th><th>'+t.th_source+'</th><th>'+t.th_status+'</th><th>'+t.th_action+'</th>'+
+    '</tr></thead><tbody>'+rows+'</tbody></table>';
+}
+
+function renderRecentTable(){
+  document.getElementById('recent-table-wrap').innerHTML = tableHTML(complaints, 5);
+}
+function renderGrievanceTable(){
+  const q = (document.getElementById('grv-search')?.value || document.getElementById('global-search')?.value || '').toLowerCase();
+  const filter = document.getElementById('status-filter').value;
+  let list = complaints.filter(c=>{
+    const matchesQ = !q || (c.id+c.category+c.desc+c.location).toLowerCase().includes(q);
+    const matchesF = filter==='all' || c.status===filter;
+    return matchesQ && matchesF;
+  });
+  document.getElementById('grievance-table-wrap').innerHTML = tableHTML(list);
+}
+function onSearch(v){
+  if(document.getElementById('grv-search')) document.getElementById('grv-search').value = v;
+  if(document.getElementById('global-search')) document.getElementById('global-search').value = v;
+  if(currentSection==='grievances') renderGrievanceTable();
+  else if(currentSection==='overview'){
+    const q=v.toLowerCase();
+    const list = complaints.filter(c=>(c.id+c.category+c.desc+c.location).toLowerCase().includes(q));
+    document.getElementById('recent-table-wrap').innerHTML = tableHTML(list,5);
+  }
+}
+function updateStatus(id, status){
+  const c = complaints.find(x=>x.id===id);
+  if(c){ c.status = status; renderStats(); renderRecentTable(); renderGrievanceTable(); showToast('Status updated for '+id+'.'); }
+}
+function renderStats(){
+  document.getElementById('stat-total').textContent = complaints.length;
+  document.getElementById('stat-pending').textContent = complaints.filter(c=>c.status==='Pending').length;
+  document.getElementById('stat-resolved').textContent = complaints.filter(c=>c.status==='Resolved').length;
+}
+
+/* ============================================================
+   SOS DEMO
+   ============================================================ */
+let sosTimer=null, sosProgress=0, sosActive=false;
+function sosStart(){
+  if(sosActive) return;
+  sosProgress = 0;
+  document.getElementById('sos-status').textContent = translations[currentLang].ws_status_holding;
+  sosTimer = setInterval(()=>{
+    sosProgress += 100/30; // 3 seconds at ~33ms tick
+    const circumference = 502;
+    const offset = circumference - (circumference * Math.min(sosProgress,100) / 100);
+    document.getElementById('sos-ring').style.strokeDashoffset = offset;
+    if(sosProgress>=100){
+      clearInterval(sosTimer);
+      sosTrigger();
+    }
+  }, 33);
+}
+function sosCancel(){
+  if(sosActive) return;
+  clearInterval(sosTimer);
+  if(sosProgress<100){
+    document.getElementById('sos-ring').style.strokeDashoffset = 502;
+    document.getElementById('sos-status').textContent = translations[currentLang].ws_status_idle;
+  }
+  sosProgress=0;
+}
+function sosTrigger(){
+  sosActive = true;
+  sosCount++;
+  document.getElementById('stat-sos') && (document.getElementById('stat-sos').textContent = 1);
+  document.getElementById('sos-status').textContent = translations[currentLang].ws_status_sent;
+  document.getElementById('sos-time').textContent = new Date().toLocaleTimeString('en-IN');
+  document.getElementById('sos-alert-box').classList.add('show');
+  showToast('SOS alert sent — emergency contacts notified (demo).');
+}
+function sosReset(){
+  sosActive=false; sosProgress=0;
+  document.getElementById('sos-ring').style.strokeDashoffset = 502;
+  document.getElementById('sos-alert-box').classList.remove('show');
+  document.getElementById('sos-status').textContent = translations[currentLang].ws_status_idle;
+  document.getElementById('stat-sos') && (document.getElementById('stat-sos').textContent = 0);
+}
+
+function routeKeyOf(from,to){ return (from.trim()+'||'+to.trim()).toLowerCase(); }
+function routeLabelOf(from,to){ return from.trim()+' → '+to.trim(); }
+
+function checkRoute(){
+  const from = document.getElementById('route-from').value.trim();
+  const to = document.getElementById('route-to').value.trim();
+  if(!from || !to){ showToast('Enter both a starting point and a destination.', true); return; }
+  currentRouteKey = routeKeyOf(from,to);
+  if(!routeRatings[currentRouteKey]) routeRatings[currentRouteKey] = { label: routeLabelOf(from,to), ratings: [], autoFiled:false, autoComplaintId:null };
+
+  /* keyless Google Maps directions embed — no API key required for this basic view.
+     Once a billed Maps JavaScript API key is added in the admin console (window.mapsApiKey),
+     this is where a live traffic layer / Distance Matrix call would replace the simulation below. */
+  const mapUrl = 'https://www.google.com/maps?saddr='+encodeURIComponent(from)+'&daddr='+encodeURIComponent(to)+'&output=embed';
+  document.getElementById('map-iframe').src = mapUrl;
+  document.getElementById('map-frame').style.display = 'block';
+
+  /* simulated foot-traffic / crowd level — a busier, more populated route reads as safer.
+     this is the hook a real traffic/crowd-density API would feed instead of Math.random(). */
+  const levels = [
+    {label:'Low', range:[32,55], badge:'badge-escalated'},
+    {label:'Medium', range:[55,78], badge:'badge-pending'},
+    {label:'High', range:[78,96], badge:'badge-resolved'}
+  ];
+  const level = levels[Math.floor(Math.random()*levels.length)];
+  const score = Math.floor(level.range[0] + Math.random()*(level.range[1]-level.range[0]));
+
+  const badge = document.getElementById('footfall-badge');
+  badge.className = 'badge '+level.badge;
+  badge.textContent = level.label;
+
+  document.getElementById('score-fill').style.width = score+'%';
+  document.getElementById('score-fill').style.background = score>80? 'var(--ok)' : score>60? 'var(--brass)' : 'var(--signal)';
+  document.getElementById('score-num').textContent = score+' / 100';
+  document.getElementById('route-result').classList.add('show');
+
+  selectedStars = 0;
+  renderStars();
+  document.getElementById('rate-block').classList.add('show');
+  renderRatingSummary();
+}
+
+function setStar(n){
+  selectedStars = n;
+  renderStars();
+}
+function renderStars(){
+  document.querySelectorAll('#star-row .star-btn').forEach((btn,i)=>{
+    btn.classList.toggle('filled', i < selectedStars);
+  });
+}
+function renderRatingSummary(){
+  const box = document.getElementById('rating-summary');
+  const entry = routeRatings[currentRouteKey];
+  if(!entry || entry.ratings.length===0){ box.style.display='none'; return; }
+  const avg = (entry.ratings.reduce((s,r)=>s+r.stars,0) / entry.ratings.length).toFixed(1);
+  box.style.display = 'block';
+  box.innerHTML = '<b>'+avg+' / 5</b> average from '+entry.ratings.length+' rider'+(entry.ratings.length>1?'s':'')+' on this route'+
+    (entry.autoFiled ? ' — a patrolling complaint ('+entry.autoComplaintId+') has already been auto-filed for this route.' : '.');
+}
+
+function submitRouteRating(){
+  if(!currentRouteKey){ showToast('Check a route before rating it.', true); return; }
+  if(selectedStars===0){ showToast('Tap a star to rate this route.', true); return; }
+  const entry = routeRatings[currentRouteKey];
+  entry.ratings.push({ stars: selectedStars, comment: document.getElementById('rate-comment').value.trim(), date: new Date().toLocaleDateString('en-IN') });
+  document.getElementById('rate-comment').value = '';
+  showToast('Thanks — your rating for this route has been recorded.');
+
+  const avg = entry.ratings.reduce((s,r)=>s+r.stars,0) / entry.ratings.length;
+  if(autoFileEnabled && !entry.autoFiled && avg <= autoComplaintThreshold){
+    fileAutoComplaint(entry, avg);
+  }
+  selectedStars = 0;
+  renderStars();
+  renderRatingSummary();
+  renderCitizenRouteTable();
+}
+
+function fileAutoComplaint(entry, avg){
+  complaintCounter++;
+  const complaint = {
+    id: 'SS-2026-'+pad4(complaintCounter),
+    category:'Public safety',
+    priority:'High',
+    location: entry.label,
+    desc: 'Citizens have repeatedly rated this route unsafe (average '+avg.toFixed(1)+'/5). Requesting increased patrolling and lighting review.',
+    status:'Pending', source:'system',
+    date: new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})
+  };
+  complaints.unshift(complaint);
+  entry.autoFiled = true;
+  entry.autoComplaintId = complaint.id;
+  renderStats(); renderRecentTable(); renderGrievanceTable();
+  showToast('Route ratings are low — complaint '+complaint.id+' was auto-filed requesting patrolling.', true);
+}
+
+function buildRouteRows(){
+  return Object.values(routeRatings).filter(e=>e.ratings.length>0).map(e=>{
+    const avg = e.ratings.reduce((s,r)=>s+r.stars,0) / e.ratings.length;
+    return { label:e.label, avg, count:e.ratings.length, flagged: avg<=autoComplaintThreshold, complaintId: e.autoComplaintId };
+  });
+}
+function renderCitizenRouteTable(){
+  const wrap = document.getElementById('citizen-route-table-wrap');
+  const rows = buildRouteRows();
+  if(rows.length===0){
+    wrap.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 2l8 3v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V5z"/></svg><h4>'+translations[currentLang].ws_no_routes_title+'</h4><p>'+translations[currentLang].ws_no_routes_body+'</p></div>';
+    return;
+  }
+  wrap.innerHTML = '<table class="route-mini-table"><thead><tr><th>Route</th><th>Avg. safety rating</th><th>Riders</th><th>Status</th></tr></thead><tbody>'+
+    rows.map(r=>'<tr><td>'+r.label+'</td><td>'+r.avg.toFixed(1)+' / 5</td><td>'+r.count+'</td><td>'+(r.flagged?'<span class="badge badge-escalated">Flagged for patrol</span>':'<span class="badge badge-resolved">Normal</span>')+'</td></tr>').join('')+
+    '</tbody></table>';
+}
+
+/* ============================================================
+   AI LEGAL ASSISTANT DEMO
+   ============================================================ */
+const legalKB = [
+  { k:['harass','harassment','women','safety'], a:"Harassment against women is a punishable offence under Indian law. You can file a complaint at your nearest police station, dial 1091 or 112, or use the Women Safety module here to send an SOS with your live location. If it's workplace-related, your organisation's Internal Committee (under the POSH Act) must act on your complaint." },
+  { k:['police','fir','complaint','file'], a:"To file a police complaint (FIR), visit your local police station or use your state's online FIR portal. Carry an ID and a written account of the incident. If the police refuse to register it, you can escalate to the Superintendent of Police or file a complaint with the local magistrate." },
+  { k:['cyber','online fraud','hack','otp'], a:"Cybercrimes — online fraud, hacking, harassment — can be reported at cybercrime.gov.in or by calling the national cyber helpline 1930. Save all screenshots, transaction IDs and messages as evidence before filing." },
+  { k:['right','rights','constitution'], a:"Every citizen has fundamental rights under the Constitution — equality, freedom of speech, and protection against discrimination among them. If you feel a specific right has been violated, tell me more about the situation and I can point you to the relevant provision." },
+  { k:['grievance','civic','sanitation','road','infrastructure'], a:"Civic issues like sanitation, roads or water supply are best filed through the Raise Complaint section here — it gives you a tracked complaint ID and status updates, with automatic escalation if it isn't addressed in time." },
+];
+function askAssistant(text){
+  document.getElementById('chat-input').value = text;
+  sendChat();
+}
+function sendChat(){
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text) return;
+  const log = document.getElementById('chat-log');
+  log.insertAdjacentHTML('beforeend','<div class="msg msg-user">'+escapeHTML(text)+'</div>');
+  input.value='';
+  const lower = text.toLowerCase();
+  let answer = "I can share general information on rights, safety and complaint procedures — I'm not able to give case-specific legal advice. Could you tell me a bit more about the situation? For example: is this about a civic issue, a safety concern, or a legal right you want to understand?";
+  for(const entry of legalKB){
+    if(entry.k.some(k=>lower.includes(k))){ answer = entry.a; break; }
+  }
+  setTimeout(()=>{
+    log.insertAdjacentHTML('beforeend','<div class="msg msg-bot">'+answer+'</div><div class="msg-disclaimer">Informational guidance only — not a substitute for professional legal advice.</div>');
+    log.scrollTop = log.scrollHeight;
+  }, 350);
+  log.scrollTop = log.scrollHeight;
+}
+function escapeHTML(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+/* ============================================================
+   TOASTS
+   ============================================================ */
+function showToast(msg, isErr){
+  const root = document.getElementById('toast-root');
+  const el = document.createElement('div');
+  el.className = 'toast'+(isErr?' err':'');
+  el.textContent = msg;
+  root.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); }, 3400);
+}
+
+/* ============================================================
+   SETTINGS — FONT SIZE + LANGUAGE
+   ============================================================ */
+function setFontSize(scale, btn){
+  document.documentElement.style.setProperty('--fs-scale', scale);
+  document.querySelectorAll('[data-fs]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function setLang(lang, btn){
+  currentLang = lang;
+  document.querySelectorAll('[data-lang]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  applyLang();
+  renderRecentTable(); renderGrievanceTable();
+}
+const translations = {
+  en:{
+    nav_overview:'Overview', nav_grievances:'My Grievances', nav_raise:'Raise Complaint', nav_group_safety:'Protection',
+    nav_safety:'Women Safety', nav_legal:'Legal Assistant', nav_settings:'Settings', nav_logout:'Log out',
+    ov_title:'Welcome back', ov_sub:"Here's the current state of your reports and safety tools.",
+    stat_total:'Total complaints', stat_pending:'Pending', stat_resolved:'Resolved', stat_sos:'Active SOS alerts',
+    recent_title:'Recent complaints', btn_raise:'Raise complaint',
+    qa_raise_t:'Raise a complaint', qa_raise_d:'Report a civic issue and track it end to end.',
+    qa_sos_t:'Try the SOS demo', qa_sos_d:'See how an emergency alert would be sent.',
+    qa_legal_t:'Ask the legal assistant', qa_legal_d:'Get general guidance on your rights.',
+    mg_title:'My Grievances', mg_sub:"All complaints you've filed, with live status.",
+    search_ph:'Search complaints…', filter_all:'All statuses', filter_pending:'Pending', filter_review:'In review', filter_resolved:'Resolved', filter_escalated:'Escalated',
+    th_id:'ID', th_category:'Category', th_desc:'Description', th_location:'Location', th_date:'Date', th_source:'Filed by', th_status:'Status', th_action:'Update status',
+    ws_footfall_label:'Foot traffic on this route:', ws_rate_title:'Used this route? Rate how safe it felt',
+    ws_rate_ph:'Optional — what made it feel safe or unsafe?', ws_rate_submit:'Submit rating',
+    ws_community_title:'Community-reported route safety', ws_no_routes_title:'No routes rated yet',
+    ws_no_routes_body:'Once citizens rate a route, its average safety score and patrol status will appear here.',
+    empty_title:'No complaints yet', empty_body:'This is a live workspace, not a demo list — raise your first complaint to see it tracked here.',
+    ws_title:'Women Safety', ws_sub:'Emergency alerts and safe-route guidance — interactive demo.',
+    ws_live_badge:'Demo mode — no real alert is sent', ws_hold:'HOLD', ws_hold_sub:'press & hold 3s',
+    ws_status_idle:'No active alert', ws_status_holding:'Hold to confirm…', ws_status_sent:'Alert active',
+    ws_sent_title:'Alert sent', ws_sent_body:'Live location shared with your emergency contacts and nearest response unit.',
+    ws_contact1:'Emergency contact 1', ws_contact2:'Emergency contact 2', ws_contact3:'Local response unit', ws_cancel:'Cancel alert',
+    ws_route_title:'Safe route check', ws_from:'From', ws_to:'To', ws_check:'Check route safety',
+    ws_score_label:'Estimated safety score', ws_tip1:'Prefer well-lit main roads over shortcuts after dark.',
+    ws_tip2:'Share your live location with a trusted contact.', ws_tip3:'Keep the SOS button one tap away on this route.',
+    ai_title:'AI Legal Assistant', ai_sub:'Informational guidance only — this is a working demo, not legal advice.',
+    ai_welcome:"Hi, I can explain general rights, laws and complaint procedures in plain language. What's on your mind?", ai_send:'Ask',
+    set_title:'Settings', set_sub:'Personalise how Smart Shield looks and reads.',
+    set_display:'Display', set_fontsize:'Font size', set_fontsize_d:'Adjust text size across the dashboard.',
+    set_lang:'Language', set_lang_d:'Choose the interface language.',
+    fs_small:'Small', fs_medium:'Medium', fs_large:'Large',
+    set_account:'Account', set_name:'Name', set_inst:'Institution', set_notif:'Notifications', set_on:'On', set_off:'Off',
+    modal_title:'Raise a new complaint', modal_sub:'This creates a tracked case with its own ID.',
+    modal_category:'Category', modal_priority:'Priority', modal_location:'Location', modal_desc:'Description',
+    modal_evidence:'Evidence (optional)', modal_cancel:'Cancel', modal_submit:'Submit complaint'
+  },
+  hi:{
+    nav_overview:'विवरण', nav_grievances:'मेरी शिकायतें', nav_raise:'शिकायत दर्ज करें', nav_group_safety:'सुरक्षा',
+    nav_safety:'महिला सुरक्षा', nav_legal:'कानूनी सहायक', nav_settings:'सेटिंग्स', nav_logout:'लॉग आउट',
+    ov_title:'वापसी पर स्वागत है', ov_sub:'आपकी शिकायतों और सुरक्षा उपकरणों की मौजूदा स्थिति यहाँ है।',
+    stat_total:'कुल शिकायतें', stat_pending:'लंबित', stat_resolved:'समाधान हुआ', stat_sos:'सक्रिय एसओएस अलर्ट',
+    recent_title:'हाल की शिकायतें', btn_raise:'शिकायत दर्ज करें',
+    qa_raise_t:'शिकायत दर्ज करें', qa_raise_d:'नागरिक समस्या दर्ज करें और उसे ट्रैक करें।',
+    qa_sos_t:'एसओएस डेमो आज़माएं', qa_sos_d:'देखें कि आपातकालीन अलर्ट कैसे भेजा जाएगा।',
+    qa_legal_t:'कानूनी सहायक से पूछें', qa_legal_d:'अपने अधिकारों पर सामान्य जानकारी पाएं।',
+    mg_title:'मेरी शिकायतें', mg_sub:'आपके द्वारा दर्ज सभी शिकायतें, स्थिति सहित।',
+    search_ph:'शिकायत खोजें…', filter_all:'सभी स्थितियाँ', filter_pending:'लंबित', filter_review:'समीक्षा में', filter_resolved:'समाधान हुआ', filter_escalated:'आगे भेजा गया',
+    th_id:'आईडी', th_category:'श्रेणी', th_desc:'विवरण', th_location:'स्थान', th_date:'तारीख़', th_source:'दर्ज किसने की', th_status:'स्थिति', th_action:'स्थिति बदलें',
+    ws_footfall_label:'इस मार्ग पर पैदल आवाजाही:', ws_rate_title:'यह मार्ग उपयोग किया? रेट करें कि कितना सुरक्षित लगा',
+    ws_rate_ph:'वैकल्पिक — किस वजह से सुरक्षित या असुरक्षित लगा?', ws_rate_submit:'रेटिंग जमा करें',
+    ws_community_title:'सामुदायिक मार्ग सुरक्षा रिपोर्ट', ws_no_routes_title:'अभी तक कोई मार्ग रेट नहीं हुआ',
+    ws_no_routes_body:'जब नागरिक किसी मार्ग को रेट करेंगे, उसका औसत सुरक्षा स्कोर यहाँ दिखेगा।',
+    empty_title:'अभी कोई शिकायत नहीं', empty_body:'यह एक वास्तविक कार्यस्थान है, डेमो सूची नहीं — पहली शिकायत दर्ज करें।',
+    ws_title:'महिला सुरक्षा', ws_sub:'आपातकालीन अलर्ट और सुरक्षित मार्ग सुझाव — इंटरैक्टिव डेमो।',
+    ws_live_badge:'डेमो मोड — कोई वास्तविक अलर्ट नहीं भेजा जाता', ws_hold:'दबाएं', ws_hold_sub:'3 सेकंड दबाकर रखें',
+    ws_status_idle:'कोई सक्रिय अलर्ट नहीं', ws_status_holding:'पुष्टि के लिए दबाए रखें…', ws_status_sent:'अलर्ट सक्रिय',
+    ws_sent_title:'अलर्ट भेजा गया', ws_sent_body:'लाइव लोकेशन आपके आपातकालीन संपर्कों और नज़दीकी यूनिट को भेजी गई।',
+    ws_contact1:'आपातकालीन संपर्क 1', ws_contact2:'आपातकालीन संपर्क 2', ws_contact3:'स्थानीय प्रतिक्रिया यूनिट', ws_cancel:'अलर्ट रद्द करें',
+    ws_route_title:'सुरक्षित मार्ग जाँच', ws_from:'से', ws_to:'तक', ws_check:'मार्ग सुरक्षा जांचें',
+    ws_score_label:'अनुमानित सुरक्षा स्कोर', ws_tip1:'अंधेरे में शॉर्टकट की जगह रोशनी वाली मुख्य सड़कें चुनें।',
+    ws_tip2:'अपनी लाइव लोकेशन किसी विश्वसनीय संपर्क के साथ साझा करें।', ws_tip3:'इस मार्ग पर एसओएस बटन तुरंत उपलब्ध रखें।',
+    ai_title:'एआई कानूनी सहायक', ai_sub:'केवल सामान्य जानकारी — यह एक कार्यशील डेमो है, कानूनी सलाह नहीं।',
+    ai_welcome:'नमस्ते, मैं सामान्य अधिकार, कानून और शिकायत प्रक्रियाएं सरल भाषा में समझा सकता हूँ। बताइए, क्या जानना चाहेंगे?', ai_send:'पूछें',
+    set_title:'सेटिंग्स', set_sub:'Smart Shield कैसा दिखे और पढ़ा जाए, इसे अपने अनुसार बदलें।',
+    set_display:'डिस्प्ले', set_fontsize:'फ़ॉन्ट आकार', set_fontsize_d:'डैशबोर्ड में टेक्स्ट का आकार बदलें।',
+    set_lang:'भाषा', set_lang_d:'इंटरफ़ेस की भाषा चुनें।',
+    fs_small:'छोटा', fs_medium:'मध्यम', fs_large:'बड़ा',
+    set_account:'खाता', set_name:'नाम', set_inst:'संस्थान', set_notif:'सूचनाएं', set_on:'चालू', set_off:'बंद',
+    modal_title:'नई शिकायत दर्ज करें', modal_sub:'इससे एक ट्रैक की गई केस आईडी बनती है।',
+    modal_category:'श्रेणी', modal_priority:'प्राथमिकता', modal_location:'स्थान', modal_desc:'विवरण',
+    modal_evidence:'साक्ष्य (वैकल्पिक)', modal_cancel:'रद्द करें', modal_submit:'शिकायत दर्ज करें'
+  }
+};
+function applyLang(){
+  const t = translations[currentLang];
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(t[key]) el.textContent = t[key];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    const key = el.getAttribute('data-i18n-ph');
+    if(t[key]) el.setAttribute('placeholder', t[key]);
+  });
+}
+
+/* ============================================================
+   ADMIN / DEVELOPER CONSOLE
+   ============================================================ */
+function showAdminSection(sec){
+  document.querySelectorAll('#view-admin .dash-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('adm-sec-'+sec).classList.add('active');
+  document.querySelectorAll('#view-admin .sn-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#view-admin .sn-item[data-adm="'+sec+'"]').forEach(b=>b.classList.add('active'));
+  const titles = {overview:'Overview', complaints:'All complaints', routes:'Route safety monitor', settings:'System settings'};
+  document.getElementById('admin-topbar-title').textContent = titles[sec];
+  if(sec==='overview') renderAdminOverview();
+  if(sec==='complaints') renderAdminComplaints();
+  if(sec==='routes') renderAdminRoutes();
+}
+function renderAdminAll(){
+  renderAdminOverview();
+  renderAdminComplaints();
+  renderAdminRoutes();
+}
+function renderAdminOverview(){
+  document.getElementById('adm-stat-total').textContent = complaints.length;
+  document.getElementById('adm-stat-auto').textContent = complaints.filter(c=>c.source==='system').length;
+  document.getElementById('adm-stat-sos').textContent = sosCount;
+  document.getElementById('adm-stat-flagged').textContent = buildRouteRows().filter(r=>r.flagged).length;
+  document.getElementById('admin-recent-wrap').innerHTML = tableHTML(complaints, 6);
+}
+function renderAdminComplaints(){
+  const q = (document.getElementById('adm-search').value||'').toLowerCase();
+  const statusF = document.getElementById('adm-status-filter').value;
+  const sourceF = document.getElementById('adm-source-filter').value;
+  const list = complaints.filter(c=>{
+    const mQ = !q || (c.id+c.category+c.desc+c.location).toLowerCase().includes(q);
+    const mS = statusF==='all' || c.status===statusF;
+    const mSrc = sourceF==='all' || c.source===sourceF;
+    return mQ && mS && mSrc;
+  });
+  document.getElementById('admin-complaints-wrap').innerHTML = tableHTML(list);
+}
+function renderAdminRoutes(){
+  const rows = buildRouteRows();
+  const wrap = document.getElementById('admin-routes-wrap');
+  if(rows.length===0){ wrap.innerHTML = emptyStateHTML(); return; }
+  wrap.innerHTML = '<table class="data-table"><thead><tr><th>Route</th><th>Avg. rating</th><th>Riders</th><th>Status</th><th>Linked complaint</th></tr></thead><tbody>'+
+    rows.map(r=>'<tr><td>'+r.label+'</td><td>'+r.avg.toFixed(1)+' / 5</td><td>'+r.count+'</td><td>'+(r.flagged?'<span class="badge badge-escalated">Flagged</span>':'<span class="badge badge-resolved">Normal</span>')+'</td><td class="cell-id">'+(r.complaintId||'—')+'</td></tr>').join('')+
+    '</tbody></table>';
+}
+function setAutoFile(on){
+  autoFileEnabled = on;
+  document.getElementById('auto-file-on').classList.toggle('active', on);
+  document.getElementById('auto-file-off').classList.toggle('active', !on);
+  showToast('Auto-filing for low-rated routes turned '+(on?'on':'off')+' — applies immediately in the citizen app.');
+}
+function setThreshold(v){
+  const n = parseFloat(v);
+  if(isNaN(n) || n<1 || n>5){ showToast('Enter a threshold between 1 and 5.', true); return; }
+  autoComplaintThreshold = n;
+  showToast('Auto-file threshold set to '+n+' — the citizen app will use this on the next rating.');
+}
+function saveMapsKey(v){
+  window.mapsApiKey = v.trim();
+  showToast(v.trim() ? 'Maps API key saved for this session.' : 'Maps API key cleared.');
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderStats();
+renderRecentTable();
+renderCitizenRouteTable();
+applyLang();
+</script>
+</body>
+</html>

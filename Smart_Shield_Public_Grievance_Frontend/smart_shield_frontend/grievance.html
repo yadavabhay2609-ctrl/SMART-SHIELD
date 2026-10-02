@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Shield | Public Grievance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/grievance.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">S</div>
+        <div><strong>Smart Shield</strong><span>Citizen Protection</span></div>
+      </div>
+
+      <nav class="nav">
+        <p class="nav-label">MAIN</p>
+        <a class="nav-item active" href="#"><span>⌂</span> Overview</a>
+        <a class="nav-item" href="#complaints"><span>▤</span> My Grievances</a>
+        <a class="nav-item" href="#raise"><span>＋</span> Raise Complaint</a>
+        <a class="nav-item" href="#safety"><span>◉</span> Women Safety</a>
+        <a class="nav-item" href="#assistant"><span>✦</span> AI Legal Assistant</a>
+        <p class="nav-label">ACCOUNT</p>
+        <a class="nav-item" href="#"><span>⚙</span> Settings</a>
+        <a class="nav-item" href="#"><span>?</span> Help & Support</a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="safety-mini">
+          <div class="mini-icon">!</div>
+          <div><strong>Need urgent help?</strong><small>Use the safety center.</small></div>
+        </div>
+        <button class="logout">↪ &nbsp; Logout</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn">☰</button>
+        <div>
+          <p class="eyebrow">CITIZEN PORTAL</p>
+          <h1>Good evening, Abhay 👋</h1>
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" title="Notifications">🔔<i></i></button>
+          <div class="profile">
+            <div class="avatar">AY</div>
+            <div><strong>Abhay Yadav</strong><small>Citizen</small></div>
+          </div>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div>
+          <span class="pill">● Your voice matters</span>
+          <h2>Report it. Track it.<br><span>Resolve it.</span></h2>
+          <p>Raise civic grievances, monitor progress, and stay connected with the concerned department — all in one place.</p>
+          <button class="primary-btn" id="openComplaint">＋ Raise a Complaint</button>
+        </div>
+        <div class="hero-art">
+          <div class="shield">S</div>
+          <div class="orbit orbit-1"></div><div class="orbit orbit-2"></div>
+          <div class="float-card card-a">✓ <b>Complaint tracked</b></div>
+          <div class="float-card card-b">⚡ <b>Fast escalation</b></div>
+        </div>
+      </section>
+
+      <section class="stats">
+        <article class="stat-card"><div class="stat-icon blue">▤</div><div><span>Total Complaints</span><strong id="totalCount">12</strong><small>All submitted requests</small></div></article>
+        <article class="stat-card"><div class="stat-icon amber">◷</div><div><span>In Progress</span><strong id="progressCount">04</strong><small>Being reviewed</small></div></article>
+        <article class="stat-card"><div class="stat-icon green">✓</div><div><span>Resolved</span><strong id="resolvedCount">07</strong><small>Successfully closed</small></div></article>
+        <article class="stat-card"><div class="stat-icon red">!</div><div><span>High Priority</span><strong id="priorityCount">01</strong><small>Needs attention</small></div></article>
+      </section>
+
+      <section class="content-grid">
+        <div class="panel complaints" id="complaints">
+          <div class="panel-head">
+            <div><h3>Recent Grievances</h3><p>Track the latest complaints submitted by you.</p></div>
+            <button class="text-btn" id="viewAll">View all →</button>
+          </div>
+          <div class="toolbar">
+            <div class="search"><span>⌕</span><input id="searchInput" placeholder="Search by complaint ID or title"></div>
+            <select id="statusFilter"><option value="all">All status</option><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Resolved">Resolved</option></select>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Complaint</th><th>Category</th><th>Submitted</th><th>Status</th><th>Priority</th></tr></thead>
+              <tbody id="complaintTable">
+                <tr data-search="SS-2026-0148 street light Sector 62" data-status="In Progress"><td><b>SS-2026-0148</b><span>Street lights not working</span></td><td>Public Safety</td><td>01 Sep 2026</td><td><span class="status progress">In Progress</span></td><td><span class="priority medium">Medium</span></td></tr>
+                <tr data-search="SS-2026-0142 garbage collection" data-status="Resolved"><td><b>SS-2026-0142</b><span>Garbage collection delay</span></td><td>Sanitation</td><td>28 Aug 2026</td><td><span class="status resolved">Resolved</span></td><td><span class="priority low">Low</span></td></tr>
+                <tr data-search="SS-2026-0137 road damage" data-status="Pending"><td><b>SS-2026-0137</b><span>Road damage near market</span></td><td>Roads</td><td>26 Aug 2026</td><td><span class="status pending">Pending</span></td><td><span class="priority high">High</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="side-stack">
+          <article class="panel quick" id="safety">
+            <div class="panel-head"><div><h3>Safety Center</h3><p>Quick access when you need help.</p></div><span class="live">LIVE</span></div>
+            <button class="safety-btn" id="sosBtn"><span>⚠</span><div><b>Emergency SOS</b><small>Send an urgent alert</small></div><em>→</em></button>
+            <button class="outline-btn">View Safety Resources</button>
+          </article>
+
+          <article class="panel assistant" id="assistant">
+            <div class="ai-top"><div class="ai-icon">✦</div><div><h3>AI Legal Assistant</h3><p>Understand your rights</p></div><span class="online"></span></div>
+            <p class="ai-copy">Describe your issue and get general information about relevant rights, laws and complaint procedures.</p>
+            <button class="assistant-btn" id="assistantBtn">Ask the AI Assistant <span>→</span></button>
+          </article>
+        </div>
+      </section>
+
+      <section class="how panel" id="raise">
+        <div class="panel-head"><div><h3>How Smart Shield Works</h3><p>Simple, transparent and citizen-first.</p></div></div>
+        <div class="steps">
+          <div><span>01</span><div><b>Submit</b><p>Describe your issue and attach evidence.</p></div></div>
+          <div><span>02</span><div><b>Assign</b><p>Complaint reaches the concerned department.</p></div></div>
+          <div><span>03</span><div><b>Track</b><p>Follow every status update in real time.</p></div></div>
+          <div><span>04</span><div><b>Resolve</b><p>Receive the final resolution and remarks.</p></div></div>
+        </div>
+      </section>
+
+      <footer>Smart Shield • A citizen-focused SDG 16 project <span>Peace • Justice • Strong Institutions</span></footer>
+    </main>
+  </div>
+
+  <div class="modal" id="complaintModal">
+    <div class="modal-card">
+      <button class="close" data-close>×</button>
+      <span class="pill">NEW GRIEVANCE</span><h2>Raise a Complaint</h2><p>Provide the details below. Required fields are marked with *.</p>
+      <form id="complaintForm">
+        <div class="form-row"><label>Complaint category *<select id="category" required><option value="">Select category</option><option>Public Safety</option><option>Roads</option><option>Sanitation</option><option>Water Supply</option><option>Electricity</option><option>Corruption</option></select></label><label>Priority *<select required><option>Low</option><option selected>Medium</option><option>High</option></select></label></div>
+        <label>Complaint title *<input id="title" required placeholder="e.g. Street light not working"></label>
+        <label>Location *<input id="location" required placeholder="Area / landmark"></label>
+        <label>Description *<textarea id="description" required rows="4" placeholder="Explain your problem clearly..."></textarea></label>
+        <label>Evidence <input type="file" id="evidence" accept="image/*,.pdf"></label>
+        <button class="primary-btn full" type="submit">Submit Complaint →</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">✓ Complaint submitted successfully</div>
+  <script src="js/grievance.js"></script>
+</body>
+</html>

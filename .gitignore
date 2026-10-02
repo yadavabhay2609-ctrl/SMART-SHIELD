@@ -1,0 +1,28 @@
+# Maven
+maven/
+
+# Build output
+target/
+**/target/
+
+# ZIP files
+*.zip
+
+# VS Code local settings
+.vscode/
+
+# Java compiled files
+*.class
+
+# Node dependencies
+node_modules/
+
+# Local configuration and secrets
+**/application.properties
+**/*.backup
+.env
+.env.*
+
+# Reference images
+image/
+pdf/
