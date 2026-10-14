@@ -26,3 +26,12 @@ node_modules/
 # Reference images
 image/
 pdf/
+
+# Uploaded user files
+**/uploads/
+
+# Uploaded user files
+**/uploads/
+
+# Local test artifacts
+

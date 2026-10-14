@@ -16,11 +16,14 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CitizenTokenService citizenTokenService;
 
     public AuthService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder,
+                       CitizenTokenService citizenTokenService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.citizenTokenService = citizenTokenService;
     }
 
     public AuthResponse signup(SignupRequest request) {
@@ -44,12 +47,15 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
+        String token = citizenTokenService.generateToken(savedUser.getId(), savedUser.getEmail());
+
         return new AuthResponse(
                 savedUser.getId(),
                 savedUser.getFullName(),
                 savedUser.getEmail(),
                 savedUser.getRole().name(),
-                "Signup successful"
+                "Signup successful",
+                token
         );
     }
 
@@ -71,12 +77,15 @@ public class AuthService {
             );
         }
 
+        String token = citizenTokenService.generateToken(user.getId(), user.getEmail());
+
         return new AuthResponse(
                 user.getId(),
                 user.getFullName(),
                 user.getEmail(),
                 user.getRole().name(),
-                "Login successful"
+                "Login successful",
+                token
         );
     }
 }

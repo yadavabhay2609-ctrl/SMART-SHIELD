@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Shield | Women Safety & Emergency SOS Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/grievance.css">
+  <link rel="stylesheet" href="css/safety.css">
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark" style="background:#dc2626;">🛡</div>
+        <div><strong>Smart Shield</strong><span>Women Safety Center</span></div>
+      </div>
+
+      <nav class="nav">
+        <p class="nav-label">MAIN</p>
+        <a class="nav-item" href="grievance.html"><span>⌂</span> Overview</a>
+        <a class="nav-item" href="grievance.html#complaints"><span>▤</span> My Grievances</a>
+        <a class="nav-item" href="grievance.html#raise"><span>＋</span> Raise Complaint</a>
+        <a class="nav-item active" href="safety.html"><span>◉</span> Women Safety</a>
+        <a class="nav-item" href="safe-routes.html"><span>🛣</span> Safe Routes</a>
+        <a class="nav-item" href="ai-assistant.html"><span>✦</span> AI Legal Assistant</a>
+        <a class="nav-item" href="form-scanner.html"><span>📋</span> Form Scanner</a>
+        <p class="nav-label">ACCOUNT</p>
+        <a class="nav-item" href="../../index.html"><span>🏠</span> Home</a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="safety-mini" style="background:#fee2e2;border-color:#fca5a5;">
+          <div class="mini-icon" style="background:#ef4444;">⚠</div>
+          <div><strong style="color:#991b1b;">Emergency Ready</strong><small style="color:#b91c1c;">Direct dispatch line</small></div>
+        </div>
+        <button class="logout" id="authBtn">↪ &nbsp; Logout</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn">☰</button>
+        <div>
+          <p class="eyebrow" style="color:#ef4444;">EMERGENCY RESPONSE PORTAL</p>
+          <h1 id="welcomeGreeting">Women Safety &amp; SOS Center</h1>
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" title="Emergency Help" onclick="window.location.href='#helplines'">🚨</button>
+          <div class="profile">
+            <div class="avatar" id="userAvatar" style="background:#fee2e2;color:#b91c1c;">AY</div>
+            <div><strong id="userName">Citizen</strong><small id="userRole">Citizen</small></div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Emergency SOS Hero Section -->
+      <section class="safety-hero">
+        <div class="safety-hero-text">
+          <span class="pill" style="background:rgba(239, 68, 68, 0.25);color:#fca5a5;">● LIVE EMERGENCY PROTECTION</span>
+          <h2>Need Immediate Help?<br><span>One-Touch SOS Broadcast</span></h2>
+          <p>
+            Triggering the SOS alert immediately retrieves your browser's GPS coordinates,
+            notifies your registered emergency contacts, and registers an emergency incident
+            with local response coordinators.
+          </p>
+          <div style="display:flex;gap:12px;align-items:center;">
+            <button class="primary-btn" id="triggerSosDirectBtn" style="background:#ef4444;color:#fff;box-shadow:0 8px 20px rgba(239, 68, 68, 0.4);">
+              ⚠ Trigger Emergency SOS Now
+            </button>
+            <span style="font-size:11px;color:#94a3b8;">Safe confirmation required before dispatch</span>
+          </div>
+        </div>
+
+        <div class="sos-trigger-wrap">
+          <div class="sos-pulse-container">
+            <div class="sos-ring"></div>
+            <div class="sos-ring-2"></div>
+            <button class="sos-main-btn" id="mainSosBtn" title="Press to trigger Emergency SOS">
+              SOS
+              <span>Emergency</span>
+            </button>
+          </div>
+          <p class="sos-hint">PRESS FOR EMERGENCY</p>
+        </div>
+      </section>
+
+      <!-- Browser Geolocation Diagnostic Banner -->
+      <section class="geo-banner" id="geoBanner">
+        <div class="geo-status-indicator">
+          <div class="geo-dot" id="geoDot"></div>
+          <div>
+            <strong id="geoStatusText">Checking Browser Geolocation Access...</strong>
+            <small id="geoSubText">Location is required to send real-time coordinates to emergency responders.</small>
+          </div>
+        </div>
+        <button class="primary-btn" id="requestGeoBtn" style="padding:8px 14px;font-size:10px;background:#f1f5f9;color:#334155;box-shadow:none;border:1px solid #cbd5e1;">
+          Verify Location
+        </button>
+      </section>
+
+      <!-- Active / Latest SOS Alert Monitor -->
+      <section class="latest-alert-card panel" id="latestAlertPanel" style="display:none;">
+        <div class="panel-head" style="margin-bottom:14px;">
+          <div>
+            <h3 style="display:flex;align-items:center;gap:8px;">
+              <span>🚨</span> Active Emergency Alert Status
+            </h3>
+            <p id="latestAlertTime">Triggered just now</p>
+          </div>
+          <span class="alert-status-badge" id="latestAlertStatus">TRIGGERED</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:14px;">
+          <div>
+            <small style="color:#64748b;font-size:9px;font-weight:700;display:block;text-transform:uppercase;">Latitude</small>
+            <strong id="latestLat" style="font-size:12px;color:#0f172a;">--</strong>
+          </div>
+          <div>
+            <small style="color:#64748b;font-size:9px;font-weight:700;display:block;text-transform:uppercase;">Longitude</small>
+            <strong id="latestLng" style="font-size:12px;color:#0f172a;">--</strong>
+          </div>
+          <div>
+            <small style="color:#64748b;font-size:9px;font-weight:700;display:block;text-transform:uppercase;">Admin Monitoring</small>
+            <span class="notification-badge SENT" style="background:#ecfdf5;color:#047857;">ACTIVE</span>
+          </div>
+          <div>
+            <small style="color:#64748b;font-size:9px;font-weight:700;display:block;text-transform:uppercase;">Email Alert</small>
+            <span class="notification-badge" id="latestEmailStatus">--</span>
+          </div>
+          <div>
+            <small style="color:#64748b;font-size:9px;font-weight:700;display:block;text-transform:uppercase;">Telegram Alert</small>
+            <span class="notification-badge" id="latestTelegramStatus">--</span>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <p id="latestNotifDetails" style="font-size:11px;color:#475569;margin:0;">Loading alert details...</p>
+          <a id="latestMapLink" href="#" target="_blank" rel="noopener noreferrer" style="font-size:11px;font-weight:700;color:#2563eb;text-decoration:none;">
+            View Coordinates on Map ↗
+          </a>
+        </div>
+      </section>
+
+      <!-- Main Two-Column Layout -->
+      <section class="safety-grid">
+        <!-- Left: Emergency Contacts Section -->
+        <article class="panel">
+          <div class="contacts-header">
+            <div>
+              <h3>Trusted Emergency Contacts</h3>
+              <p>People notified automatically when your SOS is activated.</p>
+            </div>
+            <button class="primary-btn" id="addContactBtn" style="background:#18243a;color:#fff;">
+              ＋ Add Contact
+            </button>
+          </div>
+
+          <div class="contacts-list" id="contactsContainer">
+            <div class="empty-state">
+              <div class="empty-state-icon">👥</div>
+              <h4>No Emergency Contacts Added</h4>
+              <p>Add trusted family members or friends who should receive immediate emergency alerts.</p>
+              <button class="primary-btn" id="emptyAddContactBtn" style="background:#18243a;color:#fff;">
+                Add First Contact
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Right: SOS Alerts History -->
+        <article class="panel">
+          <div class="panel-head" style="margin-bottom:14px;">
+            <div>
+              <h3>Recent SOS Alerts</h3>
+              <p>Past emergency alerts triggered by your account.</p>
+            </div>
+            <button class="text-btn" id="refreshAlertsBtn">Refresh ↻</button>
+          </div>
+
+          <div id="alertsHistoryContainer" style="display:flex;flex-direction:column;gap:10px;max-height:360px;overflow-y:auto;padding-right:4px;">
+            <p style="text-align:center;color:#8a94a6;font-size:11px;padding:24px;">No emergency alerts recorded.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- Emergency Helplines & Guidance -->
+      <section class="panel" id="helplines" style="margin-bottom:24px;">
+        <div class="panel-head" style="margin-bottom:16px;">
+          <div>
+            <h3>Emergency Helplines &amp; Authorities</h3>
+            <p>Direct telephone emergency services available 24/7 across India.</p>
+          </div>
+          <span class="live">24×7 ACTIVE</span>
+        </div>
+
+        <div class="helplines-grid">
+          <a class="helpline-card" href="tel:112">
+            <div class="helpline-info">
+              <small>National Emergency</small>
+              <strong>All-in-One Helpline</strong>
+              <p style="margin:0;font-size:10px;color:#64748b;">Police, Fire, Ambulance</p>
+            </div>
+            <div class="helpline-number">112</div>
+          </a>
+
+          <a class="helpline-card" href="tel:1091">
+            <div class="helpline-info">
+              <small>Women Safety</small>
+              <strong>Women Helpline</strong>
+              <p style="margin:0;font-size:10px;color:#64748b;">Distress & Harassment Aid</p>
+            </div>
+            <div class="helpline-number">1091</div>
+          </a>
+
+          <a class="helpline-card" href="tel:1090">
+            <div class="helpline-info">
+              <small>State Police</small>
+              <strong>Women Power Line</strong>
+              <p style="margin:0;font-size:10px;color:#64748b;">24x7 Stalking & Abuse Line</p>
+            </div>
+            <div class="helpline-number">1090</div>
+          </a>
+
+          <a class="helpline-card" href="tel:100">
+            <div class="helpline-info">
+              <small>Police Support</small>
+              <strong>Police Control Room</strong>
+              <p style="margin:0;font-size:10px;color:#64748b;">Instant Patrol Unit Dispatch</p>
+            </div>
+            <div class="helpline-number">100</div>
+          </a>
+
+          <a class="helpline-card" href="tel:181">
+            <div class="helpline-info">
+              <small>National Commission</small>
+              <strong>Women in Distress</strong>
+              <p style="margin:0;font-size:10px;color:#64748b;">Counseling & Legal Support</p>
+            </div>
+            <div class="helpline-number">181</div>
+          </a>
+
+          <a class="helpline-card" href="tel:1098">
+            <div class="helpline-info">
+              <small>Childline India</small>
+              <strong>Child Helpline</strong>
+              <p style="margin:0;font-size:10px;color:#64748b;">Children in Distress</p>
+            </div>
+            <div class="helpline-number">1098</div>
+          </a>
+        </div>
+      </section>
+
+      <footer>
+        Smart Shield • A citizen-focused SDG 16 project
+        <span>Peace • Justice • Strong Institutions</span>
+      </footer>
+    </main>
+  </div>
+
+  <!-- SOS Confirmation Modal -->
+  <div class="modal" id="sosConfirmModal">
+    <div class="modal-card" style="max-width:480px;text-align:center;">
+      <button class="close" data-close>×</button>
+      <div style="width:60px;height:60px;border-radius:50%;background:#fee2e2;color:#ef4444;font-size:28px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;">
+        ⚠
+      </div>
+      <h2 style="font-size:20px;margin-top:0;">Confirm Emergency SOS</h2>
+      <p style="font-size:11px;color:#64748b;margin-bottom:16px;">
+        Are you sure you want to trigger an Emergency SOS alert?<br>
+        Your exact browser location will be captured and sent to your emergency contacts.
+      </p>
+
+      <div style="text-align:left;margin-bottom:16px;">
+        <label style="font-size:10px;font-weight:700;color:#475569;display:block;margin-bottom:6px;">
+          Emergency Message (Optional):
+        </label>
+        <input type="text" id="sosMessageInput" value="Emergency assistance required immediately" placeholder="e.g. In immediate danger, please help" style="width:100%;border:1px solid #cbd5e1;border-radius:8px;padding:9px;font-size:11px;">
+      </div>
+
+      <div style="display:flex;gap:10px;">
+        <button class="outline-btn" style="flex:1;margin-top:0;padding:11px;" id="cancelSosConfirmBtn">
+          Cancel
+        </button>
+        <button class="primary-btn" style="flex:1.5;background:#ef4444;color:#fff;padding:11px;" id="confirmSosBtn">
+          Yes, Trigger SOS Now →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live SOS Dispatch Steps Overlay -->
+  <div class="dispatch-overlay" id="dispatchOverlay">
+    <div class="dispatch-card">
+      <div class="dispatch-icon" id="dispatchIcon">🚨</div>
+      <h3 class="dispatch-title" id="dispatchTitle">Dispatching SOS Alert</h3>
+      <p class="dispatch-status" id="dispatchStatusText">Acquiring current GPS location from browser...</p>
+
+      <div class="dispatch-steps">
+        <div class="step-item active" id="stepLocation">
+          <div class="step-check">1</div>
+          <span>Acquire browser GPS coordinates</span>
+        </div>
+        <div class="step-item" id="stepRegister">
+          <div class="step-check">2</div>
+          <span>Register persistent SOS incident with server</span>
+        </div>
+        <div class="step-item" id="stepNotify">
+          <div class="step-check">3</div>
+          <span>Dispatch emergency notification to contacts</span>
+        </div>
+      </div>
+
+      <div style="display:none;" id="dispatchSuccessActions">
+        <button class="primary-btn full" id="closeDispatchBtn" style="background:#10b981;color:#fff;">
+          Done
+        </button>
+      </div>
+
+      <div style="display:none;" id="dispatchErrorActions">
+        <button class="primary-btn full" id="retryDispatchBtn" style="background:#ef4444;color:#fff;margin-bottom:8px;">
+          Retry SOS
+        </button>
+        <button class="outline-btn" id="dismissDispatchBtn">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Emergency Contact Modal -->
+  <div class="modal" id="contactModal">
+    <div class="modal-card" style="max-width:480px;">
+      <button class="close" data-close>×</button>
+      <span class="pill" id="contactModalPill">EMERGENCY CONTACT</span>
+      <h2 id="contactModalTitle" style="margin-top:10px;">Add Emergency Contact</h2>
+      <p id="contactModalSub" style="margin-bottom:18px;">Enter the details of a trusted person to notify during emergencies.</p>
+
+      <form id="contactForm">
+        <input type="hidden" id="contactEditId">
+        <label>Full Name *
+          <input type="text" id="contactName" required placeholder="e.g. Ramesh Sharma" minlength="2" maxlength="100">
+        </label>
+        <label>Phone Number *
+          <input type="tel" id="contactPhone" required placeholder="e.g. +919876543210" pattern="^[0-9+()\-\s]{7,20}$">
+        </label>
+        <div class="form-row">
+          <label>Relationship *
+            <select id="contactRelationship" required>
+              <option value="">Select relationship</option>
+              <option value="Father">Father</option>
+              <option value="Mother">Mother</option>
+              <option value="Spouse">Spouse</option>
+              <option value="Sibling">Sibling</option>
+              <option value="Child">Child</option>
+              <option value="Friend">Friend</option>
+              <option value="Guardian">Guardian</option>
+              <option value="Colleague">Colleague</option>
+              <option value="Other">Other</option>
+            </select>
+          </label>
+          <label>Email (For instant email alerts)
+            <input type="email" id="contactEmail" placeholder="name@example.com" maxlength="120">
+          </label>
+        </div>
+        <div style="margin-top:8px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" id="contactActive" checked style="width:auto;margin:0;">
+          <label for="contactActive" style="margin:0;font-size:11px;font-weight:600;color:#334155;cursor:pointer;">
+            Enable this contact for emergency broadcasts
+          </label>
+        </div>
+        <button class="primary-btn full" type="submit" id="saveContactBtn">
+          Save Emergency Contact →
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Citizen Auth Modal (Sign In / Register) -->
+  <div class="modal" id="authModal">
+    <div class="modal-card" style="max-width:440px;">
+      <button class="close" data-close>×</button>
+      <span class="pill" id="authPill">CITIZEN ACCESS</span>
+      <h2 id="authTitle" style="margin-top:10px;">Citizen Sign In</h2>
+      <p id="authSub" style="margin-bottom:16px;">Sign in to access your safety center and emergency contacts.</p>
+
+      <form id="authForm">
+        <div id="authNameRow" style="display:none;margin-bottom:12px;">
+          <label>Full Name *<input id="authFullName" placeholder="e.g. Priya Sharma"></label>
+        </div>
+        <label>Email Address *<input id="authEmail" type="email" required placeholder="name@example.com"></label>
+        <label>Password *<input id="authPassword" type="password" required placeholder="••••••••"></label>
+        <button class="primary-btn full" type="submit" id="authSubmitBtn" style="margin-top:14px;">Sign In →</button>
+      </form>
+
+      <div style="margin-top:16px;text-align:center;font-size:10px;color:#6b7280;">
+        <span id="authTogglePrompt">Don't have an account?</span>
+        <button type="button" id="authToggleBtn" style="background:none;border:0;color:#2563eb;font-weight:700;cursor:pointer;margin-left:4px;padding:0;">Sign Up</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Telegram Connection Modal -->
+  <div class="modal" id="telegramModal">
+    <div class="modal-card" style="max-width:480px;text-align:center;">
+      <button class="close" data-close>×</button>
+      <div style="width:56px;height:56px;border-radius:50%;background:#e0f2fe;color:#0284c7;font-size:26px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;">
+        ✈
+      </div>
+      <h2 style="font-size:18px;margin-top:0;" id="telegramModalTitle">Connect Emergency Contact via Telegram</h2>
+      <p style="font-size:11px;color:#64748b;margin-bottom:18px;" id="telegramModalSub">
+        Ask this contact to connect with the Smart Shield Telegram Bot to receive instant SOS notifications with live GPS maps.
+      </p>
+
+      <!-- Active Connection Instructions State -->
+      <div id="telegramConnectingState">
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:16px;text-align:left;">
+          <p style="font-size:11px;font-weight:700;color:#0f172a;margin:0 0 8px;">Instructions for your contact:</p>
+          <ol style="margin:0;padding-left:18px;font-size:11px;color:#475569;line-height:1.6;">
+            <li>Ask them to open the Telegram Bot: <strong id="telegramBotUsernameDisplay">@SmartShieldAlertBot</strong></li>
+            <li>Press <strong>START</strong> in the bot</li>
+            <li>Submit the single-use connection code below:</li>
+          </ol>
+        </div>
+
+        <div style="background:#0f172a;color:#fff;border-radius:12px;padding:16px;margin-bottom:14px;text-align:center;">
+          <small style="color:#94a3b8;font-size:9px;text-transform:uppercase;letter-spacing:1px;font-weight:700;display:block;margin-bottom:4px;">Single-Use Connection Code</small>
+          <div id="telegramCodeDisplay" style="font-size:24px;font-family:monospace;font-weight:900;letter-spacing:3px;color:#38bdf8;">SH-......</div>
+          <small id="telegramExpiryCountdown" style="color:#f87171;font-size:10px;margin-top:4px;display:block;">Expires in 10 minutes</small>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-bottom:12px;">
+          <a id="telegramDeepLinkBtn" href="#" target="_blank" rel="noopener noreferrer" class="primary-btn" style="flex:1.5;background:#0284c7;color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px;">
+            <span>✈</span> Open Bot in Telegram ↗
+          </a>
+          <button id="telegramCopyCodeBtn" class="outline-btn" style="flex:1;margin-top:0;padding:10px;">
+            📋 Copy Code
+          </button>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f1f5f9;border-radius:8px;font-size:11px;color:#475569;">
+          <span id="telegramPollingStatus">⏳ Waiting for contact to send code...</span>
+          <button id="telegramCheckStatusBtn" class="text-btn" style="font-weight:700;color:#0284c7;">Check Status ↻</button>
+        </div>
+      </div>
+
+      <!-- Connected State -->
+      <div id="telegramConnectedState" style="display:none;padding:16px 0;">
+        <div style="font-size:48px;margin-bottom:10px;color:#10b981;">✓</div>
+        <h3 style="color:#0f172a;font-size:16px;margin:0 0 6px;">Telegram Connected Successfully!</h3>
+        <p style="color:#64748b;font-size:11px;margin-bottom:18px;">
+          This emergency contact will now receive immediate Telegram broadcast alerts with clickable location maps whenever you trigger an SOS.
+        </p>
+        <div style="display:flex;gap:10px;">
+          <button class="primary-btn full" data-close style="background:#10b981;color:#fff;">
+            Done
+          </button>
+          <button id="telegramDisconnectBtn" class="outline-btn" style="color:#dc2626;border-color:#fecaca;margin-top:0;">
+            Disconnect
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">Emergency alert status updated</div>
+
+  <script src="js/api.js"></script>
+  <script src="js/safety.js"></script>
+</body>
+</html>

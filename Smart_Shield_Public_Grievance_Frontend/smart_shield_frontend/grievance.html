@@ -21,12 +21,13 @@
         <p class="nav-label">MAIN</p>
         <a class="nav-item active" href="#"><span>⌂</span> Overview</a>
         <a class="nav-item" href="#complaints"><span>▤</span> My Grievances</a>
-        <a class="nav-item" href="#raise"><span>＋</span> Raise Complaint</a>
-        <a class="nav-item" href="#safety"><span>◉</span> Women Safety</a>
-        <a class="nav-item" href="#assistant"><span>✦</span> AI Legal Assistant</a>
+        <a class="nav-item" id="navRaiseComplaint" href="#raise"><span>＋</span> Raise Complaint</a>
+        <a class="nav-item" href="safety.html"><span>◉</span> Women Safety</a>
+        <a class="nav-item" href="safe-routes.html"><span>🛣</span> Safe Routes</a>
+        <a class="nav-item" href="ai-assistant.html"><span>✦</span> AI Legal Assistant</a>
+        <a class="nav-item" href="form-scanner.html"><span>📋</span> Form Scanner</a>
         <p class="nav-label">ACCOUNT</p>
-        <a class="nav-item" href="#"><span>⚙</span> Settings</a>
-        <a class="nav-item" href="#"><span>?</span> Help & Support</a>
+        <a class="nav-item" href="../../index.html"><span>🏠</span> Home</a>
       </nav>
 
       <div class="sidebar-bottom">
@@ -34,7 +35,7 @@
           <div class="mini-icon">!</div>
           <div><strong>Need urgent help?</strong><small>Use the safety center.</small></div>
         </div>
-        <button class="logout">↪ &nbsp; Logout</button>
+        <button class="logout" id="authBtn">↪ &nbsp; Logout</button>
       </div>
     </aside>
 
@@ -43,13 +44,13 @@
         <button class="menu-btn" id="menuBtn">☰</button>
         <div>
           <p class="eyebrow">CITIZEN PORTAL</p>
-          <h1>Good evening, Abhay 👋</h1>
+          <h1 id="welcomeGreeting">Good evening, Citizen 👋</h1>
         </div>
         <div class="top-actions">
           <button class="icon-btn" title="Notifications">🔔<i></i></button>
           <div class="profile">
-            <div class="avatar">AY</div>
-            <div><strong>Abhay Yadav</strong><small>Citizen</small></div>
+            <div class="avatar" id="userAvatar">C</div>
+            <div><strong id="userName">Citizen</strong><small id="userRole">Citizen</small></div>
           </div>
         </div>
       </header>
@@ -70,10 +71,10 @@
       </section>
 
       <section class="stats">
-        <article class="stat-card"><div class="stat-icon blue">▤</div><div><span>Total Complaints</span><strong id="totalCount">12</strong><small>All submitted requests</small></div></article>
-        <article class="stat-card"><div class="stat-icon amber">◷</div><div><span>In Progress</span><strong id="progressCount">04</strong><small>Being reviewed</small></div></article>
-        <article class="stat-card"><div class="stat-icon green">✓</div><div><span>Resolved</span><strong id="resolvedCount">07</strong><small>Successfully closed</small></div></article>
-        <article class="stat-card"><div class="stat-icon red">!</div><div><span>High Priority</span><strong id="priorityCount">01</strong><small>Needs attention</small></div></article>
+        <article class="stat-card"><div class="stat-icon blue">▤</div><div><span>Total Complaints</span><strong id="totalCount">00</strong><small>All submitted requests</small></div></article>
+        <article class="stat-card"><div class="stat-icon amber">◷</div><div><span>In Progress</span><strong id="progressCount">00</strong><small>Being reviewed</small></div></article>
+        <article class="stat-card"><div class="stat-icon green">✓</div><div><span>Resolved</span><strong id="resolvedCount">00</strong><small>Successfully closed</small></div></article>
+        <article class="stat-card"><div class="stat-icon red">!</div><div><span>High Priority</span><strong id="priorityCount">00</strong><small>Needs attention</small></div></article>
       </section>
 
       <section class="content-grid">
@@ -84,15 +85,13 @@
           </div>
           <div class="toolbar">
             <div class="search"><span>⌕</span><input id="searchInput" placeholder="Search by complaint ID or title"></div>
-            <select id="statusFilter"><option value="all">All status</option><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Resolved">Resolved</option></select>
+            <select id="statusFilter"><option value="all">All status</option><option value="Pending">Pending</option><option value="In Progress">In Progress</option><option value="Resolved">Resolved</option><option value="Escalated">Escalated</option></select>
           </div>
           <div class="table-wrap">
             <table>
               <thead><tr><th>Complaint</th><th>Category</th><th>Submitted</th><th>Status</th><th>Priority</th></tr></thead>
               <tbody id="complaintTable">
-                <tr data-search="SS-2026-0148 street light Sector 62" data-status="In Progress"><td><b>SS-2026-0148</b><span>Street lights not working</span></td><td>Public Safety</td><td>01 Sep 2026</td><td><span class="status progress">In Progress</span></td><td><span class="priority medium">Medium</span></td></tr>
-                <tr data-search="SS-2026-0142 garbage collection" data-status="Resolved"><td><b>SS-2026-0142</b><span>Garbage collection delay</span></td><td>Sanitation</td><td>28 Aug 2026</td><td><span class="status resolved">Resolved</span></td><td><span class="priority low">Low</span></td></tr>
-                <tr data-search="SS-2026-0137 road damage" data-status="Pending"><td><b>SS-2026-0137</b><span>Road damage near market</span></td><td>Roads</td><td>26 Aug 2026</td><td><span class="status pending">Pending</span></td><td><span class="priority high">High</span></td></tr>
+                <tr id="loadingRow"><td colspan="5" style="text-align:center;padding:24px;color:#8a94a6;">Loading grievances...</td></tr>
               </tbody>
             </table>
           </div>
@@ -101,8 +100,8 @@
         <div class="side-stack">
           <article class="panel quick" id="safety">
             <div class="panel-head"><div><h3>Safety Center</h3><p>Quick access when you need help.</p></div><span class="live">LIVE</span></div>
-            <button class="safety-btn" id="sosBtn"><span>⚠</span><div><b>Emergency SOS</b><small>Send an urgent alert</small></div><em>→</em></button>
-            <button class="outline-btn">View Safety Resources</button>
+            <button class="safety-btn" id="sosBtn" onclick="window.location.href='safety.html?trigger=true'"><span>⚠</span><div><b>Emergency SOS</b><small>Send an urgent alert</small></div><em>→</em></button>
+            <button class="outline-btn" onclick="window.location.href='safety.html'">View Safety Resources</button>
           </article>
 
           <article class="panel assistant" id="assistant">
@@ -132,17 +131,105 @@
       <button class="close" data-close>×</button>
       <span class="pill">NEW GRIEVANCE</span><h2>Raise a Complaint</h2><p>Provide the details below. Required fields are marked with *.</p>
       <form id="complaintForm">
-        <div class="form-row"><label>Complaint category *<select id="category" required><option value="">Select category</option><option>Public Safety</option><option>Roads</option><option>Sanitation</option><option>Water Supply</option><option>Electricity</option><option>Corruption</option></select></label><label>Priority *<select required><option>Low</option><option selected>Medium</option><option>High</option></select></label></div>
+        <div class="form-row">
+          <label>Complaint category *
+            <select id="category" required>
+              <option value="">Select category</option>
+              <option value="PUBLIC_SAFETY">Public Safety</option>
+              <option value="ROADS">Roads</option>
+              <option value="SANITATION">Sanitation</option>
+              <option value="WATER_SUPPLY">Water Supply</option>
+              <option value="ELECTRICITY">Electricity</option>
+              <option value="CORRUPTION">Corruption</option>
+            </select>
+          </label>
+          <label>Priority *
+            <select id="priority" required>
+              <option value="LOW">Low</option>
+              <option value="MEDIUM" selected>Medium</option>
+              <option value="HIGH">High</option>
+              <option value="CRITICAL">Critical</option>
+            </select>
+          </label>
+        </div>
         <label>Complaint title *<input id="title" required placeholder="e.g. Street light not working"></label>
         <label>Location *<input id="location" required placeholder="Area / landmark"></label>
         <label>Description *<textarea id="description" required rows="4" placeholder="Explain your problem clearly..."></textarea></label>
         <label>Evidence <input type="file" id="evidence" accept="image/*,.pdf"></label>
-        <button class="primary-btn full" type="submit">Submit Complaint →</button>
+        <button class="primary-btn full" type="submit" id="submitComplaintBtn">Submit Complaint →</button>
       </form>
     </div>
   </div>
 
+  <!-- Grievance Details, Status History & Evidence Modal -->
+  <div class="modal" id="detailsModal">
+    <div class="modal-card">
+      <button class="close" data-close>×</button>
+      <span class="pill" id="detailsTrackingId">SS-YYYY-XXXX</span>
+      <h2 id="detailsTitle" style="margin-top:10px;">Grievance Details</h2>
+      <p id="detailsSubmitted" style="margin-bottom:12px;">Submitted on --</p>
+
+      <div class="details-section">
+        <div class="details-grid">
+          <div><small>Status</small><div id="detailsStatus"><span class="status pending">Pending</span></div></div>
+          <div><small>Priority</small><div id="detailsPriority"><span class="priority medium">Medium</span></div></div>
+          <div><small>Category</small><strong id="detailsCategory">--</strong></div>
+          <div><small>Location</small><strong id="detailsLocation">--</strong></div>
+        </div>
+        <div style="margin-top:12px;">
+          <small style="color:#8a94a6;font-size:9px;font-weight:700;display:block;text-transform:uppercase;margin-bottom:3px;">Description</small>
+          <p id="detailsDescription" style="margin:0;font-size:11px;color:#334155;line-height:1.6;white-space:pre-wrap;"></p>
+        </div>
+      </div>
+
+      <!-- Status History Timeline -->
+      <div class="details-section">
+        <h3 style="font-size:12px;margin:0 0 6px;">Status History</h3>
+        <div id="historyList" class="timeline-list">
+          <p style="color:#8a94a6;font-size:10px;margin:0;">No history records available.</p>
+        </div>
+      </div>
+
+      <!-- Evidence Metadata & Attach Form -->
+      <div class="details-section">
+        <h3 style="font-size:12px;margin:0 0 6px;">Evidence Files</h3>
+        <div id="evidenceList" class="evidence-list">
+          <p style="color:#8a94a6;font-size:10px;margin:0;">No evidence files attached.</p>
+        </div>
+        <form id="attachEvidenceForm" style="margin-top:12px;display:flex;gap:8px;align-items:center;">
+          <input type="file" id="attachEvidenceFile" accept="image/*,.pdf" required style="flex:1;margin-top:0;padding:8px;">
+          <button class="primary-btn" type="submit" id="attachEvidenceBtn" style="white-space:nowrap;padding:9px 14px;">Attach Evidence</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Citizen Auth Modal (Sign In / Register) -->
+  <div class="modal" id="authModal">
+    <div class="modal-card" style="max-width:440px;">
+      <button class="close" data-close>×</button>
+      <span class="pill" id="authPill">CITIZEN ACCESS</span>
+      <h2 id="authTitle" style="margin-top:10px;">Citizen Sign In</h2>
+      <p id="authSub" style="margin-bottom:16px;">Sign in to submit and track your civic grievances.</p>
+      
+      <form id="authForm">
+        <div id="authNameRow" style="display:none;margin-bottom:12px;">
+          <label>Full Name *<input id="authFullName" placeholder="e.g. Abhay Yadav"></label>
+        </div>
+        <label>Email Address *<input id="authEmail" type="email" required placeholder="name@example.com"></label>
+        <label>Password *<input id="authPassword" type="password" required placeholder="••••••••"></label>
+        <button class="primary-btn full" type="submit" id="authSubmitBtn" style="margin-top:14px;">Sign In →</button>
+      </form>
+
+      <div style="margin-top:16px;text-align:center;font-size:10px;color:#6b7280;">
+        <span id="authTogglePrompt">Don't have an account?</span>
+        <button type="button" id="authToggleBtn" style="background:none;border:0;color:#2563eb;font-weight:700;cursor:pointer;margin-left:4px;padding:0;">Sign Up</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast">✓ Complaint submitted successfully</div>
+  <script src="js/api.js"></script>
   <script src="js/grievance.js"></script>
 </body>
 </html>

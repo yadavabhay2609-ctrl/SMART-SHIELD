@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Shield | Safe Routes & Transit Safety</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <!-- Leaflet CSS for OpenStreetMap Interactive Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="css/grievance.css">
+  <link rel="stylesheet" href="css/safety.css">
+  <link rel="stylesheet" href="css/safe-routes.css">
+</head>
+
+<body>
+  <div class="app-shell">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark" style="background:#2563eb;">🛡</div>
+        <div><strong>Smart Shield</strong><span>Safe Routes Portal</span></div>
+      </div>
+
+      <nav class="nav">
+        <p class="nav-label">MAIN</p>
+        <a class="nav-item" href="grievance.html"><span>⌂</span> Overview</a>
+        <a class="nav-item" href="grievance.html#complaints"><span>▤</span> My Grievances</a>
+        <a class="nav-item" href="grievance.html#raise"><span>＋</span> Raise Complaint</a>
+        <a class="nav-item" href="safety.html"><span>◉</span> Women Safety & SOS</a>
+        <a class="nav-item active" href="safe-routes.html"><span>🛣</span> Safe Routes</a>
+        <a class="nav-item" href="ai-assistant.html"><span>✦</span> AI Legal Assistant</a>
+        <a class="nav-item" href="form-scanner.html"><span>📋</span> Form Scanner</a>
+        <p class="nav-label">ACCOUNT</p>
+        <a class="nav-item" href="../../index.html"><span>🏠</span> Home</a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="safety-mini" style="background:#eff6ff;border-color:#bfdbfe;">
+          <div class="mini-icon" style="background:#3b82f6;">🛡</div>
+          <div><strong style="color:#1e40af;">Route Guard</strong><small style="color:#2563eb;">Safety Scoring
+              Active</small></div>
+        </div>
+        <button class="logout" id="authBtn">↪ &nbsp; Logout</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn">☰</button>
+        <div>
+          <p class="eyebrow" style="color:#2563eb;">AI-POWERED CIVIC TRANSIT PROTECTION</p>
+          <h1 id="welcomeGreeting">Safe Routes &amp; Safety Scoring</h1>
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" title="Emergency Help" onclick="window.location.href='safety.html'">🚨</button>
+          <div class="profile">
+            <div class="avatar" id="userAvatar" style="background:#dbeafe;color:#1e40af;">AY</div>
+            <div><strong id="userName">Citizen</strong><small id="userRole">Citizen</small></div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Configuration Banner -->
+      <div id="configNotice" class="config-notice" style="display:none;">
+        <span class="notice-icon">ℹ</span>
+        <span id="configNoticeText">Connecting to Safe Routes Service...</span>
+      </div>
+
+      <!-- Route Planner Card -->
+      <section class="card route-planner-card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Find a Safe Route</h2>
+            <p class="card-subtitle">Analyze live safety scores based on civic grievances, SOS history, and verified
+              community reviews</p>
+          </div>
+          <div class="mode-toggle">
+            <button type="button" class="mode-btn active" id="modeWalk" data-mode="WALK">🚶 Walking</button>
+            <button type="button" class="mode-btn" id="modeDrive" data-mode="DRIVE">🚗 Driving</button>
+          </div>
+        </div>
+
+        <form id="routeForm" class="route-form">
+          <div class="form-row">
+            <div class="input-group">
+              <label for="originInput">Current / Origin Location</label>
+              <div class="input-with-action">
+                <input type="text" id="originInput" placeholder="Click 'Use Current Location' or enter place" required>
+                <button type="button" class="btn-secondary gps-btn" id="useGpsBtn"
+                  title="Request browser GPS location">📍 Use Current Location</button>
+              </div>
+              <div id="originLocationBanner" class="origin-location-banner" style="display:none;">
+                <span class="banner-pin">📍</span>
+                <div class="banner-text">
+                  <span class="banner-caption">Current Location</span>
+                  <strong id="originLocationText" class="banner-city">Ghaziabad, Uttar Pradesh</strong>
+                </div>
+              </div>
+              <input type="hidden" id="originLat" value="28.6692">
+              <input type="hidden" id="originLng" value="77.4538">
+              <small class="field-hint" id="originCoordHint">Default coordinates: 28.6692, 77.4538</small>
+            </div>
+
+            <div class="input-group destination-group">
+              <label for="destInput">Destination</label>
+              <div class="input-with-dropdown">
+                <input type="text" id="destInput" placeholder="Search destination (Hospital, Metro, Police Station)..."
+                  autocomplete="off" required>
+                <div id="destSuggestionsDropdown" class="suggestions-dropdown" style="display:none;"></div>
+              </div>
+              <input type="hidden" id="destLat" value="28.6672">
+              <input type="hidden" id="destLng" value="77.4328">
+              <small class="field-hint" id="destCoordHint">Select a nearby place or enter destination</small>
+            </div>
+          </div>
+
+          <!-- Quick Destination Chips (Nearby Emergency & Transit Landmarks) -->
+          <div class="quick-destinations" id="quickDestSection">
+            <div class="quick-dest-header">
+              <span class="quick-label" id="quickDestLabel">Nearby destinations:</span>
+              <span id="quickCityTag" class="city-tag" style="display:none;"></span>
+            </div>
+            <div class="quick-dest-chips" id="quickDestChips">
+              <!-- Populated dynamically via LocationService -->
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary calculate-btn" id="calculateBtn">
+              <span id="calcBtnText">🛡 Calculate Safe Route</span>
+              <span id="calcBtnSpinner" class="spinner" style="display:none;"></span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Route Evaluation Results (Hidden until calculated) -->
+      <section id="routeResultsSection" class="route-results" style="display:none;">
+        <!-- Google Maps-Style Route Inspection Summary Banner -->
+        <div class="card route-inspection-card">
+          <div class="inspection-header">
+            <div class="inspection-title-group">
+              <span class="inspection-eyebrow">ROUTE INSPECTION TELEMETRY</span>
+              <h3 class="inspection-title">Transit Corridor Overview</h3>
+            </div>
+            <span class="engine-badge" id="routeEngineBadge">Local Safe Route Fallback</span>
+          </div>
+          <div class="inspection-journey">
+            <div class="journey-node start-node">
+              <div class="node-marker start-marker">●</div>
+              <div class="node-content">
+                <span class="node-label">START / ORIGIN</span>
+                <strong class="node-name" id="inspectStartName">Current Location</strong>
+                <small class="node-sub" id="inspectStartSub">Ghaziabad, Uttar Pradesh</small>
+              </div>
+            </div>
+            <div class="journey-divider">
+              <div class="divider-line"></div>
+              <div class="transit-pill">
+                <span id="inspectModeIcon">🚶</span>
+                <span id="inspectDistanceText">-- km</span>
+                <span class="pill-dot">•</span>
+                <span id="inspectDurationText">-- min</span>
+              </div>
+              <div class="divider-line"></div>
+            </div>
+            <div class="journey-node end-node">
+              <div class="node-marker end-marker">🏁</div>
+              <div class="node-content">
+                <span class="node-label">DESTINATION</span>
+                <strong class="node-name" id="inspectEndName">Destination Place</strong>
+                <small class="node-sub" id="inspectEndSub">Verified Destination</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-layout">
+          <!-- Left Column: Map & Geometry Visualization -->
+          <div class="card map-card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Route Corridor Visualization</h3>
+                <span class="map-status-pill live" id="mapStatusPill">OpenStreetMap — Live Streets</span>
+              </div>
+              <span id="routeIdBadge" class="route-id-badge">SR-00000000</span>
+            </div>
+            <div class="map-container" id="routeMapContainer">
+              <!-- Genuine Interactive OpenStreetMap Leaflet View -->
+              <div id="leafletMap" class="leaflet-map-view"></div>
+              <div class="map-ctrl-floating">
+                <button type="button" class="map-expand-btn" id="mapExpandBtn" aria-label="Expand Map" title="Expand Map to Fullscreen">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                  <span>Expand Map</span>
+                </button>
+                <button type="button" class="map-expand-btn map-collapse-btn" id="mapCollapseBtn" aria-label="Close Expanded Map" title="Minimize Map (Esc)" style="display:none;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg>
+                  <span>Close (Esc)</span>
+                </button>
+              </div>
+              <div id="mapOverlayInfo" class="map-overlay-info">
+                <span id="mapDistanceBadge">0.0 km</span> • <span id="mapDurationBadge">0 mins</span>
+              </div>
+              <!-- Fallback / Retry Banner if routing service unavailable -->
+              <div id="mapFallbackBanner" class="map-fallback-banner" style="display:none;">
+                <div class="fallback-content">
+                  <span class="fallback-icon">⚠</span>
+                  <div class="fallback-text">
+                    <strong id="fallbackTitle">Routing Service Notice</strong>
+                    <p id="fallbackMsg">Free routing service (OSRM) temporarily unavailable. Please retry.</p>
+                  </div>
+                  <button type="button" class="btn-retry" id="mapRetryBtn">↻ Retry</button>
+                </div>
+              </div>
+            </div>
+            <div class="map-legend">
+              <span><i class="dot dot-origin"></i> Origin (Blue)</span>
+              <span><i class="dot dot-dest"></i> Destination (Red)</span>
+              <span><i class="dot dot-police"></i> Emergency Post</span>
+              <span><i class="dot dot-path"></i> Safe Route</span>
+            </div>
+          </div>
+
+          <!-- Right Column: Safety Score & Key Metrics -->
+          <div class="card score-card">
+            <div class="score-header">
+              <span class="score-label">SMART SHIELD SAFETY SCORE</span>
+              <span id="dataConfidenceBadge" class="badge-confidence">MEDIUM CONFIDENCE</span>
+            </div>
+
+            <div class="score-display">
+              <div class="score-circle" id="scoreCircle">
+                <span class="score-number" id="safetyScoreNum">--</span>
+                <span class="score-max">/100</span>
+              </div>
+              <div class="score-summary">
+                <div class="level-tag" id="safetyLevelTag">ANALYZING</div>
+                <p class="level-desc" id="safetyLevelDesc">Evaluating verified civic reports and incident density along
+                  corridor.</p>
+              </div>
+            </div>
+
+            <!-- Distance & Duration Metrics -->
+            <div class="metric-tiles">
+              <div class="metric-tile">
+                <span class="tile-icon">📏</span>
+                <div>
+                  <strong id="metricDistance">-- km</strong>
+                  <small>Total Distance</small>
+                </div>
+              </div>
+              <div class="metric-tile">
+                <span class="tile-icon">⏱</span>
+                <div>
+                  <strong id="metricDuration">-- mins</strong>
+                  <small>Est. Transit Time</small>
+                </div>
+              </div>
+              <div class="metric-tile">
+                <span class="tile-icon">⭐</span>
+                <div>
+                  <strong id="metricRating">-- / 5</strong>
+                  <small id="metricReviewsCount">0 reviews</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Active Warnings List -->
+            <div id="warningsCard" class="warnings-card" style="display:none;">
+              <h4>⚠ Safety Advisories</h4>
+              <ul id="warningsList"></ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Safety Factors Breakdown Section -->
+        <div class="card factors-card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Transparent Safety Factors</h3>
+              <p class="card-subtitle">Exact signals weighted in calculating this corridor's safety index</p>
+            </div>
+          </div>
+          <div class="factors-grid" id="factorsContainer">
+            <!-- Dynamic factors injected here -->
+          </div>
+        </div>
+
+        <!-- Nearby Public Safety Infrastructure -->
+        <div class="card facilities-card" id="facilitiesSection" style="display:none;">
+          <div class="card-header">
+            <h3 class="card-title">Accessible Emergency Infrastructure</h3>
+            <p class="card-subtitle">Police stations and medical emergency response centers along this path</p>
+          </div>
+          <div class="facilities-list" id="facilitiesList"></div>
+        </div>
+
+        <!-- Route Community Rating & Feedback -->
+        <div class="card review-card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Rate &amp; Review This Route</h3>
+              <p class="card-subtitle">Help fellow citizens by rating lighting, crowd density, and safety observations
+              </p>
+            </div>
+          </div>
+
+          <form id="ratingForm" class="rating-form">
+            <div class="star-rating-group">
+              <span class="rating-instruction">Your Overall Safety Rating:</span>
+              <div class="star-rating" id="starRating">
+                <span class="star" data-val="1">★</span>
+                <span class="star" data-val="2">★</span>
+                <span class="star" data-val="3">★</span>
+                <span class="star" data-val="4">★</span>
+                <span class="star" data-val="5">★</span>
+              </div>
+              <input type="hidden" id="selectedStarRating" value="5">
+              <span id="starText" class="star-text">5 - Very Safe</span>
+            </div>
+
+            <div class="tag-selector">
+              <span class="tag-label">Select observations:</span>
+              <div class="tag-chips">
+                <button type="button" class="tag-chip" data-tag="WELL_LIT">💡 Well Lit</button>
+                <button type="button" class="tag-chip" data-tag="POLICE_PATROL">👮 Regular Patrol</button>
+                <button type="button" class="tag-chip" data-tag="CROWDED">👥 Busy &amp; Active</button>
+                <button type="button" class="tag-chip" data-tag="POOR_LIGHTING">🌑 Poor Lighting</button>
+                <button type="button" class="tag-chip" data-tag="ISOLATED">🏚 Isolated Stretch</button>
+              </div>
+              <input type="hidden" id="selectedSafetyTag" value="WELL_LIT">
+            </div>
+
+            <div class="comment-group">
+              <label for="routeComment">Community Feedback (Optional)</label>
+              <textarea id="routeComment" rows="3" maxlength="500"
+                placeholder="e.g. Main road is safe and well lit, avoid the narrow alley after 9 PM."></textarea>
+              <div class="char-count"><span id="charCount">0</span>/500 characters</div>
+            </div>
+
+            <div class="review-actions">
+              <button type="submit" class="btn-primary" id="submitReviewBtn">Submit Review</button>
+            </div>
+          </form>
+
+          <!-- Existing Community Reviews -->
+          <div class="community-reviews" id="reviewsContainer">
+            <h4>Verified Citizen Reviews</h4>
+            <div class="reviews-list" id="reviewsList">
+              <p class="empty-state">No reviews yet for this route. Be the first citizen to review!</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Leaflet Interactive Maps -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="js/api.js"></script>
+  <script src="js/safe-routes.js"></script>
+</body>
+
+</html>

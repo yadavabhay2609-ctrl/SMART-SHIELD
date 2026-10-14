@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Shield | AI Civic + Legal Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/grievance.css">
+  <link rel="stylesheet" href="css/safety.css">
+  <link rel="stylesheet" href="css/safe-routes.css">
+  <link rel="stylesheet" href="css/ai-assistant.css">
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark" style="background:#6366f1;">🤖</div>
+        <div><strong>Smart Shield</strong><span>AI Civic Assistant</span></div>
+      </div>
+
+      <nav class="nav">
+        <p class="nav-label">MAIN</p>
+        <a class="nav-item" href="grievance.html"><span>⌂</span> Overview</a>
+        <a class="nav-item" href="grievance.html#complaints"><span>▤</span> My Grievances</a>
+        <a class="nav-item" href="grievance.html#raise"><span>＋</span> Raise Complaint</a>
+        <a class="nav-item" href="safety.html"><span>◉</span> Women Safety & SOS</a>
+        <a class="nav-item" href="safe-routes.html"><span>🛣</span> Safe Routes</a>
+        <a class="nav-item active" href="ai-assistant.html"><span>✦</span> AI Legal Assistant</a>
+        <a class="nav-item" href="form-scanner.html"><span>📋</span> Form Scanner</a>
+        <p class="nav-label">ACCOUNT</p>
+        <a class="nav-item" href="../../index.html"><span>🏠</span> Home</a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="safety-mini" style="background:#f5f3ff;border-color:#ddd6fe;">
+          <div class="mini-icon" style="background:#8b5cf6;">⚖</div>
+          <div><strong style="color:#5b21b6;">Civic Guard AI</strong><small id="sidebarAiStatus" style="color:#6d28d9;">Checking Engine...</small></div>
+        </div>
+        <button class="logout" id="authBtn">↪ &nbsp; Logout</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn">☰</button>
+        <div>
+          <p class="eyebrow" style="color:#6366f1;">MODULE 5 — GEMINI AI CIVIC + LEGAL ASSISTANT</p>
+          <h1 id="welcomeGreeting">AI Civic &amp; Legal Assistant</h1>
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" title="Emergency Help" onclick="window.location.href='safety.html'">🚨</button>
+          <div class="profile">
+            <div class="avatar" id="userAvatar" style="background:#ede9fe;color:#5b21b6;">AI</div>
+            <div><strong id="userName">Citizen</strong><small id="userRole">Citizen</small></div>
+          </div>
+        </div>
+      </header>
+
+      <div class="ai-assistant-layout">
+        <!-- Banners Container -->
+        <div class="ai-banners">
+          <!-- Live AI Engine Status Banner -->
+          <div class="ai-status-banner" id="aiStatusBanner">
+            <div class="ai-status-info">
+              <span class="ai-status-indicator" id="statusIndicator"></span>
+              <span id="aiStatusText">Connecting to Smart Shield AI Engine...</span>
+            </div>
+            <span class="ai-engine-badge" id="aiEngineBadge">Checking</span>
+          </div>
+
+          <!-- Mandatory Legal Disclaimer Banner -->
+          <div class="legal-disclaimer-banner">
+            <span class="disclaimer-icon">⚠️</span>
+            <div>
+              <strong>Civic &amp; Legal Information Notice:</strong>
+              Smart Shield AI Assistant provides verified civic guidance and general statutory information. It is <strong>NOT</strong> a substitute for a licensed advocate, police officer, or government authority. For ongoing violence, medical crises, or immediate danger, dial <strong>112</strong> immediately.
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Application Card -->
+        <section class="chat-card">
+          <div class="chat-card-header">
+            <div class="chat-header-title">
+              <div class="chat-avatar-bot">✦</div>
+              <div class="chat-title-text">
+                <h2>Civic &amp; Statutory Guidance Copilot</h2>
+                <p>Complaint drafting, tracking explanation, legal rights, and Smart Shield features</p>
+              </div>
+            </div>
+            <div class="chat-actions">
+              <button class="btn-ghost" id="clearChatBtn" title="Reset chat history">↺ Clear Conversation</button>
+            </div>
+          </div>
+
+          <!-- Quick Suggestion Pills -->
+          <div class="quick-prompts-bar">
+            <button class="prompt-chip" data-prompt="How do I file a road pothole complaint?">🛣 Road Complaint</button>
+            <button class="prompt-chip" data-prompt="What does my grievance tracking ID mean?">🔍 Tracking ID Info</button>
+            <button class="prompt-chip" data-prompt="Help me draft a complaint for street light failure">💡 Street Light Draft</button>
+            <button class="prompt-chip" data-prompt="What are my rights regarding FIR and Zero FIR in India?">⚖ Zero FIR Rights</button>
+            <button class="prompt-chip" data-prompt="How does Safe Routes score and community rating work?">🛡 Safe Routes Help</button>
+            <button class="prompt-chip" data-prompt="What should I do in an emergency? What numbers should I call?">🚨 Emergency Numbers</button>
+            <button class="prompt-chip" data-prompt="How do I file an RTI application?">📄 RTI Act 2005</button>
+          </div>
+
+          <!-- Chat Conversation Viewport -->
+          <div class="chat-messages" id="chatMessages">
+            <!-- Welcome Initial Message -->
+            <div class="message-row assistant">
+              <div class="msg-avatar bot">✦</div>
+              <div class="message-bubble">
+                <div class="msg-content">Hello! I am your Smart Shield Civic & Legal Assistant.
+
+I can assist you with:
+• Drafting and categorizing civic grievances (roads, water, electricity, sanitation)
+• Understanding your grievance tracking IDs and verification processes
+• Explaining public safety tools like Safe Routes and SOS Emergency Center
+• General statutory information on consumer rights, RTI, and police complaints (FIR)
+
+How can I help you today?</div>
+                <div class="msg-meta-bar">
+                  <span>Smart Shield System</span>
+                  <span class="msg-source-tag local-kb">SYSTEM KNOWLEDGE</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chat Input Area -->
+          <div class="chat-input-bar">
+            <form id="chatForm" class="chat-form">
+              <div class="chat-input-row">
+                <textarea 
+                  id="chatInput" 
+                  class="chat-textarea" 
+                  placeholder="Ask a question about civic services, grievance drafting, or legal procedures..." 
+                  maxlength="3000" 
+                  rows="1"
+                  required
+                ></textarea>
+                <button type="submit" id="sendBtn" class="btn-send">
+                  <span>Send</span> ➔
+                </button>
+              </div>
+              <div class="chat-input-footer">
+                <span>Maximum 3,000 characters per message • Bounded conversation context</span>
+                <span id="charCounter">0 / 3000</span>
+              </div>
+            </form>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Citizen Auth Modal (Sign In / Register) -->
+  <div class="modal" id="authModal">
+    <div class="modal-card" style="max-width:440px;">
+      <button class="close" data-close>×</button>
+      <span class="pill" id="authPill">CITIZEN ACCESS</span>
+      <h2 id="authTitle" style="margin-top:10px;">Citizen Sign In</h2>
+      <p id="authSub" style="margin-bottom:16px;">Sign in to interact with the AI Civic Assistant.</p>
+      
+      <form id="authForm">
+        <div id="authNameRow" style="display:none;margin-bottom:12px;">
+          <label>Full Name *<input id="authFullName" placeholder="e.g. Abhay Yadav"></label>
+        </div>
+        <label>Email Address *<input id="authEmail" type="email" required placeholder="name@example.com"></label>
+        <label>Password *<input id="authPassword" type="password" required placeholder="••••••••"></label>
+        
+        <div style="margin-top:18px;display:flex;gap:10px;">
+          <button class="primary-btn" type="submit" id="authSubmitBtn" style="flex:1;">Sign In</button>
+          <button class="secondary-btn" type="button" id="authToggleBtn">Register</button>
+        </div>
+        <p id="authError" style="color:#ef4444;font-size:12px;margin-top:10px;display:none;"></p>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/ai-assistant.js"></script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Shield | Government Form Scanner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/grievance.css">
+  <link rel="stylesheet" href="css/safety.css">
+  <link rel="stylesheet" href="css/safe-routes.css">
+  <link rel="stylesheet" href="css/ai-assistant.css">
+  <link rel="stylesheet" href="css/form-scanner.css">
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark" style="background:#0284c7;">📋</div>
+        <div><strong>Smart Shield</strong><span>Form Scanner</span></div>
+      </div>
+
+      <nav class="nav">
+        <p class="nav-label">MAIN</p>
+        <a class="nav-item" href="grievance.html"><span>⌂</span> Overview</a>
+        <a class="nav-item" href="grievance.html#complaints"><span>▤</span> My Grievances</a>
+        <a class="nav-item" href="grievance.html#raise"><span>＋</span> Raise Complaint</a>
+        <a class="nav-item" href="safety.html"><span>◉</span> Women Safety & SOS</a>
+        <a class="nav-item" href="safe-routes.html"><span>🛣</span> Safe Routes</a>
+        <a class="nav-item" href="ai-assistant.html"><span>✦</span> AI Legal Assistant</a>
+        <a class="nav-item active" href="form-scanner.html"><span>📋</span> Form Scanner</a>
+        <p class="nav-label">ACCOUNT</p>
+        <a class="nav-item" href="../../index.html"><span>🏠</span> Home</a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="safety-mini" style="background:#f0fdf4;border-color:#bbf7d0;">
+          <div class="mini-icon" style="background:#16a34a;">🔒</div>
+          <div><strong style="color:#166534;">Privacy Guard</strong><small style="color:#15803d;">Zero Permanent Storage</small></div>
+        </div>
+        <button class="logout" id="authBtn">↪ &nbsp; Logout</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn">☰</button>
+        <div>
+          <p class="eyebrow" style="color:#0284c7;">MODULE 6 — GOVERNMENT FORM SCANNER &amp; AI UNDERSTANDING</p>
+          <h1 id="welcomeGreeting">Government Form Scanner</h1>
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" title="Emergency Help" onclick="window.location.href='safety.html'">🚨</button>
+          <div class="profile">
+            <div class="avatar" id="userAvatar" style="background:#e0f2fe;color:#0369a1;">FS</div>
+            <div><strong id="userName">Citizen</strong><small id="userRole">Citizen</small></div>
+          </div>
+        </div>
+      </header>
+
+      <div class="scanner-layout">
+        <!-- Privacy & Temporary Processing Notice -->
+        <div class="privacy-banner">
+          <span class="privacy-icon">🛡️</span>
+          <div>
+            <strong>Privacy &amp; Document Protection Assurance:</strong>
+            Smart Shield processes uploaded forms and documents <strong>temporarily in memory only</strong> for analysis. Your documents are <strong>never permanently stored</strong> on our servers, database, or public cloud.
+          </div>
+        </div>
+
+        <!-- Live Scanner Engine Status Banner -->
+        <div class="ai-status-banner" id="scannerStatusBanner">
+          <div class="ai-status-info">
+            <span class="ai-status-indicator" id="scannerIndicator"></span>
+            <span id="scannerStatusText">Checking Government Form Scanner Engine...</span>
+          </div>
+          <span class="ai-engine-badge" id="scannerBadge">Checking</span>
+        </div>
+
+        <!-- Upload Card -->
+        <section class="upload-card">
+          <div class="dropzone" id="dropzone">
+            <div class="dropzone-icon">📄</div>
+            <h2 class="dropzone-title">Upload Government Form or Public Application</h2>
+            <p class="dropzone-sub">Drag &amp; drop your form here, or browse files from your device</p>
+            <div class="file-format-tags">
+              <span class="format-tag">PDF</span>
+              <span class="format-tag">JPEG</span>
+              <span class="format-tag">PNG</span>
+              <span class="format-tag">WEBP</span>
+              <span class="format-tag">MAX 10 MB</span>
+            </div>
+            <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.webp" style="display:none;">
+          </div>
+
+          <!-- Selected File Card (hidden by default) -->
+          <div class="selected-file-box" id="selectedFileBox" style="display:none;">
+            <div class="file-info-group">
+              <div class="file-type-icon" id="fileTypeIcon">PDF</div>
+              <div class="file-details">
+                <h4 id="selectedFileName">filename.pdf</h4>
+                <p id="selectedFileSize">0 KB • application/pdf</p>
+              </div>
+            </div>
+            <button type="button" class="btn-remove-file" id="removeFileBtn">✕ Remove</button>
+          </div>
+
+          <!-- Optional Citizen Note -->
+          <div class="instruction-group">
+            <label for="instructionInput">Specific Verification Request (Optional)</label>
+            <input 
+              type="text" 
+              id="instructionInput" 
+              class="instruction-input" 
+              placeholder="e.g. Check whether applicant details and mandatory signature field are filled"
+              maxlength="500"
+            >
+          </div>
+
+          <!-- Actions -->
+          <div class="scan-actions">
+            <button type="button" class="btn-scan" id="scanBtn" disabled>
+              <span>Scan &amp; Understand Form</span> ➔
+            </button>
+          </div>
+        </section>
+
+        <!-- Progress Box (hidden by default) -->
+        <div class="scan-progress-box" id="progressBox" style="display:none;">
+          <div class="progress-spinner"></div>
+          <h3 class="progress-stage-title" id="progressStage">Analyzing Document...</h3>
+          <p class="progress-stage-sub" id="progressSub">Inspecting form fields, completeness, and official requirements...</p>
+        </div>
+
+        <!-- Scan Results Container (hidden by default) -->
+        <div class="scan-results-container" id="resultsContainer" style="display:none;">
+          <!-- Document Overview Card -->
+          <section class="doc-header-card">
+            <div class="doc-meta-row">
+              <div>
+                <h2 class="doc-type-title" id="resDocType">Public Application Form</h2>
+                <p class="doc-summary" id="resDocSummary">Form summary details will appear here.</p>
+              </div>
+              <div class="doc-badges-group">
+                <span class="badge-confidence" id="resConfidence">92% Confidence</span>
+                <span class="badge-not-stored">✓ NOT STORED</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Missing Fields Alert -->
+          <div class="section-alert missing" id="missingAlert" style="display:none;">
+            <h3>⚠️ Missing or Incomplete Fields Detected</h3>
+            <ul id="missingList"></ul>
+          </div>
+
+          <!-- Quality Warnings Alert -->
+          <div class="section-alert warnings" id="warningsAlert" style="display:none;">
+            <h3>🔍 Document Quality &amp; Formatting Notices</h3>
+            <ul id="warningsList"></ul>
+          </div>
+
+          <!-- Official Verification Alert -->
+          <div class="section-alert verification" id="verificationAlert" style="display:none;">
+            <h3>🏛️ Statutory Items to Verify Before Submission</h3>
+            <ul id="verificationList"></ul>
+          </div>
+
+          <!-- Form Fields Card -->
+          <section class="fields-card">
+            <div class="fields-card-header">
+              <h3>Extracted Form Fields (<span id="fieldsCount">0</span>)</h3>
+              <div class="filter-pills">
+                <button type="button" class="filter-pill active" data-filter="ALL">All Fields</button>
+                <button type="button" class="filter-pill" data-filter="EMPTY">Empty / Missing</button>
+                <button type="button" class="filter-pill" data-filter="FILLED">Filled</button>
+                <button type="button" class="filter-pill" data-filter="UNCLEAR">Unclear</button>
+              </div>
+            </div>
+
+            <div class="fields-table-container">
+              <table class="fields-table">
+                <thead>
+                  <tr>
+                    <th>Field Label</th>
+                    <th>Detected Value</th>
+                    <th>Status</th>
+                    <th>Confidence</th>
+                    <th>Filling Guidance</th>
+                  </tr>
+                </thead>
+                <tbody id="fieldsTbody">
+                  <!-- Populated dynamically via textContent -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Legal Disclaimer -->
+          <div class="scan-disclaimer-box" id="resDisclaimer">
+            This scan provides AI-assisted document guidance only. Verify all information, eligibility requirements and submission instructions against the official government form/instructions before submitting.
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Citizen Auth Modal (Sign In / Register) -->
+  <div class="modal" id="authModal">
+    <div class="modal-card" style="max-width:440px;">
+      <button class="close" data-close>×</button>
+      <span class="pill" id="authPill">CITIZEN ACCESS</span>
+      <h2 id="authTitle" style="margin-top:10px;">Citizen Sign In</h2>
+      <p id="authSub" style="margin-bottom:16px;">Sign in to scan and analyze government forms.</p>
+      
+      <form id="authForm">
+        <div id="authNameRow" style="display:none;margin-bottom:12px;">
+          <label>Full Name *<input id="authFullName" placeholder="e.g. Abhay Yadav"></label>
+        </div>
+        <label>Email Address *<input id="authEmail" type="email" required placeholder="name@example.com"></label>
+        <label>Password *<input id="authPassword" type="password" required placeholder="••••••••"></label>
+        
+        <div style="margin-top:18px;display:flex;gap:10px;">
+          <button class="primary-btn" type="submit" id="authSubmitBtn" style="flex:1;">Sign In</button>
+          <button class="secondary-btn" type="button" id="authToggleBtn">Register</button>
+        </div>
+        <p id="authError" style="color:#ef4444;font-size:12px;margin-top:10px;display:none;"></p>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/form-scanner.js"></script>
+</body>
+</html>

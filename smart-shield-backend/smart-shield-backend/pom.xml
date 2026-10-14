@@ -64,6 +64,12 @@
             <artifactId>spring-security-crypto</artifactId>
         </dependency>
 
+        <!-- Mail (Optional notification support) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Public+Sans:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<!-- Leaflet CSS for Admin Inspector Live Map -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <style>
 /* ============================================================
    SMART SHIELD — DESIGN TOKENS
@@ -367,6 +369,19 @@ table.data-table tr:last-child td{border-bottom:none;}
 .field-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .modal-foot{padding:18px 24px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:12px;}
 
+/* ROLE SELECTION */
+.role-cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:6px;}
+@media (max-width:640px){.role-cards-grid{grid-template-columns:1fr;}}
+.role-card-item{background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:22px 20px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;}
+.role-card-item:hover{border-color:var(--brass);box-shadow:0 6px 20px rgba(0,0,0,0.08);transform:translateY(-2px);}
+.role-card-item.admin-card:hover{border-color:var(--review);}
+.role-card-badge{font-family:var(--mono);font-size:0.72rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:4px 8px;border-radius:4px;display:inline-block;margin-bottom:12px;width:fit-content;}
+.role-card-badge.citizen-badge{background:var(--brass-tint);color:var(--brass-deep);}
+.role-card-badge.admin-badge{background:var(--review-tint);color:var(--review);}
+.role-card-icon{font-size:1.9rem;margin-bottom:8px;line-height:1;}
+.role-card-item h4{font-family:var(--serif);font-size:1.18rem;margin-bottom:8px;color:var(--text);}
+.role-card-item p{color:var(--text-soft);font-size:0.88rem;line-height:1.55;margin-bottom:20px;flex:1;}
+
 /* SAFETY VIEW */
 .safety-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
 .sos-panel{background:var(--ink);color:var(--text-inverse);padding:40px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;overflow:hidden;}
@@ -417,6 +432,33 @@ table.data-table tr:last-child td{border-bottom:none;}
 .admin-banner b{color:var(--review);}
 .badge-source{background:var(--paper-2);color:var(--text-soft);border:1px solid var(--line);}
 .badge-source.auto{background:var(--review-tint);color:var(--review);border-color:transparent;}
+
+/* ADMIN CONSOLE EXTENSIONS */
+.login-inline-error{
+  background:var(--signal-tint);border:1px solid var(--signal);color:var(--signal);
+  padding:11px 14px;border-radius:var(--radius-sm);font-size:0.84rem;margin-bottom:16px;
+  line-height:1.45;display:flex;align-items:center;gap:8px;
+}
+.badge-high{background:var(--signal-tint);color:var(--signal);}
+.badge-high::before{background:var(--signal);}
+.badge-medium{background:var(--brass-tint);color:var(--brass-deep);}
+.badge-medium::before{background:var(--brass-deep);}
+.badge-low{background:var(--ok-tint);color:var(--ok);}
+.badge-low::before{background:var(--ok);}
+.badge-triggered{background:var(--signal-tint);color:var(--signal);}
+.badge-triggered::before{background:var(--signal);}
+.badge-notified{background:var(--brass-tint);color:var(--brass-deep);}
+.badge-notified::before{background:var(--brass-deep);}
+.badge-acknowledged{background:var(--review-tint);color:var(--review);}
+.badge-acknowledged::before{background:var(--review);}
+.badge-cancelled{background:var(--paper-2);color:var(--text-soft);}
+.badge-cancelled::before{background:var(--text-soft);}
+.channel-pill{display:inline-flex;align-items:center;padding:2px 7px;font-size:0.72rem;font-family:var(--mono);border-radius:3px;font-weight:600;}
+.channel-pill.unconfigured{background:rgba(169,59,52,0.12);color:var(--signal);border:1px solid rgba(169,59,52,0.25);}
+.channel-pill.sent{background:rgba(46,140,82,0.12);color:var(--ok);border:1px solid rgba(46,140,82,0.25);}
+.btn-xs{padding:5px 9px;font-size:0.76rem;border-radius:var(--radius-sm);cursor:pointer;}
+.audit-entry{background:var(--paper-2);border-left:3px solid var(--review);padding:10px 14px;font-size:0.83rem;border-radius:0 4px 4px 0;}
+.audit-entry-meta{display:flex;justify-content:space-between;color:var(--text-soft);font-size:0.75rem;margin-bottom:4px;}
 
 /* LEGAL AI */
 .chat-shell{display:flex;flex-direction:column;height:560px;}
@@ -481,6 +523,58 @@ table.data-table tr:last-child td{border-bottom:none;}
   .sn-toggle{display:flex !important;}
 }
 .sn-toggle{display:none;background:none;border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px;color:var(--text-soft);}
+
+/* ============================================================
+   ADMIN INSPECTOR SOS MAP & NAVIGATION STYLES
+   ============================================================ */
+.admin-sos-map-box {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+}
+.admin-sos-map-box.is-expanded {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  border-radius: 0 !important;
+  z-index: 100000 !important;
+  border: none !important;
+  background: #0f172a !important;
+}
+.admin-sos-map-box.is-expanded #adm-sos-leaflet-map {
+  height: 100vh !important;
+  width: 100% !important;
+}
+.admin-map-ctrl-btn {
+  background: rgba(15, 23, 42, 0.88);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  transition: all 0.2s ease;
+}
+.admin-map-ctrl-btn:hover {
+  background: rgba(15, 23, 42, 1);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.admin-map-ctrl-btn.collapse-btn {
+  background: rgba(220, 38, 38, 0.92);
+}
+.admin-map-ctrl-btn.collapse-btn:hover {
+  background: rgba(185, 28, 28, 1);
+}
+body.admin-map-locked {
+  overflow: hidden !important;
+}
 </style>
 </head>
 <body>
@@ -502,8 +596,8 @@ table.data-table tr:last-child td{border-bottom:none;}
       <li><a href="#team">Team</a></li>
     </ul>
     <div class="nav-actions">
-      <button class="btn btn-ghost btn-sm" onclick="goTo('login')">Login</button>
-      <button class="btn btn-brass btn-sm" onclick="goTo('login')">Enter platform</button>
+      <button id="navSignInBtn" class="btn btn-ghost btn-sm" onclick="openRoleModal()">Sign In</button>
+      <button id="navEnterPlatformBtn" class="btn btn-brass btn-sm" onclick="openRoleModal()">Enter platform</button>
       <button class="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
@@ -517,7 +611,7 @@ table.data-table tr:last-child td{border-bottom:none;}
         <h1>One platform for civic complaints, personal safety, and <em>knowing your rights.</em></h1>
         <p class="hero-sub">Smart Shield brings together a public grievance tracker, a women's safety response system, and a legal guidance assistant — so a citizen never has to work out which office, app, or helpline to turn to first.</p>
         <div class="hero-cta">
-          <button class="btn btn-brass" onclick="goTo('login')">Enter platform</button>
+          <button id="heroEnterPlatformBtn" class="btn btn-brass" onclick="openRoleModal()">Enter platform</button>
           <a href="#modules" class="btn btn-ghost">See how it works</a>
         </div>
         <div class="hero-stats">
@@ -667,8 +761,51 @@ table.data-table tr:last-child td{border-bottom:none;}
     <div class="footer-bottom">
       <span>Project code 2026-27CSEMPID001</span>
       <span>Session 2026-27</span>
+      <a onclick="goTo('adminlogin')" style="color:var(--text-soft);cursor:pointer;text-decoration:underline;">Developer / Admin / Inspector Console →</a>
     </div>
   </footer>
+</div>
+
+<!-- ============================================================
+     ROLE SELECTION MODAL
+     ============================================================ -->
+<div class="modal-overlay" id="modal-role-select" hidden>
+  <div class="modal-box" style="max-width:620px;">
+    <div class="modal-head">
+      <div>
+        <h3 id="role-select-title">Sign In to Smart Shield</h3>
+        <p style="margin-top:4px;">Select your account type to proceed to the platform.</p>
+      </div>
+      <button class="modal-close" onclick="closeRoleModal()" aria-label="Close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="role-cards-grid">
+        <!-- Option 1: Citizen -->
+        <div class="role-card-item">
+          <div>
+            <div class="role-card-badge citizen-badge">Citizen Services</div>
+            <div class="role-card-icon">👤</div>
+            <h4>Login as Citizen</h4>
+            <p>Access complaints, SOS, Safe Routes, AI Assistant and other citizen services.</p>
+          </div>
+          <button class="btn btn-brass btn-block btn-sm" id="btn-login-citizen" onclick="selectRole('citizen')">Login as Citizen</button>
+        </div>
+
+        <!-- Option 2: Admin / Inspector -->
+        <div class="role-card-item admin-card">
+          <div>
+            <div class="role-card-badge admin-badge">Operations &amp; Safety</div>
+            <div class="role-card-icon">👮</div>
+            <h4>Login as Admin / Inspector</h4>
+            <p>Access complaints, SOS alerts, route monitoring and administrative controls.</p>
+          </div>
+          <button class="btn btn-dark btn-block btn-sm" id="btn-login-admin" onclick="selectRole('admin')">Login as Admin</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ============================================================
@@ -695,7 +832,7 @@ table.data-table tr:last-child td{border-bottom:none;}
         <div class="field"><label for="login-pass">Password</label><input id="login-pass" type="password" placeholder="••••••••"></div>
         <div class="field-row"><label style="display:flex;align-items:center;gap:7px;font-weight:400;color:var(--text-soft)"><input type="checkbox" style="width:auto"> Remember me</label><a href="#">Forgot password?</a></div>
         <button class="btn btn-dark btn-block" onclick="doLogin()">Sign in</button>
-        <p class="login-alt">New here? <a onclick="doLogin()">Continue as guest to explore the demo</a></p>
+        <p class="login-alt">New here? <a onclick="window.location.href='Smart_Shield_Public_Grievance_Frontend/smart_shield_frontend/grievance.html'">Explore citizen portal</a></p>
         <p class="login-alt" style="margin-top:8px;border-top:1px solid var(--line);padding-top:16px;">Are you the developer? <a onclick="goTo('adminlogin')">Enter the admin console</a></p>
       </div>
     </div>
@@ -1035,21 +1172,31 @@ table.data-table tr:last-child td{border-bottom:none;}
 <div id="view-adminlogin" class="view" hidden>
   <div class="login-panel" style="min-height:100vh;background:var(--paper-2);">
     <div class="login-card">
-      <a class="login-back" style="position:static;color:var(--text-soft);margin-bottom:24px;display:inline-flex;" onclick="goTo('login')">
+      <a class="login-back" style="position:static;color:var(--text-soft);margin-bottom:24px;display:inline-flex;cursor:pointer;" onclick="goTo('landing')">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        Back to citizen login
+        Back to home
       </a>
-      <h2>Admin console sign-in</h2>
-      <p class="sub">Developer &amp; platform-operations access — separate from the citizen-facing app.</p>
-      <div class="field"><label>Admin ID</label><input type="text" placeholder="admin@smartshield"></div>
-      <div class="field"><label>Password</label><input type="password" placeholder="••••••••"></div>
-      <button class="btn btn-dark btn-block" onclick="goTo('admin'); renderAdminAll();">Enter admin console</button>
+      <h2>Admin / Inspector sign-in</h2>
+      <p class="sub">Municipal governance, emergency SOS monitoring &amp; route safety inspection console.</p>
+      
+      <form id="admin-login-form" onsubmit="event.preventDefault(); doAdminLogin();">
+        <div id="admin-login-error" class="login-inline-error" style="display:none;" role="alert"></div>
+        <div class="field">
+          <label for="admin-login-id">Admin ID / Officer Username</label>
+          <input type="text" id="admin-login-id" name="username" autocomplete="username" spellcheck="false" placeholder="e.g. ADMIN001" required>
+        </div>
+        <div class="field">
+          <label for="admin-login-pass">Password</label>
+          <input type="password" id="admin-login-pass" name="password" autocomplete="current-password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-dark btn-block" id="admin-login-btn">Login as Admin / Inspector</button>
+      </form>
     </div>
   </div>
 </div>
 
 <!-- ============================================================
-     ADMIN / DEVELOPER CONSOLE
+     ADMIN / INSPECTOR CONSOLE
      ============================================================ -->
 <div id="view-admin" class="view" hidden>
   <aside class="sidebar" id="admin-sidebar">
@@ -1058,33 +1205,40 @@ table.data-table tr:last-child td{border-bottom:none;}
       <span class="brand-word">Shield <b>Console</b></span>
     </div>
     <nav class="sidebar-nav">
-      <div class="sn-group-label">Platform</div>
+      <div class="sn-group-label">Platform Operations</div>
       <button class="sn-item active" data-adm="overview" onclick="showAdminSection('overview')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
         <span>Overview</span>
       </button>
       <button class="sn-item" data-adm="complaints" onclick="showAdminSection('complaints')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3h9l5 5v13a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M14 3v5h5M8 13h8M8 17h5"/></svg>
-        <span>All complaints</span>
+        <span>Complaints Management</span>
+      </button>
+      <button class="sn-item" data-adm="sos" onclick="showAdminSection('sos')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2l8 3v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V5z"/><circle cx="12" cy="11" r="3"/></svg>
+        <span>SOS Alerts Monitoring</span>
       </button>
       <button class="sn-item" data-adm="routes" onclick="showAdminSection('routes')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2l8 3v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V5z"/></svg>
-        <span>Route safety monitor</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M12 19h4.5a3.5 3.5 0 000-7h-5a3.5 3.5 0 010-7H15"/></svg>
+        <span>Route Safety Monitor</span>
       </button>
-      <div class="sn-group-label">Platform config</div>
+      <div class="sn-group-label">Platform Config</div>
       <button class="sn-item" data-adm="settings" onclick="showAdminSection('settings')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.34 1.87l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.7 1.7 0 00-1.87-.34 1.7 1.7 0 00-1 1.55V21a2 2 0 11-4 0v-.09a1.7 1.7 0 00-1-1.55 1.7 1.7 0 00-1.87.34l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.7 1.7 0 00.34-1.87 1.7 1.7 0 00-1.55-1H3a2 2 0 110-4h.09a1.7 1.7 0 001.55-1 1.7 1.7 0 00-.34-1.87l-.06-.06a2 2 0 112.83-2.83l.06.06a1.7 1.7 0 001.87.34H9a1.7 1.7 0 001-1.55V3a2 2 0 114 0v.09a1.7 1.7 0 001 1.55 1.7 1.7 0 001.87-.34l.06-.06a2 2 0 112.83 2.83l-.06.06a1.7 1.7 0 00-.34 1.87V9a1.7 1.7 0 001.55 1H21a2 2 0 110 4h-.09a1.7 1.7 0 00-1.55 1z"/></svg>
-        <span>System settings</span>
+        <span>System Settings</span>
       </button>
     </nav>
     <div class="sidebar-foot">
       <div class="user-chip">
-        <div class="user-avatar">DV</div>
-        <div class="user-meta"><b>Developer</b><span>Smart Shield Console</span></div>
+        <div class="user-avatar" style="background:var(--review);color:#fff;">AD</div>
+        <div class="user-meta">
+          <b id="admin-user-display-id">ADMIN001</b>
+          <span>Role: ADMIN / INSPECTOR</span>
+        </div>
       </div>
-      <button class="logout-btn" onclick="goTo('landing')">
+      <button class="logout-btn" onclick="doAdminLogout()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-        <span>Exit console</span>
+        <span>Exit Console</span>
       </button>
     </div>
   </aside>
@@ -1097,78 +1251,207 @@ table.data-table tr:last-child td{border-bottom:none;}
       <h1 id="admin-topbar-title">Overview</h1>
       <div style="flex:1"></div>
       <div class="topbar-right">
-        <button class="btn btn-ghost btn-outline-dark btn-sm" onclick="goTo('dashboard')">View as citizen →</button>
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(46,140,130,0.12);color:var(--review);border-radius:999px;font-size:0.75rem;font-weight:600;">
+          <span style="width:7px;height:7px;border-radius:50%;background:var(--review);"></span>
+          OFFICER SESSION ACTIVE
+        </span>
+        <button class="btn btn-outline-dark btn-sm" onclick="doAdminLogout()">Log out</button>
       </div>
     </header>
     <main class="dash-content">
 
+      <!-- 1. OVERVIEW -->
       <section class="dash-section active" id="adm-sec-overview">
-        <div class="admin-banner">
-          <b>How this connects:</b> this console and the citizen app read and write the same live data — a complaint, an SOS trigger, or a route rating shows up on both sides instantly. Right now that shared data lives in this browser tab only. Once a real backend and database are wired in, the exact same admin controls here will manage that data across every citizen's device.
+        <div class="section-title-row">
+          <div>
+            <h2>Civic Operations Overview</h2>
+            <p>Live metrics from Smart Shield city infrastructure &amp; public safety network.</p>
+          </div>
+          <button class="btn btn-outline-dark btn-sm" onclick="renderAdminAll()">↻ Refresh Live Data</button>
         </div>
-        <div class="stat-grid" id="admin-stat-grid">
-          <div class="stat-card"><div class="label">Total complaints</div><div class="value" id="adm-stat-total">0</div></div>
-          <div class="stat-card s-review"><div class="label">Auto-filed by system</div><div class="value" id="adm-stat-auto">0</div></div>
-          <div class="stat-card s-sos"><div class="label">SOS alerts triggered</div><div class="value" id="adm-stat-sos">0</div></div>
-          <div class="stat-card s-pending"><div class="label">Flagged routes</div><div class="value" id="adm-stat-flagged">0</div></div>
+        <div class="stat-grid" id="admin-stat-grid" style="grid-template-columns:repeat(6,1fr);">
+          <div class="stat-card"><div class="label">Total Complaints</div><div class="value" id="adm-stat-total">0</div></div>
+          <div class="stat-card s-pending"><div class="label">Pending</div><div class="value" id="adm-stat-pending">0</div></div>
+          <div class="stat-card s-review"><div class="label">In Review</div><div class="value" id="adm-stat-review">0</div></div>
+          <div class="stat-card s-resolved"><div class="label">Resolved</div><div class="value" id="adm-stat-resolved">0</div></div>
+          <div class="stat-card s-sos"><div class="label">Active SOS Alerts</div><div class="value" id="adm-stat-sos">0</div></div>
+          <div class="stat-card"><div class="label">Routes Monitored</div><div class="value" id="adm-stat-routes">0</div></div>
         </div>
-        <div class="panel">
-          <div class="panel-head"><h3>Latest activity</h3></div>
-          <div class="panel-body" id="admin-recent-wrap"></div>
+        <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Latest Citizen Complaints</h3>
+              <button class="btn btn-outline-dark btn-sm" onclick="showAdminSection('complaints')">View All →</button>
+            </div>
+            <div class="panel-body" id="admin-recent-wrap"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Recent SOS Incidents</h3>
+              <button class="btn btn-outline-dark btn-sm" onclick="showAdminSection('sos')">View All →</button>
+            </div>
+            <div class="panel-body" id="admin-recent-sos-wrap"></div>
+          </div>
         </div>
       </section>
 
+      <!-- 2. COMPLAINTS MANAGEMENT -->
       <section class="dash-section" id="adm-sec-complaints">
-        <div class="section-title-row"><div><h2>All complaints</h2><p>Every case filed by a citizen or auto-generated by the system.</p></div></div>
+        <div class="section-title-row">
+          <div>
+            <h2>Complaints Management</h2>
+            <p>Inspect citizen filings, review automated tickets, and update official case statuses.</p>
+          </div>
+          <button class="btn btn-outline-dark btn-sm" onclick="renderAdminAll()">↻ Refresh</button>
+        </div>
         <div class="panel">
           <div class="table-toolbar">
-            <div class="topbar-search">
+            <div class="topbar-search" style="max-width:240px;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-              <input id="adm-search" type="text" placeholder="Search all complaints…" oninput="renderAdminComplaints()">
+              <input id="adm-search" type="text" placeholder="Search ID, title, location…" oninput="renderAdminComplaints()">
             </div>
+            <select id="adm-category-filter" onchange="renderAdminComplaints()">
+              <option value="all">All Categories</option>
+              <option value="ROADS">Road & Infrastructure</option>
+              <option value="SANITATION">Sanitation</option>
+              <option value="WATER_SUPPLY">Water Supply</option>
+              <option value="ELECTRICITY">Electricity</option>
+              <option value="CORRUPTION">Corruption</option>
+              <option value="PUBLIC_SAFETY">Public Safety</option>
+              <option value="OTHER">Other</option>
+            </select>
+            <select id="adm-priority-filter" onchange="renderAdminComplaints()">
+              <option value="all">All Priorities</option>
+              <option value="HIGH">High Priority</option>
+              <option value="MEDIUM">Medium Priority</option>
+              <option value="LOW">Low Priority</option>
+            </select>
             <select id="adm-status-filter" onchange="renderAdminComplaints()">
-              <option value="all">All statuses</option><option value="Pending">Pending</option>
-              <option value="In Review">In review</option><option value="Resolved">Resolved</option><option value="Escalated">Escalated</option>
+              <option value="all">All Statuses</option>
+              <option value="PENDING">Pending</option>
+              <option value="IN_REVIEW">In Review</option>
+              <option value="RESOLVED">Resolved</option>
+              <option value="ESCALATED">Escalated</option>
             </select>
             <select id="adm-source-filter" onchange="renderAdminComplaints()">
-              <option value="all">All sources</option><option value="citizen">Citizen-filed</option><option value="system">Auto-filed</option>
+              <option value="all">All Sources</option>
+              <option value="CITIZEN">Citizen-filed</option>
+              <option value="SYSTEM">System Auto-filed</option>
             </select>
           </div>
           <div class="panel-body" id="admin-complaints-wrap"></div>
         </div>
       </section>
 
-      <section class="dash-section" id="adm-sec-routes">
-        <div class="section-title-row"><div><h2>Route safety monitor</h2><p>Every route citizens have rated, with its live average and patrol status.</p></div></div>
+      <!-- 3. SOS ALERTS MONITORING -->
+      <section class="dash-section" id="adm-sec-sos">
+        <div class="section-title-row">
+          <div>
+            <h2>SOS Emergency Alerts Monitoring</h2>
+            <p>Operational emergency incident console with GPS coordinates and honest delivery telemetry.</p>
+          </div>
+          <button class="btn btn-outline-dark btn-sm" onclick="renderAdminAll()">↻ Refresh</button>
+        </div>
         <div class="panel">
+          <div class="table-toolbar">
+            <div class="topbar-search" style="max-width:240px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="adm-sos-search" type="text" placeholder="Search citizen, ID, location…" oninput="renderAdminSos()">
+            </div>
+            <select id="adm-sos-status-filter" onchange="renderAdminSos()">
+              <option value="all">All Lifecycle States</option>
+              <option value="TRIGGERED">Triggered</option>
+              <option value="NOTIFIED">Notified</option>
+              <option value="ACKNOWLEDGED">Acknowledged</option>
+              <option value="RESOLVED">Resolved</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+          </div>
+          <div class="panel-body" id="admin-sos-wrap"></div>
+        </div>
+      </section>
+
+      <!-- 4. ROUTE SAFETY MONITOR -->
+      <section class="dash-section" id="adm-sec-routes">
+        <div class="section-title-row">
+          <div>
+            <h2>Route Safety Monitor &amp; Risk Audits</h2>
+            <p>Civic safety analytics across city transit corridors, foot-traffic observations, and patrol triggers.</p>
+          </div>
+          <button class="btn btn-outline-dark btn-sm" onclick="renderAdminAll()">↻ Refresh</button>
+        </div>
+        <div class="stat-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:20px;">
+          <div class="stat-card"><div class="label">Total Evaluated Routes</div><div class="value" id="adm-route-total">0</div></div>
+          <div class="stat-card"><div class="label">Network Safety Score</div><div class="value" id="adm-route-avg">0 / 100</div></div>
+          <div class="stat-card s-sos"><div class="label">High-Risk Corridors</div><div class="value" id="adm-route-highrisk">0</div></div>
+          <div class="stat-card s-review"><div class="label">Auto-Filed Complaints</div><div class="value" id="adm-route-autofiled">0</div></div>
+          <div class="stat-card"><div class="label">Citizen Ratings Logged</div><div class="value" id="adm-route-ratings">0</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Evaluated City Corridors</h3>
+            <div style="font-size:0.8rem;color:var(--text-soft);">Live telemetry from Safe Route Service</div>
+          </div>
           <div class="panel-body" id="admin-routes-wrap"></div>
         </div>
       </section>
 
+      <!-- 5. SYSTEM SETTINGS -->
       <section class="dash-section" id="adm-sec-settings">
-        <div class="section-title-row"><div><h2>System settings</h2><p>Controls that apply immediately to the citizen app.</p></div></div>
+        <div class="section-title-row">
+          <div>
+            <h2>System Settings &amp; Platform Configuration</h2>
+            <p>Operational thresholds and automation rules persisted in backend system settings.</p>
+          </div>
+          <button class="btn btn-brass btn-sm" onclick="saveAdminSettings()">Save Settings</button>
+        </div>
         <div class="settings-grid">
           <div class="panel">
-            <div class="panel-head"><h3>Auto-complaint rules</h3></div>
+            <div class="panel-head"><h3>Automated Complaint Filing</h3></div>
             <div class="panel-body pad">
               <div class="setting-row">
-                <div><b>Auto-file complaints for low-rated routes</b><span class="desc">When off, poor ratings are recorded but no complaint is generated.</span></div>
+                <div>
+                  <b>Auto-file complaints for low-rated routes</b>
+                  <span class="desc">When enabled, unsafe route reports trigger an official municipal patrolling complaint.</span>
+                </div>
                 <div class="seg-control">
-                  <button class="seg-btn active" id="auto-file-on" onclick="setAutoFile(true)">On</button>
-                  <button class="seg-btn" id="auto-file-off" onclick="setAutoFile(false)">Off</button>
+                  <button type="button" class="seg-btn" id="adm-set-autofile-on" onclick="setAdminAutoFileToggle(true)">On</button>
+                  <button type="button" class="seg-btn" id="adm-set-autofile-off" onclick="setAdminAutoFileToggle(false)">Off</button>
                 </div>
               </div>
               <div class="setting-row">
-                <div><b>Auto-file threshold</b><span class="desc">File a patrolling complaint when a route's average rating falls at or below this value.</span></div>
-                <input id="threshold-input" type="number" step="0.1" min="1" max="5" value="2.5" style="width:80px;padding:9px 10px;border:1px solid var(--line);border-radius:var(--radius-sm)" onchange="setThreshold(this.value)">
+                <div>
+                  <b>Auto-file rating threshold</b>
+                  <span class="desc">Triggers auto-complaint when route score falls at or below this value (1 to 5).</span>
+                </div>
+                <input id="adm-set-threshold" type="number" step="1" min="1" max="5" value="3" style="width:80px;padding:9px 10px;border:1px solid var(--line);border-radius:var(--radius-sm)">
+              </div>
+              <div class="setting-row">
+                <div>
+                  <b>Minimum ratings required</b>
+                  <span class="desc">Minimum number of citizen reviews required before automated filing evaluates the route.</span>
+                </div>
+                <input id="adm-set-minratings" type="number" step="1" min="1" max="20" value="5" style="width:80px;padding:9px 10px;border:1px solid var(--line);border-radius:var(--radius-sm)">
+              </div>
+              <div style="margin-top:20px;">
+                <button type="button" class="btn btn-dark btn-sm" onclick="saveAdminSettings()">Save Settings to Server</button>
               </div>
             </div>
           </div>
           <div class="panel">
-            <div class="panel-head"><h3>Maps &amp; live data</h3></div>
+            <div class="panel-head"><h3>System Architecture &amp; Security</h3></div>
             <div class="panel-body pad">
-              <div class="field"><label>Google Maps API key</label><input id="maps-key-input" type="text" placeholder="Add a billing-enabled Maps JavaScript API key" onchange="saveMapsKey(this.value)"></div>
-              <p style="font-size:0.82rem;color:var(--text-soft);line-height:1.6;margin-top:-6px;">The citizen app currently uses a keyless Google Maps embed for the route preview, and a simulated foot-traffic score for safety scoring. Adding a real API key here (once billing is set up) is where you'd wire in live traffic and crowd-density data — the route logic already reads from <code>window.mapsApiKey</code>.</p>
+              <div style="font-size:0.86rem;line-height:1.7;color:var(--text-soft);">
+                <div>• <strong>Backend Gateway:</strong> <code>http://localhost:8082</code></div>
+                <div>• <strong>Admin Token Protocol:</strong> HMAC-SHA256 Token (2-hour lifecycle)</div>
+                <div>• <strong>Citizen/Admin Isolation:</strong> Dual interceptors (<code>CitizenAuthInterceptor</code> &amp; <code>AdminAuthInterceptor</code>)</div>
+                <div>• <strong>Role Authorization:</strong> Role verified on each protected REST endpoint</div>
+                <div>• <strong>Telemetry:</strong> Real database records without mock data</div>
+              </div>
+              <div class="field" style="margin-top:20px;">
+                <label>Google Maps Client Key (Session override)</label>
+                <input id="maps-key-input" type="text" placeholder="Add Maps JavaScript API key if available" onchange="saveMapsKey(this.value)">
+              </div>
             </div>
           </div>
         </div>
@@ -1176,8 +1459,175 @@ table.data-table tr:last-child td{border-bottom:none;}
 
     </main>
   </div>
+
+  <!-- COMPLAINT DETAIL & STATUS UPDATE MODAL (ADMIN) -->
+  <div class="modal-overlay" id="modal-admin-complaint-detail" hidden>
+    <div class="modal-box" style="max-width:640px;">
+      <div class="modal-head">
+        <div>
+          <h3 id="adm-mdl-tracking-id">Grievance Details</h3>
+          <p id="adm-mdl-title" style="margin-top:4px;color:var(--text-soft);font-size:0.88rem;"></p>
+        </div>
+        <button class="modal-close" onclick="closeAdminComplaintModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="field-2col" style="margin-bottom:14px;">
+          <div><label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;">Category</label><div id="adm-mdl-category" style="font-weight:600;font-size:0.92rem;"></div></div>
+          <div><label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;">Priority</label><div id="adm-mdl-priority"></div></div>
+        </div>
+        <div class="field-2col" style="margin-bottom:14px;">
+          <div><label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;">Current Status</label><div id="adm-mdl-status"></div></div>
+          <div><label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;">Filing Source</label><div id="adm-mdl-source"></div></div>
+        </div>
+        <div class="field-2col" style="margin-bottom:14px;">
+          <div><label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;">Location</label><div id="adm-mdl-location" style="font-size:0.9rem;"></div></div>
+          <div><label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;">Citizen Profile</label><div id="adm-mdl-citizen" style="font-size:0.9rem;font-weight:600;"></div></div>
+        </div>
+        <div class="field-2col" style="margin-bottom:14px;">
+          <div><label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;">Submitted Time</label><div id="adm-mdl-created" style="font-size:0.85rem;color:var(--text-soft);"></div></div>
+          <div><label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;">Last Updated</label><div id="adm-mdl-updated" style="font-size:0.85rem;color:var(--text-soft);"></div></div>
+        </div>
+        <div class="field" style="margin-bottom:16px;">
+          <label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;">Description</label>
+          <div id="adm-mdl-desc" style="padding:12px;background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius-sm);font-size:0.88rem;line-height:1.6;"></div>
+        </div>
+
+        <!-- Evidence -->
+        <div style="margin-bottom:18px;">
+          <label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;display:block;margin-bottom:6px;">Evidence Attachments</label>
+          <div id="adm-mdl-evidence" style="padding:10px;background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius-sm);font-size:0.84rem;"></div>
+        </div>
+
+        <!-- Audit History -->
+        <div style="margin-bottom:18px;">
+          <label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;display:block;margin-bottom:6px;">Status Audit History</label>
+          <div id="adm-mdl-history" style="max-height:160px;overflow-y:auto;border:1px solid var(--line);padding:10px;border-radius:var(--radius-sm);background:var(--paper-2);"></div>
+        </div>
+
+        <!-- Update Form -->
+        <div style="border-top:1px solid var(--line);padding-top:16px;margin-top:16px;">
+          <h4 style="font-size:0.95rem;margin-bottom:12px;">Update Official Status</h4>
+          <div class="field">
+            <label for="adm-update-status-select">New Status</label>
+            <select id="adm-update-status-select">
+              <option value="PENDING">PENDING</option>
+              <option value="IN_REVIEW">IN_REVIEW</option>
+              <option value="RESOLVED">RESOLVED</option>
+              <option value="ESCALATED">ESCALATED</option>
+            </select>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label for="adm-update-remarks">Officer Remarks / Action Taken</label>
+            <textarea id="adm-update-remarks" rows="2" placeholder="Describe the reason or action taken (required for audit log)..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-outline-dark" onclick="closeAdminComplaintModal()">Cancel</button>
+        <button class="btn btn-brass" id="adm-btn-update-status" onclick="submitAdminGrievanceStatus()">Update Status</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOS DETAIL MODAL (ADMIN) -->
+  <div class="modal-overlay" id="modal-admin-sos-detail" hidden>
+    <div class="modal-box" style="max-width:640px;">
+      <div class="modal-head">
+        <div>
+          <h3 id="adm-sos-mdl-id">SOS Emergency Details</h3>
+          <p id="adm-sos-mdl-time" style="margin-top:4px;color:var(--text-soft);font-size:0.88rem;"></p>
+        </div>
+        <button class="modal-close" onclick="closeAdminSosModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="field-2col" style="margin-bottom:14px;">
+          <div><label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;">Status</label><div id="adm-sos-mdl-status"></div></div>
+          <div><label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;">Citizen Profile</label><div id="adm-sos-mdl-citizen" style="font-weight:600;font-size:0.92rem;"></div></div>
+        </div>
+        <div class="field-2col" style="margin-bottom:14px;">
+          <div>
+            <label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;">GPS Coordinates</label>
+            <div id="adm-sos-mdl-coords" style="font-family:var(--mono);font-size:0.88rem;"></div>
+          </div>
+          <div>
+            <label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;">Map Location</label>
+            <div id="adm-sos-mdl-maplink"></div>
+          </div>
+        </div>
+        <!-- Inspector to SOS Live Route & Map Section (Feature 3) -->
+        <div class="field" style="margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+            <label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;font-weight:700;letter-spacing:0.5px;">Inspector Dispatch &amp; SOS Navigation</label>
+            <button type="button" class="btn btn-xs btn-brass" id="adm-sos-nav-btn" onclick="requestInspectorNavigation()" style="display:inline-flex;align-items:center;gap:4px;">
+              <span>🧭 Navigate to SOS</span>
+            </button>
+          </div>
+
+          <!-- Inspector Route Map Container with Fullscreen support -->
+          <div id="adm-sos-map-container" class="admin-sos-map-box">
+            <div id="adm-sos-leaflet-map" style="width:100%;height:270px;background:#e2e8f0;"></div>
+
+            <!-- Floating Top Badges -->
+            <div id="adm-sos-map-toolbar" style="position:absolute;top:10px;right:10px;z-index:1000;display:flex;gap:6px;">
+              <button type="button" class="admin-map-ctrl-btn" id="adm-sos-expand-btn" onclick="toggleAdminMapExpand(true)" title="Expand Map">
+                ⛶ Expand
+              </button>
+              <button type="button" class="admin-map-ctrl-btn collapse-btn" id="adm-sos-collapse-btn" onclick="toggleAdminMapExpand(false)" title="Minimize Map (Esc)" style="display:none;">
+                ✕ Minimize
+              </button>
+            </div>
+
+            <div id="adm-sos-metrics-badge" style="position:absolute;top:10px;left:10px;z-index:1000;display:none;background:rgba(15,23,42,0.92);color:#fff;padding:5px 12px;border-radius:14px;font-size:0.8rem;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+              <span id="adm-sos-distance">0.0 km</span> • <span id="adm-sos-duration">0 mins</span>
+            </div>
+
+            <!-- Route Status/Error Banner -->
+            <div id="adm-sos-route-status" style="display:none;position:absolute;bottom:10px;left:10px;right:10px;z-index:1000;padding:8px 12px;border-radius:6px;font-size:0.82rem;backdrop-filter:blur(4px);"></div>
+          </div>
+
+          <!-- Map Legend -->
+          <div id="adm-sos-map-legend" style="display:flex;gap:14px;align-items:center;margin-top:8px;font-size:0.78rem;color:var(--text-soft);flex-wrap:wrap;">
+            <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;background:#ef4444;border-radius:50%;display:inline-block;border:1px solid #991b1b;"></span> SOS Sender Location (Red)</span>
+            <span id="adm-sos-legend-inspector" style="display:none;align-items:center;gap:5px;"><span style="width:10px;height:10px;background:#2563eb;border-radius:50%;display:inline-block;border:1px solid #1e40af;"></span> Inspector Location (Blue)</span>
+            <span id="adm-sos-legend-route" style="display:none;align-items:center;gap:5px;"><span style="width:16px;height:3px;background:#dc2626;display:inline-block;border-radius:2px;"></span> Road Route</span>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:14px;">
+          <label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;">Location Notice</label>
+          <div style="font-size:0.85rem;color:var(--text-soft);padding:8px 12px;background:var(--paper-2);border-radius:var(--radius-sm);border:1px solid var(--line);">
+            Address unavailable — GPS coordinates available.
+          </div>
+        </div>
+        <div class="field-2col" style="margin-bottom:14px;">
+          <div><label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;">Email Delivery</label><div id="adm-sos-mdl-email"></div></div>
+          <div><label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;">Telegram Delivery</label><div id="adm-sos-mdl-telegram"></div></div>
+        </div>
+        <div class="field" style="margin-bottom:16px;">
+          <label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;">Emergency Message</label>
+          <div id="adm-sos-mdl-msg" style="padding:12px;background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius-sm);font-size:0.88rem;line-height:1.6;"></div>
+        </div>
+        <!-- Status History -->
+        <div style="margin-bottom:18px;">
+          <label style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;display:block;margin-bottom:6px;">Incident Status History</label>
+          <div id="adm-sos-mdl-history" style="max-height:160px;overflow-y:auto;border:1px solid var(--line);padding:10px;border-radius:var(--radius-sm);background:var(--paper-2);"></div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-outline-dark" onclick="closeAdminSosModal()">Close</button>
+        <button class="btn btn-outline-dark" id="adm-sos-mdl-btn-ack" onclick="submitModalSosStatus('ACKNOWLEDGED')">Acknowledge</button>
+        <button class="btn btn-brass" id="adm-sos-mdl-btn-res" onclick="submitModalSosStatus('RESOLVED')">Mark Resolved</button>
+      </div>
+    </div>
+  </div>
 </div>
 
+<!-- Leaflet Interactive Maps for Admin Inspector SOS View -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 /* ============================================================
    STATE
@@ -1201,10 +1651,42 @@ let sosCount = 0;
    ============================================================ */
 const viewIds = {landing:'view-landing', login:'view-login', dashboard:'view-dashboard', adminlogin:'view-adminlogin', admin:'view-admin'};
 function goTo(view){
-  Object.keys(viewIds).forEach(v=>{ document.getElementById(viewIds[v]).hidden = (v!==view); });
+  if(view==='admin'){
+    const token = localStorage.getItem('smartshield_admin_token');
+    if(!token){
+      showToast('Admin authentication required. Please sign in.', true);
+      view = 'adminlogin';
+    }
+  }
+  Object.keys(viewIds).forEach(v=>{ const el = document.getElementById(viewIds[v]); if(el) el.hidden = (v!==view); });
   window.scrollTo(0,0);
+  if(view==='admin'){
+    renderAdminAll();
+  }
 }
-function doLogin(){ goTo('dashboard'); showSection('overview'); }
+
+function openRoleModal(){
+  const m = document.getElementById('modal-role-select');
+  if(m) m.hidden = false;
+}
+
+function closeRoleModal(){
+  const m = document.getElementById('modal-role-select');
+  if(m) m.hidden = true;
+}
+
+function selectRole(role){
+  closeRoleModal();
+  if(role === 'citizen'){
+    window.location.href = 'Smart_Shield_Public_Grievance_Frontend/smart_shield_frontend/grievance.html#login';
+  } else if(role === 'admin'){
+    goTo('adminlogin');
+  }
+}
+
+function doLogin(){
+  openRoleModal();
+}
 function toggleMobileNav(){ /* placeholder hook for future mobile drawer on landing */ }
 
 /* ============================================================
@@ -1640,75 +2122,1130 @@ function applyLang(){
 }
 
 /* ============================================================
-   ADMIN / DEVELOPER CONSOLE
+   ADMIN / INSPECTOR CONSOLE LOGIC
    ============================================================ */
+
+let cachedAdminGrievances = [];
+let cachedAdminSos = [];
+let cachedAdminRoutes = [];
+let cachedAdminRouteSummary = null;
+let currentDetailTrackingId = null;
+
+let adminSettingsState = {
+  auto_file_enabled: false,
+  auto_file_threshold: 3,
+  min_ratings_for_auto_file: 5
+};
+
+function formatDateTime(isoStr){
+  if(!isoStr) return '-';
+  try {
+    const d = new Date(isoStr);
+    if(isNaN(d.getTime())) return isoStr;
+    return d.toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  } catch(e){
+    return isoStr;
+  }
+}
+
+function adminStatusBadge(status){
+  const s = (status || '').toUpperCase();
+  const map = {
+    'PENDING': 'badge-pending',
+    'IN_REVIEW': 'badge-review',
+    'RESOLVED': 'badge-resolved',
+    'ESCALATED': 'badge-escalated'
+  };
+  const cls = map[s] || 'badge-pending';
+  return '<span class="badge ' + cls + '">' + escapeHTML(s.replace(/_/g, ' ')) + '</span>';
+}
+
+function adminPriorityBadge(prio){
+  const p = (prio || '').toUpperCase();
+  const map = {
+    'HIGH': 'badge-high',
+    'MEDIUM': 'badge-medium',
+    'LOW': 'badge-low'
+  };
+  const cls = map[p] || 'badge-medium';
+  return '<span class="badge ' + cls + '">' + escapeHTML(p) + '</span>';
+}
+
+function sosStatusBadge(status){
+  const s = (status || '').toUpperCase();
+  const map = {
+    'TRIGGERED': 'badge-triggered',
+    'NOTIFIED': 'badge-notified',
+    'ACKNOWLEDGED': 'badge-acknowledged',
+    'RESOLVED': 'badge-resolved',
+    'CANCELLED': 'badge-cancelled'
+  };
+  const cls = map[s] || 'badge-pending';
+  return '<span class="badge ' + cls + '">' + escapeHTML(s) + '</span>';
+}
+
+function channelBadge(status){
+  if(!status || status === 'NOT_CONFIGURED'){
+    return '<span class="channel-pill unconfigured">NOT CONFIGURED</span>';
+  }
+  return '<span class="channel-pill sent">' + escapeHTML(status) + '</span>';
+}
+
+function routeScoreBadge(score){
+  const num = typeof score === 'number' ? score : parseInt(score, 10);
+  if(isNaN(num)) return '<span class="badge">N/A</span>';
+  if(num <= 39) return '<span class="badge badge-high">' + num + ' / 100 (HIGH RISK)</span>';
+  if(num <= 69) return '<span class="badge badge-medium">' + num + ' / 100 (MODERATE)</span>';
+  return '<span class="badge badge-low">' + num + ' / 100 (SAFE)</span>';
+}
+
+async function adminFetch(url, options = {}){
+  const token = localStorage.getItem('smartshield_admin_token');
+  if(!token){
+    doAdminLogout();
+    showToast('Session expired. Please login again.', true);
+    return null;
+  }
+  options.headers = options.headers || {};
+  options.headers['Authorization'] = 'Bearer ' + token;
+  if(options.body && typeof options.body === 'string' && !options.headers['Content-Type']){
+    options.headers['Content-Type'] = 'application/json';
+  }
+  try {
+    const res = await fetch(url, options);
+    if(res.status === 401){
+      doAdminLogout();
+      showToast('Session expired. Please login again.', true);
+      return null;
+    }
+    if(res.status === 403){
+      showToast('You do not have permission to access this section.', true);
+      return null;
+    }
+    if(res.status === 429){
+      showToast('Too many requests. Please try again shortly.', true);
+      return null;
+    }
+    if(res.status >= 500){
+      showToast('Server error. Please try again.', true);
+      return null;
+    }
+    return res;
+  } catch(netErr){
+    console.warn('Network error during admin fetch:', netErr);
+    showToast('Unable to connect to Smart Shield server.', true);
+    return null;
+  }
+}
+
+async function doAdminLogin(){
+  const idEl = document.getElementById('admin-login-id');
+  const passEl = document.getElementById('admin-login-pass');
+  const btn = document.getElementById('admin-login-btn');
+  const errEl = document.getElementById('admin-login-error');
+
+  if(errEl){ errEl.style.display = 'none'; errEl.textContent = ''; }
+
+  const adminId = idEl ? idEl.value.trim() : '';
+  const password = passEl ? passEl.value : '';
+
+  if(!adminId || !password){
+    if(errEl){
+      errEl.textContent = 'Please enter both Admin ID and password.';
+      errEl.style.display = 'block';
+    } else {
+      showToast('Please enter both Admin ID and password.', true);
+    }
+    return;
+  }
+
+  if(btn){ btn.disabled = true; btn.textContent = 'Authenticating...'; }
+
+  try {
+    const res = await fetch('http://localhost:8082/api/admin/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ adminId, password })
+    });
+
+    if(!res.ok){
+      let errMsg = 'Invalid admin credentials';
+      try {
+        const data = await res.json();
+        if(data && data.message) errMsg = data.message;
+      } catch(e){}
+      if(errEl){
+        errEl.textContent = errMsg;
+        errEl.style.display = 'block';
+      } else {
+        showToast(errMsg, true);
+      }
+      return;
+    }
+
+    const data = await res.json();
+    if(!data || !data.token){
+      throw new Error('Authentication succeeded but no token received');
+    }
+
+    // Store only admin token and admin ID
+    localStorage.setItem('smartshield_admin_token', data.token);
+    localStorage.setItem('smartshield_admin_id', data.adminId || adminId);
+
+    // Clear password input immediately
+    if(passEl) passEl.value = '';
+    if(errEl){ errEl.style.display = 'none'; errEl.textContent = ''; }
+
+    const userDisplay = document.getElementById('admin-user-display-id');
+    if(userDisplay) userDisplay.textContent = data.adminId || adminId;
+
+    showToast('✓ Admin authenticated successfully.');
+    goTo('admin');
+    await renderAdminAll();
+  } catch(err){
+    const msg = (err && err.message && !err.message.includes('fetch')) ? err.message : 'Unable to connect to Smart Shield server.';
+    if(errEl){
+      errEl.textContent = msg;
+      errEl.style.display = 'block';
+    } else {
+      showToast(msg, true);
+    }
+  } finally {
+    if(btn){ btn.disabled = false; btn.textContent = 'Login as Admin / Inspector'; }
+  }
+}
+
+function doAdminLogout(){
+  localStorage.removeItem('smartshield_admin_token');
+  localStorage.removeItem('smartshield_admin_id');
+  sessionStorage.removeItem('smartshield_admin_token');
+  sessionStorage.removeItem('smartshield_admin_id');
+  cachedAdminGrievances = [];
+  cachedAdminSos = [];
+  cachedAdminRoutes = [];
+  cachedAdminRouteSummary = null;
+  try {
+    history.replaceState(null, '', window.location.pathname);
+  } catch(e) {}
+  goTo('landing');
+}
+
 function showAdminSection(sec){
   document.querySelectorAll('#view-admin .dash-section').forEach(s=>s.classList.remove('active'));
-  document.getElementById('adm-sec-'+sec).classList.add('active');
+  const targetSec = document.getElementById('adm-sec-'+sec);
+  if(targetSec) targetSec.classList.add('active');
+
   document.querySelectorAll('#view-admin .sn-item').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('#view-admin .sn-item[data-adm="'+sec+'"]').forEach(b=>b.classList.add('active'));
-  const titles = {overview:'Overview', complaints:'All complaints', routes:'Route safety monitor', settings:'System settings'};
-  document.getElementById('admin-topbar-title').textContent = titles[sec];
+  const activeBtn = document.querySelector('#view-admin .sn-item[data-adm="'+sec+'"]');
+  if(activeBtn) activeBtn.classList.add('active');
+
+  const titles = {
+    overview: 'Civic Operations Overview',
+    complaints: 'Complaints Management',
+    sos: 'SOS Alerts Monitoring',
+    routes: 'Route Safety Monitor',
+    settings: 'System Settings'
+  };
+  const topTitle = document.getElementById('admin-topbar-title');
+  if(topTitle) topTitle.textContent = titles[sec] || 'Shield Console';
+
   if(sec==='overview') renderAdminOverview();
   if(sec==='complaints') renderAdminComplaints();
+  if(sec==='sos') renderAdminSos();
   if(sec==='routes') renderAdminRoutes();
 }
-function renderAdminAll(){
-  renderAdminOverview();
-  renderAdminComplaints();
-  renderAdminRoutes();
+
+async function renderAdminAll(){
+  const token = localStorage.getItem('smartshield_admin_token');
+  if(!token){
+    goTo('adminlogin');
+    return;
+  }
+
+  const storedAdminId = localStorage.getItem('smartshield_admin_id') || 'ADMIN001';
+  const userDisplay = document.getElementById('admin-user-display-id');
+  if(userDisplay) userDisplay.textContent = storedAdminId;
+
+  try {
+    const [gRes, sosRes, rSummaryRes, rListRes, sRes] = await Promise.all([
+      adminFetch('http://localhost:8082/api/admin/grievances'),
+      adminFetch('http://localhost:8082/api/admin/safety/sos'),
+      adminFetch('http://localhost:8082/api/admin/safety/routes/summary'),
+      adminFetch('http://localhost:8082/api/admin/safety/routes'),
+      adminFetch('http://localhost:8082/api/admin/settings')
+    ]);
+
+    cachedAdminGrievances = (gRes && gRes.ok) ? await gRes.json() : [];
+    cachedAdminSos = (sosRes && sosRes.ok) ? await sosRes.json() : [];
+    cachedAdminRouteSummary = (rSummaryRes && rSummaryRes.ok) ? await rSummaryRes.json() : null;
+    cachedAdminRoutes = (rListRes && rListRes.ok) ? await rListRes.json() : [];
+
+    if(sRes && sRes.ok){
+      adminSettingsState = await sRes.json();
+      populateAdminSettings();
+    }
+
+    renderAdminOverview();
+    renderAdminComplaints();
+    renderAdminSos();
+    renderAdminRoutes();
+  } catch(err){
+    console.warn('Error loading admin console data:', err);
+  }
 }
+
 function renderAdminOverview(){
-  document.getElementById('adm-stat-total').textContent = complaints.length;
-  document.getElementById('adm-stat-auto').textContent = complaints.filter(c=>c.source==='system').length;
-  document.getElementById('adm-stat-sos').textContent = sosCount;
-  document.getElementById('adm-stat-flagged').textContent = buildRouteRows().filter(r=>r.flagged).length;
-  document.getElementById('admin-recent-wrap').innerHTML = tableHTML(complaints, 6);
+  const totalEl = document.getElementById('adm-stat-total');
+  const pendingEl = document.getElementById('adm-stat-pending');
+  const reviewEl = document.getElementById('adm-stat-review');
+  const resolvedEl = document.getElementById('adm-stat-resolved');
+  const sosEl = document.getElementById('adm-stat-sos');
+  const routesEl = document.getElementById('adm-stat-routes');
+
+  const pendingCount = cachedAdminGrievances.filter(g => (g.status||'').toUpperCase() === 'PENDING').length;
+  const reviewCount = cachedAdminGrievances.filter(g => (g.status||'').toUpperCase() === 'IN_REVIEW').length;
+  const resolvedCount = cachedAdminGrievances.filter(g => (g.status||'').toUpperCase() === 'RESOLVED').length;
+  const activeSosCount = cachedAdminSos.filter(s => ['TRIGGERED', 'NOTIFIED', 'ACKNOWLEDGED'].includes((s.status||'').toUpperCase())).length;
+
+  if(totalEl) totalEl.textContent = cachedAdminGrievances.length;
+  if(pendingEl) pendingEl.textContent = pendingCount;
+  if(reviewEl) reviewEl.textContent = reviewCount;
+  if(resolvedEl) resolvedEl.textContent = resolvedCount;
+  if(sosEl) sosEl.textContent = activeSosCount;
+  if(routesEl) routesEl.textContent = cachedAdminRouteSummary ? cachedAdminRouteSummary.totalRoutes : cachedAdminRoutes.length;
+
+  // Overview recent tables
+  const recentGrievances = cachedAdminGrievances.slice(0, 5);
+  const recentWrap = document.getElementById('admin-recent-wrap');
+  if(recentWrap){
+    if(recentGrievances.length === 0){
+      recentWrap.innerHTML = '<div class="empty-state" style="padding:24px;text-align:center;color:var(--text-soft);">No complaints filed yet.</div>';
+    } else {
+      recentWrap.innerHTML = '<table class="data-table"><thead><tr><th>Tracking ID</th><th>Category</th><th>Location</th><th>Status</th><th>Action</th></tr></thead><tbody>' +
+        recentGrievances.map(g => `
+          <tr>
+            <td class="cell-id"><b>${escapeHTML(g.trackingId)}</b></td>
+            <td>${escapeHTML(g.category)}</td>
+            <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHTML(g.location)}</td>
+            <td>${adminStatusBadge(g.status)}</td>
+            <td><button class="btn btn-outline-dark btn-xs" onclick="openAdminComplaintDetail('${escapeHTML(g.trackingId)}')">Inspect</button></td>
+          </tr>
+        `).join('') +
+        '</tbody></table>';
+    }
+  }
+
+  const recentSosWrap = document.getElementById('admin-recent-sos-wrap');
+  if(recentSosWrap){
+    const topSos = cachedAdminSos.slice(0, 5);
+    if(topSos.length === 0){
+      recentSosWrap.innerHTML = '<div class="empty-state" style="padding:24px;text-align:center;color:var(--text-soft);">No active SOS alerts.</div>';
+    } else {
+      recentSosWrap.innerHTML = '<table class="data-table"><thead><tr><th>SOS ID</th><th>Citizen</th><th>Triggered</th><th>Status</th></tr></thead><tbody>' +
+        topSos.map(s => `
+          <tr>
+            <td class="cell-id"><b>#SOS-${s.id}</b></td>
+            <td>${escapeHTML(s.citizenName || 'Citizen #' + (s.citizenId || ''))}</td>
+            <td style="font-size:0.78rem;">${formatDateTime(s.triggeredAt)}</td>
+            <td>${sosStatusBadge(s.status)}</td>
+          </tr>
+        `).join('') +
+        '</tbody></table>';
+    }
+  }
 }
+
 function renderAdminComplaints(){
-  const q = (document.getElementById('adm-search').value||'').toLowerCase();
-  const statusF = document.getElementById('adm-status-filter').value;
-  const sourceF = document.getElementById('adm-source-filter').value;
-  const list = complaints.filter(c=>{
-    const mQ = !q || (c.id+c.category+c.desc+c.location).toLowerCase().includes(q);
-    const mS = statusF==='all' || c.status===statusF;
-    const mSrc = sourceF==='all' || c.source===sourceF;
-    return mQ && mS && mSrc;
+  const wrap = document.getElementById('admin-complaints-wrap');
+  if(!wrap) return;
+
+  const q = (document.getElementById('adm-search')?.value || '').toLowerCase().trim();
+  const catF = document.getElementById('adm-category-filter')?.value || 'all';
+  const prioF = document.getElementById('adm-priority-filter')?.value || 'all';
+  const statusF = document.getElementById('adm-status-filter')?.value || 'all';
+  const sourceF = document.getElementById('adm-source-filter')?.value || 'all';
+
+  const filtered = cachedAdminGrievances.filter(c => {
+    const searchTarget = `${c.trackingId} ${c.title} ${c.category} ${c.location} ${c.description || ''}`.toLowerCase();
+    const matchesQ = !q || searchTarget.includes(q);
+    const matchesCat = catF === 'all' || (c.category || '').toUpperCase() === catF.toUpperCase();
+    const matchesPrio = prioF === 'all' || (c.priority || '').toUpperCase() === prioF.toUpperCase();
+    const matchesStatus = statusF === 'all' || (c.status || '').toUpperCase() === statusF.toUpperCase();
+    const matchesSource = sourceF === 'all' || (c.source || '').toUpperCase() === sourceF.toUpperCase();
+    return matchesQ && matchesCat && matchesPrio && matchesStatus && matchesSource;
   });
-  document.getElementById('admin-complaints-wrap').innerHTML = tableHTML(list);
-}
-function renderAdminRoutes(){
-  const rows = buildRouteRows();
-  const wrap = document.getElementById('admin-routes-wrap');
-  if(rows.length===0){ wrap.innerHTML = emptyStateHTML(); return; }
-  wrap.innerHTML = '<table class="data-table"><thead><tr><th>Route</th><th>Avg. rating</th><th>Riders</th><th>Status</th><th>Linked complaint</th></tr></thead><tbody>'+
-    rows.map(r=>'<tr><td>'+r.label+'</td><td>'+r.avg.toFixed(1)+' / 5</td><td>'+r.count+'</td><td>'+(r.flagged?'<span class="badge badge-escalated">Flagged</span>':'<span class="badge badge-resolved">Normal</span>')+'</td><td class="cell-id">'+(r.complaintId||'—')+'</td></tr>').join('')+
+
+  if(filtered.length === 0){
+    wrap.innerHTML = '<div class="empty-state" style="padding:32px;text-align:center;color:var(--text-soft);">No grievances found matching the current search & filters.</div>';
+    return;
+  }
+
+  wrap.innerHTML = '<table class="data-table"><thead><tr>' +
+    '<th>Tracking ID</th><th>Category</th><th>Title & Location</th><th>Priority</th><th>Status</th><th>Filed Date</th><th>Source</th><th>Action</th>' +
+    '</tr></thead><tbody>' +
+    filtered.map(g => `
+      <tr>
+        <td class="cell-id"><b>${escapeHTML(g.trackingId)}</b></td>
+        <td>${escapeHTML(g.category)}</td>
+        <td>
+          <div style="font-weight:600;">${escapeHTML(g.title)}</div>
+          <div style="font-size:0.78rem;color:var(--text-soft);">${escapeHTML(g.location)}</div>
+        </td>
+        <td>${adminPriorityBadge(g.priority)}</td>
+        <td>${adminStatusBadge(g.status)}</td>
+        <td style="font-size:0.8rem;">${formatDateTime(g.createdAt)}</td>
+        <td>${sourceBadge((g.source||'citizen').toLowerCase())}</td>
+        <td><button class="btn btn-outline-dark btn-xs" onclick="openAdminComplaintDetail('${escapeHTML(g.trackingId)}')">Inspect &amp; Update</button></td>
+      </tr>
+    `).join('') +
     '</tbody></table>';
 }
-function setAutoFile(on){
-  autoFileEnabled = on;
-  document.getElementById('auto-file-on').classList.toggle('active', on);
-  document.getElementById('auto-file-off').classList.toggle('active', !on);
-  showToast('Auto-filing for low-rated routes turned '+(on?'on':'off')+' — applies immediately in the citizen app.');
+
+async function openAdminComplaintDetail(trackingId){
+  currentDetailTrackingId = trackingId;
+  const modal = document.getElementById('modal-admin-complaint-detail');
+  if(!modal) return;
+
+  let g = cachedAdminGrievances.find(item => item.trackingId === trackingId);
+  if(!g){
+    const res = await adminFetch(`http://localhost:8082/api/admin/grievances/${trackingId}`);
+    if(res && res.ok) g = await res.json();
+  }
+  if(!g){
+    showToast('Grievance not found', true);
+    return;
+  }
+
+  document.getElementById('adm-mdl-tracking-id').textContent = g.trackingId;
+  document.getElementById('adm-mdl-title').textContent = g.title || '';
+  document.getElementById('adm-mdl-category').textContent = g.category || 'N/A';
+  document.getElementById('adm-mdl-priority').innerHTML = adminPriorityBadge(g.priority);
+  document.getElementById('adm-mdl-status').innerHTML = adminStatusBadge(g.status);
+  document.getElementById('adm-mdl-source').innerHTML = sourceBadge((g.source || 'citizen').toLowerCase());
+  document.getElementById('adm-mdl-location').textContent = g.location || 'N/A';
+  const citizenInfo = (g.citizenName || g.citizenEmail)
+    ? `${escapeHTML(g.citizenName || 'Citizen')} (${escapeHTML(g.citizenEmail || 'No email')}) — User #${g.citizenId || ''}`
+    : (g.citizenId ? `Citizen #${g.citizenId}` : 'Anonymous / System');
+  document.getElementById('adm-mdl-citizen').innerHTML = citizenInfo;
+  const createdEl = document.getElementById('adm-mdl-created');
+  if(createdEl) createdEl.textContent = formatDateTime(g.createdAt);
+  const updatedEl = document.getElementById('adm-mdl-updated');
+  if(updatedEl) updatedEl.textContent = formatDateTime(g.updatedAt);
+  document.getElementById('adm-mdl-desc').textContent = g.description || 'No description provided.';
+
+  const select = document.getElementById('adm-update-status-select');
+  if(select && g.status) select.value = g.status;
+  const remarksInput = document.getElementById('adm-update-remarks');
+  if(remarksInput) remarksInput.value = '';
+
+  const [histRes, evRes] = await Promise.all([
+    adminFetch(`http://localhost:8082/api/admin/grievances/${trackingId}/history`),
+    adminFetch(`http://localhost:8082/api/admin/grievances/${trackingId}/evidence`)
+  ]);
+
+  const historyWrap = document.getElementById('adm-mdl-history');
+  if(histRes && histRes.ok){
+    const hist = await histRes.json();
+    if(hist && hist.length > 0){
+      historyWrap.innerHTML = hist.map(h => `
+        <div class="audit-entry" style="margin-bottom:8px;">
+          <div class="audit-entry-meta">
+            <b>${escapeHTML(h.changedBy || 'ADMIN')}</b>
+            <span>${formatDateTime(h.createdAt)}</span>
+          </div>
+          <div>Changed status: <span style="font-weight:600;">${escapeHTML(h.previousStatus || 'INIT')}</span> → <span style="font-weight:600;color:var(--review);">${escapeHTML(h.newStatus)}</span></div>
+          ${h.remarks ? `<div style="color:var(--text-soft);font-size:0.78rem;margin-top:2px;">"${escapeHTML(h.remarks)}"</div>` : ''}
+        </div>
+      `).join('');
+    } else {
+      historyWrap.innerHTML = '<div style="color:var(--text-soft);font-size:0.82rem;">No previous status history records.</div>';
+    }
+  } else {
+    historyWrap.innerHTML = '<div style="color:var(--text-soft);font-size:0.82rem;">History unavailable.</div>';
+  }
+
+  const evWrap = document.getElementById('adm-mdl-evidence');
+  if(evRes && evRes.ok){
+    const evidence = await evRes.json();
+    if(evidence && evidence.length > 0){
+      evWrap.innerHTML = evidence.map(e => `
+        <div style="display:flex;justify-content:space-between;padding:4px 0;">
+          <span>📎 <strong>${escapeHTML(e.fileName)}</strong> (${Math.round((e.fileSize || 0) / 1024)} KB)</span>
+          <span style="color:var(--text-soft);font-size:0.75rem;">${formatDateTime(e.uploadedAt)}</span>
+        </div>
+      `).join('');
+    } else {
+      evWrap.innerHTML = '<div style="color:var(--text-soft);">No attached evidence files for this grievance.</div>';
+    }
+  } else {
+    evWrap.innerHTML = '<div style="color:var(--text-soft);">Evidence metadata unavailable.</div>';
+  }
+
+  modal.hidden = false;
 }
-function setThreshold(v){
-  const n = parseFloat(v);
-  if(isNaN(n) || n<1 || n>5){ showToast('Enter a threshold between 1 and 5.', true); return; }
-  autoComplaintThreshold = n;
-  showToast('Auto-file threshold set to '+n+' — the citizen app will use this on the next rating.');
+
+function closeAdminComplaintModal(){
+  const modal = document.getElementById('modal-admin-complaint-detail');
+  if(modal) modal.hidden = true;
+  currentDetailTrackingId = null;
 }
+
+async function submitAdminGrievanceStatus(){
+  if(!currentDetailTrackingId) return;
+  const statusSelect = document.getElementById('adm-update-status-select');
+  const remarksInput = document.getElementById('adm-update-remarks');
+  const btn = document.getElementById('adm-btn-update-status');
+
+  const newStatus = statusSelect ? statusSelect.value : 'PENDING';
+  const remarks = remarksInput ? remarksInput.value.trim() : '';
+
+  if(btn){ btn.disabled = true; btn.textContent = 'Updating...'; }
+
+  try {
+    const res = await adminFetch(`http://localhost:8082/api/admin/grievances/${currentDetailTrackingId}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status: newStatus, remarks: remarks || `Status updated to ${newStatus}` })
+    });
+    if(res && res.ok){
+      showToast(`✓ Grievance ${currentDetailTrackingId} updated to ${newStatus}.`);
+      closeAdminComplaintModal();
+      await renderAdminAll();
+    }
+  } finally {
+    if(btn){ btn.disabled = false; btn.textContent = 'Update Status'; }
+  }
+}
+
+let currentDetailSosId = null;
+let adminSosMap = null;
+let adminSosMarker = null;
+let adminInspectorMarker = null;
+let adminRoutePolyline = null;
+let adminSosCoords = null; // { lat, lng }
+let adminInspectorCoords = null; // { lat, lng }
+
+function toggleAdminMapExpand(forceExpand){
+  const container = document.getElementById('adm-sos-map-container');
+  const expBtn = document.getElementById('adm-sos-expand-btn');
+  const colBtn = document.getElementById('adm-sos-collapse-btn');
+  if(!container) return;
+
+  const isExpanded = container.classList.contains('is-expanded');
+  const target = forceExpand !== undefined ? forceExpand : !isExpanded;
+
+  if(target){
+    container.classList.add('is-expanded');
+    document.body.classList.add('admin-map-locked');
+    if(expBtn) expBtn.style.display = 'none';
+    if(colBtn) colBtn.style.display = 'inline-block';
+  } else {
+    container.classList.remove('is-expanded');
+    document.body.classList.remove('admin-map-locked');
+    if(expBtn) expBtn.style.display = 'inline-block';
+    if(colBtn) colBtn.style.display = 'none';
+  }
+
+  setTimeout(() => {
+    if(adminSosMap) adminSosMap.invalidateSize();
+  }, 100);
+  setTimeout(() => {
+    if(adminSosMap) adminSosMap.invalidateSize();
+  }, 300);
+}
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){
+    const container = document.getElementById('adm-sos-map-container');
+    if(container && container.classList.contains('is-expanded')){
+      toggleAdminMapExpand(false);
+    }
+  }
+});
+
+function initOrUpdateAdminSosMap(lat, lng, incidentId){
+  const mapEl = document.getElementById('adm-sos-leaflet-map');
+  if(!mapEl || typeof L === 'undefined') return;
+
+  // Reset inspector live navigation state on opening modal
+  adminInspectorCoords = null;
+  const navBtn = document.getElementById('adm-sos-nav-btn');
+  if(navBtn){
+    navBtn.disabled = false;
+    navBtn.innerHTML = '🧭 Navigate to SOS';
+  }
+  const statusEl = document.getElementById('adm-sos-route-status');
+  if(statusEl) statusEl.style.display = 'none';
+  const metricsBadge = document.getElementById('adm-sos-metrics-badge');
+  if(metricsBadge) metricsBadge.style.display = 'none';
+  const legendInspector = document.getElementById('adm-sos-legend-inspector');
+  if(legendInspector) legendInspector.style.display = 'none';
+  const legendRoute = document.getElementById('adm-sos-legend-route');
+  if(legendRoute) legendRoute.style.display = 'none';
+
+  if(!adminSosMap){
+    adminSosMap = L.map('adm-sos-leaflet-map', {
+      center: [lat, lng],
+      zoom: 15,
+      zoomControl: true,
+      scrollWheelZoom: true
+    });
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+    }).addTo(adminSosMap);
+  } else {
+    adminSosMap.setView([lat, lng], 15);
+  }
+
+  // Clear existing navigation layers
+  if(adminRoutePolyline){
+    adminSosMap.removeLayer(adminRoutePolyline);
+    adminRoutePolyline = null;
+  }
+  if(adminInspectorMarker){
+    adminSosMap.removeLayer(adminInspectorMarker);
+    adminInspectorMarker = null;
+  }
+  if(adminSosMarker){
+    adminSosMap.removeLayer(adminSosMarker);
+    adminSosMarker = null;
+  }
+
+  // Genuine Red Marker for SOS Sender Location
+  const redSosIcon = L.divIcon({
+    className: 'admin-marker-sos-red',
+    html: `<div style="background:#dc2626;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(220,38,38,0.5);border:2px solid #fff;font-size:16px;">🚨</div>`,
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16]
+  });
+
+  adminSosMarker = L.marker([lat, lng], { icon: redSosIcon }).addTo(adminSosMap);
+  adminSosMarker.bindPopup(`<b>SOS Incident #${incidentId}</b><br>Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`).openPopup();
+
+  setTimeout(() => {
+    if(adminSosMap) adminSosMap.invalidateSize();
+  }, 150);
+}
+
+async function requestInspectorNavigation(){
+  if(!adminSosCoords || adminSosCoords.lat == null || adminSosCoords.lng == null){
+    showToast('Valid SOS sender coordinates not available for navigation', true);
+    return;
+  }
+
+  const navBtn = document.getElementById('adm-sos-nav-btn');
+  const statusEl = document.getElementById('adm-sos-route-status');
+
+  if(!navigator.geolocation){
+    if(statusEl){
+      statusEl.style.display = 'block';
+      statusEl.style.background = '#fef2f2';
+      statusEl.style.color = '#991b1b';
+      statusEl.style.border = '1px solid #fecaca';
+      statusEl.innerHTML = '✕ Geolocation is not supported by your browser.';
+    }
+    return;
+  }
+
+  if(navBtn){
+    navBtn.disabled = true;
+    navBtn.innerHTML = '⏳ Locating Inspector...';
+  }
+  if(statusEl){
+    statusEl.style.display = 'block';
+    statusEl.style.background = '#f0fdf4';
+    statusEl.style.color = '#166534';
+    statusEl.style.border = '1px solid #bbf7d0';
+    statusEl.innerHTML = 'Requesting browser location permission...';
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async (pos) => {
+      const inspLat = pos.coords.latitude;
+      const inspLng = pos.coords.longitude;
+      const accuracy = pos.coords.accuracy;
+
+      if(inspLat < -90 || inspLat > 90 || inspLng < -180 || inspLng > 180){
+        if(navBtn){ navBtn.disabled = false; navBtn.innerHTML = '↻ Retry Navigation'; }
+        if(statusEl){
+          statusEl.style.display = 'block';
+          statusEl.style.background = '#fef2f2';
+          statusEl.style.color = '#991b1b';
+          statusEl.style.border = '1px solid #fecaca';
+          statusEl.innerHTML = 'Invalid coordinates received from GPS sensor.';
+        }
+        return;
+      }
+
+      adminInspectorCoords = { lat: inspLat, lng: inspLng };
+
+      if(navBtn){
+        navBtn.disabled = false;
+        navBtn.innerHTML = '✓ Re-route to SOS';
+      }
+
+      // Add / Update Blue Inspector Marker
+      if(adminInspectorMarker && adminSosMap){
+        adminSosMap.removeLayer(adminInspectorMarker);
+      }
+      const blueInspectorIcon = L.divIcon({
+        className: 'admin-marker-insp-blue',
+        html: `<div style="background:#2563eb;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(37,99,235,0.5);border:2px solid #fff;font-size:16px;">👮</div>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16]
+      });
+
+      adminInspectorMarker = L.marker([inspLat, inspLng], { icon: blueInspectorIcon }).addTo(adminSosMap);
+      adminInspectorMarker.bindPopup(`<b>Inspector Device Location</b><br>Accuracy: ±${Math.round(accuracy)}m`);
+
+      const legendInspector = document.getElementById('adm-sos-legend-inspector');
+      if(legendInspector) legendInspector.style.display = 'inline-flex';
+
+      // Calculate Road Route via OSRM Client-Side (Sensitive: never transmitted or persisted)
+      if(statusEl){
+        statusEl.style.display = 'block';
+        statusEl.style.background = '#eff6ff';
+        statusEl.style.color = '#1e40af';
+        statusEl.style.border = '1px solid #bfdbfe';
+        statusEl.innerHTML = 'Calculating road route via OSRM...';
+      }
+
+      try {
+        const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${inspLng},${inspLat};${adminSosCoords.lng},${adminSosCoords.lat}?overview=full&geometries=geojson`;
+        const ctrl = new AbortController();
+        const tid = setTimeout(() => ctrl.abort(), 10000);
+        const resp = await fetch(osrmUrl, { signal: ctrl.signal });
+        clearTimeout(tid);
+
+        if(!resp.ok) throw new Error(`OSRM HTTP ${resp.status}`);
+        const data = await resp.json();
+
+        if(data && data.routes && data.routes.length > 0){
+          const route = data.routes[0];
+          const distanceKm = (route.distance / 1000).toFixed(2);
+          const durationMins = Math.max(1, Math.round(route.duration / 60));
+
+          // Real Road Polyline Geometry
+          const coords = route.geometry.coordinates; // [[lng, lat], ...]
+          const latLngs = coords.map(c => [c[1], c[0]]);
+
+          if(adminRoutePolyline && adminSosMap){
+            adminSosMap.removeLayer(adminRoutePolyline);
+          }
+
+          adminRoutePolyline = L.polyline(latLngs, {
+            color: '#dc2626',
+            weight: 5,
+            opacity: 0.88,
+            lineJoin: 'round'
+          }).addTo(adminSosMap);
+
+          // Update metrics badge
+          const metricsBadge = document.getElementById('adm-sos-metrics-badge');
+          const distEl = document.getElementById('adm-sos-distance');
+          const durEl = document.getElementById('adm-sos-duration');
+          if(metricsBadge && distEl && durEl){
+            distEl.textContent = `${distanceKm} km`;
+            durEl.textContent = `${durationMins} mins`;
+            metricsBadge.style.display = 'block';
+          }
+
+          const legendRoute = document.getElementById('adm-sos-legend-route');
+          if(legendRoute) legendRoute.style.display = 'inline-flex';
+
+          if(statusEl) statusEl.style.display = 'none';
+
+          // Fit map view to both markers and route with appropriate padding
+          adminSosMap.fitBounds(adminRoutePolyline.getBounds(), { padding: [40, 40] });
+        } else {
+          throw new Error('No road route found between locations');
+        }
+      } catch(routeErr){
+        console.warn('Inspector navigation routing notice:', routeErr);
+        if(adminRoutePolyline && adminSosMap){
+          adminSosMap.removeLayer(adminRoutePolyline);
+          adminRoutePolyline = null;
+        }
+        const metricsBadge = document.getElementById('adm-sos-metrics-badge');
+        if(metricsBadge) metricsBadge.style.display = 'none';
+        const legendRoute = document.getElementById('adm-sos-legend-route');
+        if(legendRoute) legendRoute.style.display = 'none';
+
+        if(statusEl){
+          statusEl.style.display = 'block';
+          statusEl.style.background = '#fffbeb';
+          statusEl.style.color = '#b45309';
+          statusEl.style.border = '1px solid #fde68a';
+          statusEl.innerHTML = `<strong>Routing Notice:</strong> Road routing temporarily unavailable. Both locations shown on map. <button type="button" class="btn btn-xs btn-outline-dark" style="margin-left:8px;padding:2px 8px;" onclick="requestInspectorNavigation()">↻ Retry</button>`;
+        }
+
+        // Fit bounds to both markers without fake straight line
+        adminSosMap.fitBounds(L.latLngBounds([
+          [adminInspectorCoords.lat, adminInspectorCoords.lng],
+          [adminSosCoords.lat, adminSosCoords.lng]
+        ]), { padding: [40, 40] });
+      }
+    },
+    (err) => {
+      console.warn('Inspector geolocation error:', err);
+      if(navBtn){ navBtn.disabled = false; navBtn.innerHTML = '↻ Retry Navigation'; }
+      if(statusEl){
+        statusEl.style.display = 'block';
+        statusEl.style.background = '#fef2f2';
+        statusEl.style.color = '#991b1b';
+        statusEl.style.border = '1px solid #fecaca';
+        if(err.code === 1 /* PERMISSION_DENIED */){
+          statusEl.innerHTML = '✕ Location permission denied. Please allow device location to navigate to SOS.';
+        } else {
+          statusEl.innerHTML = `✕ Device location unavailable (${err.message}). <button type="button" class="btn btn-xs btn-outline-dark" style="margin-left:8px;padding:2px 8px;" onclick="requestInspectorNavigation()">↻ Retry</button>`;
+        }
+      }
+    },
+    { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+  );
+}
+
+async function openAdminSosDetail(id){
+  currentDetailSosId = id;
+  const modal = document.getElementById('modal-admin-sos-detail');
+  if(!modal) return;
+
+  let s = cachedAdminSos.find(item => item.id == id);
+  if(!s){
+    const res = await adminFetch(`http://localhost:8082/api/admin/safety/sos/${id}`);
+    if(res && res.ok) s = await res.json();
+  }
+  if(!s){
+    showToast('SOS incident not found', true);
+    return;
+  }
+
+  document.getElementById('adm-sos-mdl-id').textContent = `#SOS-${s.id}`;
+  document.getElementById('adm-sos-mdl-time').textContent = `Triggered: ${formatDateTime(s.triggeredAt)}`;
+  document.getElementById('adm-sos-mdl-status').innerHTML = sosStatusBadge(s.status);
+  document.getElementById('adm-sos-mdl-citizen').innerHTML = `${escapeHTML(s.citizenName || 'Citizen')} (${escapeHTML(s.citizenEmail || 'ID: #' + (s.citizenId || ''))}) — User #${s.citizenId || ''}`;
+
+  const lat = s.latitude != null ? s.latitude.toFixed(6) : '-';
+  const lng = s.longitude != null ? s.longitude.toFixed(6) : '-';
+  document.getElementById('adm-sos-mdl-coords').textContent = `${lat}, ${lng} (Accuracy: ±${s.accuracy != null ? s.accuracy.toFixed(1) + 'm' : 'N/A'})`;
+
+  const mapLinkEl = document.getElementById('adm-sos-mdl-maplink');
+  if(s.latitude != null && s.longitude != null){
+    mapLinkEl.innerHTML = `<a href="https://maps.google.com/?q=${s.latitude},${s.longitude}" target="_blank" rel="noopener" class="btn btn-outline-dark btn-xs" style="text-decoration:none;">Open in Google Maps ↗</a>`;
+  } else {
+    mapLinkEl.innerHTML = '<span style="color:var(--text-soft);font-size:0.8rem;">GPS unavailable</span>';
+  }
+
+  document.getElementById('adm-sos-mdl-email').innerHTML = channelBadge(s.emailStatus);
+  document.getElementById('adm-sos-mdl-telegram').innerHTML = channelBadge(s.telegramStatus);
+  document.getElementById('adm-sos-mdl-msg').textContent = s.message || 'No additional message attached.';
+
+  const isAck = (s.status || '').toUpperCase() === 'ACKNOWLEDGED';
+  const isResolved = (s.status || '').toUpperCase() === 'RESOLVED';
+  const ackBtn = document.getElementById('adm-sos-mdl-btn-ack');
+  const resBtn = document.getElementById('adm-sos-mdl-btn-res');
+  if(ackBtn) ackBtn.style.display = (!isAck && !isResolved) ? 'inline-block' : 'none';
+  if(resBtn) resBtn.style.display = (!isResolved) ? 'inline-block' : 'none';
+
+  // Load history
+  const histWrap = document.getElementById('adm-sos-mdl-history');
+  try {
+    const histRes = await adminFetch(`http://localhost:8082/api/admin/safety/sos/${id}/history`);
+    if(histRes && histRes.ok){
+      const hist = await histRes.json();
+      if(hist && hist.length > 0){
+        histWrap.innerHTML = hist.map(h => `
+          <div class="audit-entry" style="margin-bottom:8px;">
+            <div class="audit-entry-meta">
+              <b>${escapeHTML(h.changedBy || 'ADMIN')}</b>
+              <span>${formatDateTime(h.createdAt || h.changedAt)}</span>
+            </div>
+            <div>Changed status: <span style="font-weight:600;">${escapeHTML(h.previousStatus || 'INIT')}</span> → <span style="font-weight:600;color:var(--review);">${escapeHTML(h.newStatus)}</span></div>
+            ${h.remarks ? `<div style="color:var(--text-soft);font-size:0.78rem;margin-top:2px;">"${escapeHTML(h.remarks)}"</div>` : ''}
+          </div>
+        `).join('');
+      } else {
+        histWrap.innerHTML = '<div style="color:var(--text-soft);font-size:0.82rem;">No previous status transitions.</div>';
+      }
+    } else {
+      histWrap.innerHTML = '<div style="color:var(--text-soft);font-size:0.82rem;">History unavailable.</div>';
+    }
+  } catch(e) {
+    histWrap.innerHTML = '<div style="color:var(--text-soft);font-size:0.82rem;">History unavailable.</div>';
+  }
+
+  // Feature 3: Initialize or update the interactive Leaflet map for this actual SOS record
+  if(s.latitude != null && s.longitude != null && !isNaN(s.latitude) && !isNaN(s.longitude)){
+    adminSosCoords = { lat: s.latitude, lng: s.longitude };
+    initOrUpdateAdminSosMap(s.latitude, s.longitude, s.id);
+  } else {
+    adminSosCoords = null;
+    const statusEl = document.getElementById('adm-sos-route-status');
+    if(statusEl){
+      statusEl.style.display = 'block';
+      statusEl.style.background = '#fffbeb';
+      statusEl.style.color = '#b45309';
+      statusEl.style.border = '1px solid #fde68a';
+      statusEl.innerHTML = 'Invalid / unavailable SOS coordinates for this incident.';
+    }
+    const navBtn = document.getElementById('adm-sos-nav-btn');
+    if(navBtn){
+      navBtn.disabled = true;
+      navBtn.innerHTML = '🧭 Navigation Unavailable';
+    }
+  }
+
+  modal.hidden = false;
+}
+
+function closeAdminSosModal(){
+  toggleAdminMapExpand(false);
+  const modal = document.getElementById('modal-admin-sos-detail');
+  if(modal) modal.hidden = true;
+  currentDetailSosId = null;
+}
+
+async function submitModalSosStatus(newStatus){
+  if(!currentDetailSosId) return;
+  const remarks = prompt(`Enter officer remarks for updating SOS #${currentDetailSosId} to ${newStatus}:`, `Action taken by officer: ${newStatus}`);
+  if(remarks === null) return;
+
+  const res = await adminFetch(`http://localhost:8082/api/admin/safety/sos/${currentDetailSosId}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ status: newStatus, remarks: remarks.trim() || `Status updated to ${newStatus}` })
+  });
+
+  if(res && res.ok){
+    showToast(`✓ SOS #${currentDetailSosId} status changed to ${newStatus}.`);
+    closeAdminSosModal();
+    await renderAdminAll();
+  }
+}
+
+function renderAdminSos(){
+  const wrap = document.getElementById('admin-sos-wrap');
+  if(!wrap) return;
+
+  const q = (document.getElementById('adm-sos-search')?.value || '').toLowerCase().trim();
+  const statusF = document.getElementById('adm-sos-status-filter')?.value || 'all';
+
+  const filtered = cachedAdminSos.filter(s => {
+    const target = `${s.id} ${s.citizenName || ''} ${s.citizenEmail || ''} ${s.message || ''} ${s.source || ''}`.toLowerCase();
+    const matchesQ = !q || target.includes(q);
+    const matchesStatus = statusF === 'all' || (s.status || '').toUpperCase() === statusF.toUpperCase();
+    return matchesQ && matchesStatus;
+  });
+
+  if(filtered.length === 0){
+    wrap.innerHTML = '<div class="empty-state" style="padding:32px;text-align:center;color:var(--text-soft);">No SOS incidents matching filter criteria.</div>';
+    return;
+  }
+
+  wrap.innerHTML = '<table class="data-table"><thead><tr>' +
+    '<th>SOS ID</th><th>Citizen Profile</th><th>GPS Location</th><th>Triggered At</th><th>Delivery Telemetry</th><th>Status</th><th>Officer Actions</th>' +
+    '</tr></thead><tbody>' +
+    filtered.map(s => {
+      const lat = s.latitude != null ? s.latitude.toFixed(5) : '-';
+      const lng = s.longitude != null ? s.longitude.toFixed(5) : '-';
+      const mapLink = (s.latitude != null && s.longitude != null)
+        ? `<a href="https://maps.google.com/?q=${s.latitude},${s.longitude}" target="_blank" rel="noopener" style="font-size:0.75rem;color:var(--review);font-weight:600;">[View Map ↗]</a>`
+        : '';
+      const isResolved = (s.status || '').toUpperCase() === 'RESOLVED';
+      const isAck = (s.status || '').toUpperCase() === 'ACKNOWLEDGED';
+
+      return `
+        <tr>
+          <td class="cell-id"><b>#SOS-${s.id}</b></td>
+          <td>
+            <div style="font-weight:600;">${escapeHTML(s.citizenName || 'Citizen #' + (s.citizenId || ''))}</div>
+            <div style="font-size:0.76rem;color:var(--text-soft);">${escapeHTML(s.citizenEmail || 'ID: #' + (s.citizenId || ''))}</div>
+          </td>
+          <td>
+            <div style="font-family:var(--mono);font-size:0.8rem;">${lat}, ${lng}</div>
+            <div style="font-size:0.72rem;color:var(--text-soft);margin-top:2px;">Address unavailable — GPS coordinates available.</div>
+            <div>${mapLink}</div>
+          </td>
+          <td style="font-size:0.8rem;">${formatDateTime(s.triggeredAt)}</td>
+          <td>
+            <div style="font-size:0.74rem;">Email: ${channelBadge(s.emailStatus)}</div>
+            <div style="font-size:0.74rem;margin-top:2px;">Telegram: ${channelBadge(s.telegramStatus)}</div>
+          </td>
+          <td>${sosStatusBadge(s.status)}</td>
+          <td>
+            <div style="display:flex;gap:4px;flex-wrap:wrap;">
+              <button class="btn btn-outline-dark btn-xs" onclick="openAdminSosDetail(${s.id})">Inspect</button>
+              ${!isAck && !isResolved ? `<button class="btn btn-outline-dark btn-xs" onclick="updateAdminSosStatus(${s.id}, 'ACKNOWLEDGED')">Acknowledge</button>` : ''}
+              ${!isResolved ? `<button class="btn btn-brass btn-xs" onclick="updateAdminSosStatus(${s.id}, 'RESOLVED')">Resolve</button>` : '<span style="color:var(--text-soft);font-size:0.78rem;">Resolved ✓</span>'}
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('') +
+    '</tbody></table>';
+}
+
+async function updateAdminSosStatus(id, newStatus){
+  const remarks = prompt(`Enter officer remarks for updating SOS #${id} to ${newStatus}:`, `Action taken by officer: ${newStatus}`);
+  if(remarks === null) return;
+
+  const res = await adminFetch(`http://localhost:8082/api/admin/safety/sos/${id}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ status: newStatus, remarks: remarks.trim() || `Status updated to ${newStatus}` })
+  });
+
+  if(res && res.ok){
+    showToast(`✓ SOS #${id} status changed to ${newStatus}.`);
+    await renderAdminAll();
+  }
+}
+
+function renderAdminRoutes(){
+  const wrap = document.getElementById('admin-routes-wrap');
+  if(!wrap) return;
+
+  const summary = cachedAdminRouteSummary || {};
+  const total = summary.totalRoutes != null ? summary.totalRoutes : cachedAdminRoutes.length;
+  const avg = summary.averageSafetyScore != null ? summary.averageSafetyScore : 0;
+  const highRisk = summary.highRiskRouteCount != null ? summary.highRiskRouteCount : cachedAdminRoutes.filter(r => (r.safetyScore || 100) <= 39).length;
+  const autoFiled = summary.autoFiledGrievances != null ? summary.autoFiledGrievances : 0;
+  const totalRatings = summary.totalRatings != null ? summary.totalRatings : 0;
+
+  const rTotalEl = document.getElementById('adm-route-total');
+  const rAvgEl = document.getElementById('adm-route-avg');
+  const rHighEl = document.getElementById('adm-route-highrisk');
+  const rAutoEl = document.getElementById('adm-route-autofiled');
+  const rRatingsEl = document.getElementById('adm-route-ratings');
+
+  if(rTotalEl) rTotalEl.textContent = total;
+  if(rAvgEl) rAvgEl.textContent = avg.toFixed(1) + ' / 100';
+  if(rHighEl) rHighEl.textContent = highRisk;
+  if(rAutoEl) rAutoEl.textContent = autoFiled;
+  if(rRatingsEl) rRatingsEl.textContent = totalRatings;
+
+  if(cachedAdminRoutes.length === 0){
+    wrap.innerHTML = '<div class="empty-state" style="padding:32px;text-align:center;color:var(--text-soft);">No transit corridors evaluated yet. Routes evaluated by citizens will display here.</div>';
+    return;
+  }
+
+  wrap.innerHTML = '<table class="data-table"><thead><tr>' +
+    '<th>Corridor ID</th><th>Origin</th><th>Destination</th><th>Safety Score</th><th>Travel Mode</th><th>Community Rating</th><th>Auto Grievance</th>' +
+    '</tr></thead><tbody>' +
+    cachedAdminRoutes.map(r => `
+      <tr>
+        <td class="cell-id"><b>${escapeHTML(r.safeRouteId)}</b></td>
+        <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHTML(r.originAddress || '-')}</td>
+        <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHTML(r.destinationAddress || '-')}</td>
+        <td>${routeScoreBadge(r.safetyScore)}</td>
+        <td><span style="font-size:0.78rem;font-family:var(--mono);">${escapeHTML(r.travelMode || 'WALKING')}</span></td>
+        <td>
+          <div style="font-weight:600;font-size:0.84rem;">${r.averageRating ? r.averageRating.toFixed(1) + ' ★' : 'Unrated'}</div>
+          <div style="font-size:0.72rem;color:var(--text-soft);">${r.ratingCount || 0} reviews</div>
+        </td>
+        <td>
+          ${r.autoGrievanceFiled ? `<span class="badge badge-escalated">${escapeHTML(r.autoGrievanceTrackingId || 'Filed')}</span>` : '<span style="color:var(--text-soft);font-size:0.78rem;">None</span>'}
+        </td>
+      </tr>
+    `).join('') +
+    '</tbody></table>';
+}
+
+function populateAdminSettings(){
+  const onBtn = document.getElementById('adm-set-autofile-on');
+  const offBtn = document.getElementById('adm-set-autofile-off');
+  const threshInput = document.getElementById('adm-set-threshold');
+  const minInput = document.getElementById('adm-set-minratings');
+
+  const isEnabled = !!adminSettingsState.auto_file_enabled;
+  if(onBtn) onBtn.classList.toggle('active', isEnabled);
+  if(offBtn) offBtn.classList.toggle('active', !isEnabled);
+
+  if(threshInput && adminSettingsState.auto_file_threshold != null){
+    threshInput.value = adminSettingsState.auto_file_threshold;
+  }
+  if(minInput && adminSettingsState.min_ratings_for_auto_file != null){
+    minInput.value = adminSettingsState.min_ratings_for_auto_file;
+  }
+}
+
+function setAdminAutoFileToggle(on){
+  adminSettingsState.auto_file_enabled = !!on;
+  document.getElementById('adm-set-autofile-on')?.classList.toggle('active', !!on);
+  document.getElementById('adm-set-autofile-off')?.classList.toggle('active', !on);
+}
+
+async function saveAdminSettings(){
+  const threshEl = document.getElementById('adm-set-threshold');
+  const minEl = document.getElementById('adm-set-minratings');
+
+  const threshVal = threshEl ? parseInt(threshEl.value, 10) : 3;
+  const minVal = minEl ? parseInt(minEl.value, 10) : 5;
+
+  if(isNaN(threshVal) || threshVal < 1 || threshVal > 10){
+    showToast('Auto-file threshold must be between 1 and 10', true);
+    return;
+  }
+  if(isNaN(minVal) || minVal < 1){
+    showToast('Minimum ratings must be at least 1', true);
+    return;
+  }
+
+  const payload = {
+    auto_file_enabled: !!adminSettingsState.auto_file_enabled,
+    auto_file_threshold: threshVal,
+    min_ratings_for_auto_file: minVal
+  };
+
+  const res = await adminFetch('http://localhost:8082/api/admin/settings', {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  });
+
+  if(res && res.ok){
+    const updated = await res.json();
+    adminSettingsState = updated;
+    populateAdminSettings();
+    showToast('✓ System settings saved to server.');
+  }
+}
+
 function saveMapsKey(v){
   window.mapsApiKey = v.trim();
   showToast(v.trim() ? 'Maps API key saved for this session.' : 'Maps API key cleared.');
 }
 
 /* ============================================================
-   INIT
+   INIT & ROUTING
    ============================================================ */
 renderStats();
 renderRecentTable();
 renderCitizenRouteTable();
 applyLang();
+
+document.getElementById('modal-role-select')?.addEventListener('click', function(e){
+  if(e.target === this) closeRoleModal();
+});
+
+window.addEventListener('popstate', function(){
+  const token = localStorage.getItem('smartshield_admin_token');
+  const adminView = document.getElementById('view-admin');
+  if(adminView && !adminView.hidden && !token){
+    goTo('adminlogin');
+  }
+});
+
+if(window.location.hash === '#roleselect' || window.location.search.includes('action=signin')){
+  openRoleModal();
+}
+if(window.location.hash === '#adminlogin' || window.location.search.includes('view=adminlogin')){
+  goTo('adminlogin');
+}
+if(window.location.hash === '#admin'){
+  goTo('admin');
+  renderAdminAll();
+}
 </script>
 </body>
 </html>
