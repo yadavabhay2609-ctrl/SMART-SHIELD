@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.smartshield.model.EmergencyContact;
+import com.smartshield.model.Grievance;
+import com.smartshield.model.GrievanceStatus;
 import com.smartshield.model.SosAlert;
 import com.smartshield.repository.EmergencyContactRepository;
 
@@ -45,6 +48,12 @@ public class TelegramNotificationService {
 
     @Value("${smartshield.telegram.bot-username:SmartShieldAlertBot}")
     private String botUsername;
+
+    @Value("${smartshield.telegram.chat-id:}")
+    private String defaultChatId;
+
+    private final ConcurrentHashMap<String, Long> recentEvents = new ConcurrentHashMap<>();
+    private static final long DEDUP_WINDOW_MS = 15000L;
 
     public TelegramNotificationService(EmergencyContactRepository emergencyContactRepository) {
         this.emergencyContactRepository = emergencyContactRepository;
@@ -105,12 +114,16 @@ public class TelegramNotificationService {
             return new TelegramResult("NOT_CONNECTED", details, 0);
         }
 
-        List<EmergencyContact> telegramRecipients = contacts.stream()
-                .filter(c -> c.isActive() && c.isTelegramConnected() && c.getTelegramChatId() != null && !c.getTelegramChatId().isBlank())
-                .toList();
+        List<EmergencyContact> telegramRecipients = (contacts != null)
+                ? contacts.stream()
+                        .filter(c -> c.isActive() && c.isTelegramConnected() && c.getTelegramChatId() != null && !c.getTelegramChatId().isBlank())
+                        .toList()
+                : List.of();
 
-        if (telegramRecipients.isEmpty()) {
-            String details = "No emergency contacts have connected Telegram.";
+        boolean hasDefaultChat = (defaultChatId != null && !defaultChatId.isBlank());
+
+        if (telegramRecipients.isEmpty() && !hasDefaultChat) {
+            String details = "No emergency contacts or authorized group have connected Telegram.";
             log.info("SOS Alert ID {}: {}", alert.getId(), details);
             return new TelegramResult("NOT_CONNECTED", details, 0);
         }
@@ -148,10 +161,24 @@ public class TelegramNotificationService {
             }
         }
 
+        // Also broadcast to the configured default authorized chat/group if configured and distinct
+        if (hasDefaultChat) {
+            boolean alreadyNotified = telegramRecipients.stream()
+                    .anyMatch(c -> defaultChatId.trim().equals(c.getTelegramChatId().trim()));
+            if (!alreadyNotified) {
+                boolean success = dispatchMessageToChat(defaultChatId.trim(), msg.toString());
+                if (success) {
+                    sentCount++;
+                } else {
+                    failCount++;
+                }
+            }
+        }
+
         if (sentCount > 0 && failCount == 0) {
-            return new TelegramResult("SENT", "SOS alert delivered to " + sentCount + " Telegram contact(s).", sentCount);
+            return new TelegramResult("SENT", "SOS alert delivered to " + sentCount + " Telegram recipient(s).", sentCount);
         } else if (sentCount > 0) {
-            return new TelegramResult("SENT", "SOS alert delivered to " + sentCount + " contact(s); failed for " + failCount + " contact(s).", sentCount);
+            return new TelegramResult("SENT", "SOS alert delivered to " + sentCount + " recipient(s); failed for " + failCount + " recipient(s).", sentCount);
         } else {
             return new TelegramResult("FAILED", "Failed to dispatch Telegram notifications to connected recipients.", 0);
         }
@@ -177,15 +204,16 @@ public class TelegramNotificationService {
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+            String resBody = response.body();
+            if (response.statusCode() >= 200 && response.statusCode() < 300 && resBody != null && resBody.contains("\"ok\":true")) {
                 log.info("Telegram message successfully sent to chat ID {}", maskChatId(chatId));
                 return true;
             } else {
-                log.warn("Telegram API returned non-200 status {}: {}", response.statusCode(), response.body());
+                log.warn("Telegram API dispatch failed for chat {} (status {}): {}", maskChatId(chatId), response.statusCode(), resBody);
                 return false;
             }
         } catch (Exception e) {
-            log.error("Failed to dispatch Telegram message: {}", e.getMessage());
+            log.error("Failed to dispatch Telegram message safely: {}", e.getClass().getSimpleName());
             return false;
         }
     }
@@ -293,6 +321,126 @@ public class TelegramNotificationService {
             contact.setTelegramConnectionCode(null);
             contact.setTelegramCodeExpiresAt(null);
             emergencyContactRepository.save(contact);
+        }
+    }
+
+    /**
+     * Sends concise notification when a new citizen grievance is submitted.
+     */
+    public boolean sendGrievanceReceivedNotification(Grievance grievance) {
+        if (!isConfigured() || defaultChatId == null || defaultChatId.isBlank() || grievance == null) {
+            return false;
+        }
+
+        String dedupKey = "GRIEV_RECV_" + grievance.getTrackingId();
+        if (isRecentDuplicate(dedupKey)) {
+            return true;
+        }
+
+        String trackingId = grievance.getTrackingId() != null ? grievance.getTrackingId() : "N/A";
+        String category = grievance.getCategory() != null ? grievance.getCategory().name() : "GENERAL";
+        String priority = grievance.getPriority() != null ? grievance.getPriority().name() : "MEDIUM";
+        String title = grievance.getTitle() != null ? grievance.getTitle().trim() : "Public Grievance";
+        String location = grievance.getLocation() != null ? grievance.getLocation().trim() : "Location not specified";
+        String time = LocalDateTime.now().format(TIME_FORMATTER);
+
+        StringBuilder msg = new StringBuilder();
+        msg.append("🛡️ SMART SHIELD — NEW GRIEVANCE RECEIVED\n\n");
+        msg.append("Tracking ID: ").append(trackingId).append("\n");
+        msg.append("Category: ").append(category).append("\n");
+        msg.append("Priority: ").append(priority).append("\n");
+        msg.append("Status: PENDING\n");
+        msg.append("Title: ").append(title).append("\n");
+        msg.append("Location: ").append(location).append("\n");
+        msg.append("Time: ").append(time);
+
+        boolean sent = dispatchMessageToChat(defaultChatId.trim(), msg.toString());
+        if (sent) {
+            markRecent(dedupKey);
+        }
+        return sent;
+    }
+
+    /**
+     * Sends concise notification when grievance status is updated by an administrator.
+     */
+    public boolean sendGrievanceStatusUpdatedNotification(Grievance grievance,
+                                                         GrievanceStatus oldStatus,
+                                                         GrievanceStatus newStatus,
+                                                         String remarks) {
+        if (!isConfigured() || defaultChatId == null || defaultChatId.isBlank() || grievance == null) {
+            return false;
+        }
+
+        String dedupKey = "GRIEV_STATUS_" + grievance.getTrackingId() + "_" + (newStatus != null ? newStatus.name() : "");
+        if (isRecentDuplicate(dedupKey)) {
+            return true;
+        }
+
+        String trackingId = grievance.getTrackingId() != null ? grievance.getTrackingId() : "N/A";
+        String category = grievance.getCategory() != null ? grievance.getCategory().name() : "GENERAL";
+        String time = LocalDateTime.now().format(TIME_FORMATTER);
+
+        StringBuilder msg = new StringBuilder();
+        msg.append("🛡️ SMART SHIELD — GRIEVANCE STATUS UPDATE\n\n");
+        msg.append("Tracking ID: ").append(trackingId).append("\n");
+        msg.append("Previous Status: ").append(oldStatus != null ? oldStatus.name() : "UNKNOWN").append("\n");
+        msg.append("Current Status: ").append(newStatus != null ? newStatus.name() : "UPDATED").append("\n");
+        msg.append("Category: ").append(category).append("\n");
+        if (remarks != null && !remarks.isBlank()) {
+            msg.append("Remarks: ").append(remarks.trim()).append("\n");
+        }
+        msg.append("Time: ").append(time);
+
+        boolean sent = dispatchMessageToChat(defaultChatId.trim(), msg.toString());
+        if (sent) {
+            markRecent(dedupKey);
+        }
+        return sent;
+    }
+
+    /**
+     * Dispatches a safe integration test message without triggering real citizen alerts.
+     */
+    public boolean sendTestNotification(String targetChatId) {
+        if (!isConfigured()) {
+            log.info("Telegram test skipped: Telegram is not configured.");
+            return false;
+        }
+
+        String recipient = (targetChatId != null && !targetChatId.isBlank()) ? targetChatId.trim() : defaultChatId;
+        if (recipient == null || recipient.isBlank()) {
+            log.warn("Telegram test skipped: No target or default chat ID configured.");
+            return false;
+        }
+
+        String testMsg = "✓ SMART SHIELD INTEGRATION TEST\n\n"
+                + "Telegram Bot connection verified successfully.\n"
+                + "Bot: @" + botUsername + "\n"
+                + "Time: " + LocalDateTime.now().format(TIME_FORMATTER);
+
+        return dispatchMessageToChat(recipient, testMsg);
+    }
+
+    public String getDefaultChatId() {
+        return defaultChatId;
+    }
+
+    public boolean isAuthorizedChatConfigured() {
+        return defaultChatId != null && !defaultChatId.isBlank();
+    }
+
+    private boolean isRecentDuplicate(String key) {
+        Long lastTime = recentEvents.get(key);
+        return lastTime != null && (System.currentTimeMillis() - lastTime) < DEDUP_WINDOW_MS;
+    }
+
+    private void markRecent(String key) {
+        recentEvents.put(key, System.currentTimeMillis());
+        // Simple size bound cleanup
+        if (recentEvents.size() > 500) {
+            long now = System.currentTimeMillis();
+            recentEvents.entrySet().removeIf(e -> (now - e.getValue()) > DEDUP_WINDOW_MS);
         }
     }
 

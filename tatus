@@ -1,0 +1,23 @@
+warning: in the working copy of 'Smart_Shield_Public_Grievance_Frontend/smart_shield_frontend/css/safe-routes.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'Smart_Shield_Public_Grievance_Frontend/smart_shield_frontend/js/safe-routes.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'Smart_Shield_Public_Grievance_Frontend/smart_shield_frontend/safe-routes.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'smart-shield-backend/smart-shield-backend/src/main/java/com/smartshield/controller/ConfigController.java', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'smart-shield-backend/smart-shield-backend/src/main/java/com/smartshield/controller/TelegramWebhookController.java', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'smart-shield-backend/smart-shield-backend/src/main/java/com/smartshield/service/GeminiService.java', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'smart-shield-backend/smart-shield-backend/src/main/java/com/smartshield/service/GooglePlacesService.java', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'smart-shield-backend/smart-shield-backend/src/main/java/com/smartshield/service/GoogleRoutesService.java', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'smart-shield-backend/smart-shield-backend/src/main/java/com/smartshield/service/GrievanceService.java', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'smart-shield-backend/smart-shield-backend/src/main/java/com/smartshield/service/SosNotificationService.java', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'smart-shield-backend/smart-shield-backend/src/main/java/com/smartshield/service/TelegramNotificationService.java', LF will be replaced by CRLF the next time Git touches it
+ .../smart_shield_frontend/css/safe-routes.css      |   6 [32m+[m[31m-[m
+ .../smart_shield_frontend/js/safe-routes.js        | 286 [32m+++++++++++++++++++[m[31m--[m
+ .../smart_shield_frontend/safe-routes.html         |   2 [32m+[m
+ .../smartshield/controller/ConfigController.java   |   2 [32m+[m[31m-[m
+ .../controller/TelegramWebhookController.java      |  18 [32m++[m
+ .../com/smartshield/service/GeminiService.java     |  22 [32m+[m[31m-[m
+ .../smartshield/service/GooglePlacesService.java   |  20 [32m+[m[31m-[m
+ .../smartshield/service/GoogleRoutesService.java   |  14 [32m+[m[31m-[m
+ .../com/smartshield/service/GrievanceService.java  |  45 [32m+++[m[31m-[m
+ .../service/SosNotificationService.java            | 139 [32m++++++++++[m
+ .../service/TelegramNotificationService.java       | 168 [32m+++++++++++[m[31m-[m
+ 11 files changed, 673 insertions(+), 49 deletions(-)

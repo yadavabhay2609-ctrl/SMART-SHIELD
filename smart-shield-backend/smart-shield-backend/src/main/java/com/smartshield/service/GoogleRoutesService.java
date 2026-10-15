@@ -14,7 +14,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -38,7 +41,10 @@ public class GoogleRoutesService {
     private final RestTemplate restTemplate;
 
     public GoogleRoutesService() {
-        this.restTemplate = new RestTemplate();
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(8000);
+        factory.setReadTimeout(8000);
+        this.restTemplate = new RestTemplate(factory);
     }
 
     public boolean isConfigured() {
@@ -121,8 +127,12 @@ public class GoogleRoutesService {
                     return Optional.of(data);
                 }
             }
+        } catch (HttpStatusCodeException e) {
+            log.warn("Google Routes API HTTP error (status {}): {}", e.getStatusCode(), e.getStatusText());
+        } catch (ResourceAccessException e) {
+            log.warn("Google Routes API connection or timeout: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("Failed to query Google Routes API: {}", e.getMessage());
+            log.error("Failed to query Google Routes API: {}", e.getClass().getSimpleName());
         }
 
         return Optional.empty();

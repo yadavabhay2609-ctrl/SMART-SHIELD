@@ -88,4 +88,22 @@ public class TelegramWebhookController {
             return ResponseEntity.badRequest().body(ApiResponse.error("Invalid or expired connection code"));
         }
     }
+
+    /**
+     * Test notification endpoint: tests Telegram delivery without triggering real citizen SOS alerts.
+     */
+    @PostMapping("/test-notification")
+    public ResponseEntity<ApiResponse<Boolean>> testTelegramNotification(@RequestBody(required = false) Map<String, String> payload) {
+        if (!telegramNotificationService.isConfigured()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Telegram is not configured on this server (TELEGRAM_BOT_TOKEN missing or disabled)"));
+        }
+
+        String targetChatId = payload != null ? payload.get("chatId") : null;
+        boolean sent = telegramNotificationService.sendTestNotification(targetChatId);
+        if (sent) {
+            return ResponseEntity.ok(ApiResponse.success("Telegram test message successfully delivered", true));
+        } else {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Failed to deliver Telegram test message. Verify bot token, chat ID, and that recipient has started the bot."));
+        }
+    }
 }

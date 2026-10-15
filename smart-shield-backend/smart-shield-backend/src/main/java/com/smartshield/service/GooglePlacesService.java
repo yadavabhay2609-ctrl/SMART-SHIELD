@@ -14,7 +14,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import com.smartshield.dto.DestinationSuggestionDto;
@@ -41,7 +44,10 @@ public class GooglePlacesService {
     private final RestTemplate restTemplate;
 
     public GooglePlacesService() {
-        this.restTemplate = new RestTemplate();
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(8000);
+        factory.setReadTimeout(8000);
+        this.restTemplate = new RestTemplate(factory);
     }
 
     public boolean isConfigured() {
@@ -110,8 +116,12 @@ public class GooglePlacesService {
                     return result;
                 }
             }
+        } catch (HttpStatusCodeException e) {
+            log.warn("Google Places API HTTP error (status {}): {}", e.getStatusCode(), e.getStatusText());
+        } catch (ResourceAccessException e) {
+            log.warn("Google Places API connection or timeout: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("Google Places API query failed: {}", e.getMessage());
+            log.error("Google Places API query failed safely: {}", e.getClass().getSimpleName());
         }
 
         return Collections.emptyList();
@@ -188,8 +198,12 @@ public class GooglePlacesService {
                     return result;
                 }
             }
+        } catch (HttpStatusCodeException e) {
+            log.warn("Google Places text search HTTP error (status {}): {}", e.getStatusCode(), e.getStatusText());
+        } catch (ResourceAccessException e) {
+            log.warn("Google Places text search connection or timeout: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("Google Places text search failed: {}", e.getMessage());
+            log.error("Google Places text search failed safely: {}", e.getClass().getSimpleName());
         }
 
         return Collections.emptyList();

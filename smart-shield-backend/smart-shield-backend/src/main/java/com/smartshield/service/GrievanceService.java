@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,19 +33,35 @@ import com.smartshield.util.TrackingIdGenerator;
 @Service
 public class GrievanceService {
 
+    private static final Logger log = LoggerFactory.getLogger(GrievanceService.class);
+
     private final GrievanceRepository grievanceRepository;
     private final GrievanceStatusHistoryRepository statusHistoryRepository;
     private final UserRepository userRepository;
     private final TrackingIdGenerator trackingIdGenerator;
+    private final SosNotificationService sosNotificationService;
+    private final TelegramNotificationService telegramNotificationService;
+
+    @Autowired
+    public GrievanceService(GrievanceRepository grievanceRepository,
+                            GrievanceStatusHistoryRepository statusHistoryRepository,
+                            UserRepository userRepository,
+                            TrackingIdGenerator trackingIdGenerator,
+                            @Autowired(required = false) SosNotificationService sosNotificationService,
+                            @Autowired(required = false) TelegramNotificationService telegramNotificationService) {
+        this.grievanceRepository = grievanceRepository;
+        this.statusHistoryRepository = statusHistoryRepository;
+        this.userRepository = userRepository;
+        this.trackingIdGenerator = trackingIdGenerator;
+        this.sosNotificationService = sosNotificationService;
+        this.telegramNotificationService = telegramNotificationService;
+    }
 
     public GrievanceService(GrievanceRepository grievanceRepository,
                             GrievanceStatusHistoryRepository statusHistoryRepository,
                             UserRepository userRepository,
                             TrackingIdGenerator trackingIdGenerator) {
-        this.grievanceRepository = grievanceRepository;
-        this.statusHistoryRepository = statusHistoryRepository;
-        this.userRepository = userRepository;
-        this.trackingIdGenerator = trackingIdGenerator;
+        this(grievanceRepository, statusHistoryRepository, userRepository, trackingIdGenerator, null, null);
     }
 
     /**
@@ -113,6 +132,18 @@ public class GrievanceService {
                 safeSource.equals("CITIZEN") ? "Initial grievance submitted by citizen" : "Automatically filed based on safety risk threshold"
         );
         statusHistoryRepository.save(initialHistory);
+
+        // 8. Safely dispatch email confirmation and telegram notifications (non-blocking)
+        try {
+            if (sosNotificationService != null) {
+                sosNotificationService.sendGrievanceConfirmation(savedGrievance);
+            }
+            if (telegramNotificationService != null) {
+                telegramNotificationService.sendGrievanceReceivedNotification(savedGrievance);
+            }
+        } catch (Exception e) {
+            log.warn("Notification dispatch notice during grievance creation: {}", e.getMessage());
+        }
 
         return GrievanceResponse.fromEntity(savedGrievance);
     }
@@ -319,6 +350,18 @@ public class GrievanceService {
                 safeRemarks
         );
         statusHistoryRepository.save(history);
+
+        // Safely dispatch status update notifications via email and telegram (non-blocking)
+        try {
+            if (sosNotificationService != null) {
+                sosNotificationService.sendGrievanceStatusUpdate(updatedGrievance, oldStatus, newStatus, safeRemarks);
+            }
+            if (telegramNotificationService != null) {
+                telegramNotificationService.sendGrievanceStatusUpdatedNotification(updatedGrievance, oldStatus, newStatus, safeRemarks);
+            }
+        } catch (Exception e) {
+            log.warn("Notification dispatch notice during grievance status update: {}", e.getMessage());
+        }
 
         return GrievanceResponse.fromEntity(updatedGrievance);
     }

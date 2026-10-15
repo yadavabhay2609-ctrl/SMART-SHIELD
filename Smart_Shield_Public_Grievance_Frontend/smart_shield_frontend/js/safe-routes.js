@@ -57,6 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
   let detectedCity = null;
   let detectedState = null;
   let destSearchDebounceTimer = null;
+  let activeMapMode = 'LEAFLET';
+  let googleMapInstance = null;
+  let googleRoutePolyline = null;
+  let googleOriginMarker = null;
+  let googleDestMarker = null;
+  let googleFacilityMarkers = [];
   let leafletMapInstance = null;
   let leafletRoutePolyline = null;
   let leafletRouteCasing = null;
@@ -208,34 +214,156 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Standard Google Encoded Polyline Decoder
+  function decodePolyline(encoded) {
+    if (!encoded) return [];
+    const points = [];
+    let index = 0, len = encoded.length;
+    let lat = 0, lng = 0;
+    while (index < len) {
+      let b, shift = 0, result = 0;
+      do {
+        b = encoded.charCodeAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      const dlat = ((result & 1) ? ~(result >> 1) : (result >> 1));
+      lat += dlat;
+      shift = 0;
+      result = 0;
+      do {
+        b = encoded.charCodeAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      const dlng = ((result & 1) ? ~(result >> 1) : (result >> 1));
+      lng += dlng;
+      points.push([lat / 1e5, lng / 1e5]);
+    }
+    return points;
+  }
+
+  function activateLeafletMode(customNotice) {
+    activeMapMode = 'LEAFLET';
+    const googleMapEl = document.getElementById('googleMap');
+    const leafletMapEl = document.getElementById('leafletMap');
+    if (googleMapEl) googleMapEl.style.display = 'none';
+    if (leafletMapEl) leafletMapEl.style.display = 'block';
+
+    if (mapStatusPill) {
+      mapStatusPill.textContent = customNotice || 'OpenStreetMap — Live Streets';
+      mapStatusPill.className = 'map-status-pill live';
+    }
+
+    if (!leafletMapInstance) {
+      initLeafletMap();
+    } else {
+      setTimeout(() => { if (leafletMapInstance) leafletMapInstance.invalidateSize(); }, 150);
+    }
+  }
+
+  function initGoogleMapInstance() {
+    const googleMapEl = document.getElementById('googleMap');
+    const leafletMapEl = document.getElementById('leafletMap');
+    if (!googleMapEl || typeof google === 'undefined' || !google.maps) {
+      activateLeafletMode();
+      return;
+    }
+
+    try {
+      const initialLat = parseFloat(originLatInput?.value) || 28.6692;
+      const initialLng = parseFloat(originLngInput?.value) || 77.4538;
+
+      googleMapInstance = new google.maps.Map(googleMapEl, {
+        center: { lat: initialLat, lng: initialLng },
+        zoom: 13,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        streetViewControl: false,
+        fullscreenControl: false,
+        mapTypeControl: true,
+        mapTypeControlOptions: {
+          style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+          position: google.maps.ControlPosition.TOP_RIGHT
+        }
+      });
+
+      activeMapMode = 'GOOGLE';
+      googleMapEl.style.display = 'block';
+      if (leafletMapEl) leafletMapEl.style.display = 'none';
+
+      if (mapStatusPill) {
+        mapStatusPill.textContent = 'Google Maps — Live Satellite/Streets';
+        mapStatusPill.className = 'map-status-pill live';
+      }
+
+      if (configNotice && configNoticeText) {
+        configNotice.style.display = 'flex';
+        configNotice.style.background = '#eff6ff';
+        configNotice.style.borderColor = '#bfdbfe';
+        configNotice.style.color = '#1e40af';
+        configNoticeText.textContent = 'Google Maps JavaScript API & Google Routes services active.';
+      }
+
+      if (currentRouteData) {
+        renderMapRoute(currentRouteData);
+      }
+    } catch (e) {
+      console.warn('Google Maps initialization failed. Falling back to OpenStreetMap / Leaflet:', e);
+      activateLeafletMode('OpenStreetMap — Live Streets (Fallback)');
+    }
+  }
+  window.initGoogleMapInstance = initGoogleMapInstance;
+
+  function loadGoogleMapsScript(apiKey) {
+    if (!apiKey || apiKey.trim() === '') {
+      activateLeafletMode();
+      return;
+    }
+
+    window.gm_authFailure = function() {
+      console.warn('Google Maps authentication failure (billing or restrictions). Falling back cleanly to OpenStreetMap / Leaflet.');
+      activateLeafletMode('OpenStreetMap — Live Streets (Auth Fallback)');
+    };
+
+    if (window.google && window.google.maps) {
+      initGoogleMapInstance();
+      return;
+    }
+
+    const existingScript = document.getElementById('googleMapsApiScript');
+    if (existingScript) return;
+
+    const script = document.createElement('script');
+    script.id = 'googleMapsApiScript';
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey.trim())}&libraries=places,geometry&callback=initGoogleMapInstance`;
+    script.async = true;
+    script.defer = true;
+    script.onerror = function() {
+      console.warn('Google Maps script failed to load. Falling back cleanly to OpenStreetMap / Leaflet.');
+      activateLeafletMode('OpenStreetMap — Live Streets (Network Fallback)');
+    };
+    document.head.appendChild(script);
+  }
+
   function loadConfigStatus() {
     SmartShieldAPI.getSafeRouteConfig()
       .then(cfg => {
-        if (configNotice && configNoticeText) {
-          configNotice.style.display = 'flex';
-          configNotice.style.background = '#f0fdf4';
-          configNotice.style.borderColor = '#bbf7d0';
-          configNotice.style.color = '#166534';
-          configNoticeText.textContent = 'Free OpenStreetMap tiles & OSRM real-road routing active. Google Maps dependency safely removed.';
-        }
-        if (mapStatusPill) {
-          mapStatusPill.textContent = 'OpenStreetMap — Live Streets';
-          mapStatusPill.className = 'map-status-pill live';
+        if (cfg && cfg.mapsJsConfigured && cfg.mapsBrowserApiKey) {
+          loadGoogleMapsScript(cfg.mapsBrowserApiKey);
+        } else {
+          activateLeafletMode();
+          if (configNotice && configNoticeText) {
+            configNotice.style.display = 'flex';
+            configNotice.style.background = '#f0fdf4';
+            configNotice.style.borderColor = '#bbf7d0';
+            configNotice.style.color = '#166534';
+            configNoticeText.textContent = 'Free OpenStreetMap tiles & OSRM real-road routing active. Google APIs unconfigured.';
+          }
         }
       })
       .catch(err => {
         console.warn('Config check note:', err);
-        if (configNotice && configNoticeText) {
-          configNotice.style.display = 'flex';
-          configNotice.style.background = '#f0fdf4';
-          configNotice.style.borderColor = '#bbf7d0';
-          configNotice.style.color = '#166534';
-          configNoticeText.textContent = 'OpenStreetMap & OSRM real-road routing active.';
-        }
-        if (mapStatusPill) {
-          mapStatusPill.textContent = 'OpenStreetMap — Live Streets';
-          mapStatusPill.className = 'map-status-pill live';
-        }
+        activateLeafletMode();
       });
   }
 
@@ -312,15 +440,21 @@ document.addEventListener('DOMContentLoaded', () => {
       if (mapCollapseBtn) mapCollapseBtn.style.display = 'none';
     }
 
-    // Call Leaflet's invalidateSize() after opening, closing, or resizing
+    // Call Leaflet's invalidateSize() and Google Maps resize after opening, closing, or resizing
     setTimeout(() => {
       if (leafletMapInstance) {
         leafletMapInstance.invalidateSize();
+      }
+      if (googleMapInstance && typeof google !== 'undefined' && google.maps) {
+        google.maps.event.trigger(googleMapInstance, 'resize');
       }
     }, 100);
     setTimeout(() => {
       if (leafletMapInstance) {
         leafletMapInstance.invalidateSize();
+      }
+      if (googleMapInstance && typeof google !== 'undefined' && google.maps) {
+        google.maps.event.trigger(googleMapInstance, 'resize');
       }
     }, 300);
   }
@@ -350,6 +484,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', () => {
     if (leafletMapInstance) {
       leafletMapInstance.invalidateSize();
+    }
+    if (googleMapInstance && typeof google !== 'undefined' && google.maps) {
+      google.maps.event.trigger(googleMapInstance, 'resize');
     }
   });
 
@@ -1255,8 +1392,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Render Genuine OpenStreetMap Interactive Route on Leaflet
-    renderLeafletMapRoute(route);
+    // Render Map Route on active map provider (Google Maps or Leaflet)
+    renderMapRoute(route);
 
     // Load Existing Reviews
     loadRouteReviews(route.safeRouteId);
@@ -1301,7 +1438,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (route.roadLatLngs && route.roadLatLngs.length > 0) {
       pathLatLngs = route.roadLatLngs;
     } else if (route.encodedPolyline) {
-      pathLatLngs = decodePolyline(route.encodedPolyline).map(p => [p.lat, p.lng]);
+      pathLatLngs = decodePolyline(route.encodedPolyline);
     } else {
       pathLatLngs = [[originLat, originLng], [destLat, destLng]];
     }
@@ -1393,6 +1530,105 @@ document.addEventListener('DOMContentLoaded', () => {
         leafletMapInstance.invalidateSize();
       }
     }, 200);
+  }
+
+  // 8B. Render Live Route on Official Google Maps JavaScript API
+  function renderGoogleMapRoute(route) {
+    if (!googleMapInstance || typeof google === 'undefined' || !google.maps) {
+      renderLeafletMapRoute(route);
+      return;
+    }
+
+    // Clear previous Google markers & polyline
+    if (googleRoutePolyline) {
+      googleRoutePolyline.setMap(null);
+      googleRoutePolyline = null;
+    }
+    if (googleOriginMarker) {
+      googleOriginMarker.setMap(null);
+      googleOriginMarker = null;
+    }
+    if (googleDestMarker) {
+      googleDestMarker.setMap(null);
+      googleDestMarker = null;
+    }
+    googleFacilityMarkers.forEach(m => m.setMap(null));
+    googleFacilityMarkers = [];
+
+    const originLat = route.originLatitude;
+    const originLng = route.originLongitude;
+    const destLat = route.destinationLatitude;
+    const destLng = route.destinationLongitude;
+
+    let pathLatLngs = [];
+    if (route.roadLatLngs && route.roadLatLngs.length > 0) {
+      pathLatLngs = route.roadLatLngs;
+    } else if (route.encodedPolyline) {
+      pathLatLngs = decodePolyline(route.encodedPolyline);
+    } else {
+      pathLatLngs = [[originLat, originLng], [destLat, destLng]];
+    }
+
+    const googlePath = pathLatLngs.map(p => ({ lat: p[0], lng: p[1] }));
+
+    googleRoutePolyline = new google.maps.Polyline({
+      path: googlePath,
+      geodesic: true,
+      strokeColor: '#dc2626',
+      strokeOpacity: 0.9,
+      strokeWeight: 6
+    });
+    googleRoutePolyline.setMap(googleMapInstance);
+
+    googleOriginMarker = new google.maps.Marker({
+      position: { lat: originLat, lng: originLng },
+      map: googleMapInstance,
+      title: route.originAddress || 'Origin Location',
+      label: { text: 'A', color: '#ffffff', fontWeight: 'bold' }
+    });
+
+    googleDestMarker = new google.maps.Marker({
+      position: { lat: destLat, lng: destLng },
+      map: googleMapInstance,
+      title: route.destinationAddress || 'Destination Location',
+      label: { text: 'B', color: '#ffffff', fontWeight: 'bold' }
+    });
+
+    if (route.nearbyFacilities && route.nearbyFacilities.length > 0) {
+      route.nearbyFacilities.forEach(fac => {
+        const isPolice = fac.type === 'POLICE';
+        const marker = new google.maps.Marker({
+          position: { lat: fac.latitude, lng: fac.longitude },
+          map: googleMapInstance,
+          title: fac.name,
+          label: { text: isPolice ? '👮' : '🏥', fontSize: '14px' }
+        });
+        const infoWindow = new google.maps.InfoWindow({
+          content: `<div><strong>${isPolice ? 'Police Station' : 'Emergency Center'}:</strong> ${escapeHtml(fac.name)}<br><small>${fac.distanceMeters}m from route corridor</small></div>`
+        });
+        marker.addListener('click', () => infoWindow.open(googleMapInstance, marker));
+        googleFacilityMarkers.push(marker);
+      });
+    }
+
+    if (googlePath.length > 0) {
+      const bounds = new google.maps.LatLngBounds();
+      googlePath.forEach(pt => bounds.extend(pt));
+      googleMapInstance.fitBounds(bounds, 50);
+    }
+
+    if (mapStatusPill) {
+      mapStatusPill.textContent = 'Google Maps — Live Satellite/Streets';
+      mapStatusPill.className = 'map-status-pill live';
+    }
+  }
+
+  function renderMapRoute(route) {
+    if (activeMapMode === 'GOOGLE' && googleMapInstance) {
+      renderGoogleMapRoute(route);
+    } else {
+      renderLeafletMapRoute(route);
+    }
   }
 
   // 9. Interactive Star Rating & Observation Tags

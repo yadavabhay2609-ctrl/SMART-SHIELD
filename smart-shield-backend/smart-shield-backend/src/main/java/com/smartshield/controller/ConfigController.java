@@ -12,7 +12,7 @@ import com.smartshield.dto.PublicConfigResponse;
 @RequestMapping("/api")
 public class ConfigController {
 
-    @Value("${maps.api-key:}")
+    @Value("${smartshield.google.maps.browser-api-key:${maps.api-key:}}")
     private String mapsApiKey;
 
     @GetMapping("/config")

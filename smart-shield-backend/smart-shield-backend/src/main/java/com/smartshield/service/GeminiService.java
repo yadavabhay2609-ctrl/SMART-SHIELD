@@ -18,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import com.smartshield.dto.AiChatMessage;
@@ -33,7 +35,7 @@ public class GeminiService {
     private static final Logger log = LoggerFactory.getLogger(GeminiService.class);
 
     private static final String GEMINI_API_URL_TEMPLATE =
-            "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s";
+            "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent";
 
     @Value("${smartshield.gemini.enabled:false}")
     private boolean geminiEnabled;
@@ -95,10 +97,11 @@ public class GeminiService {
 
         try {
             RestTemplate restTemplate = createRestTemplate();
-            String url = String.format(GEMINI_API_URL_TEMPLATE, getModelName(), geminiApiKey);
+            String url = String.format(GEMINI_API_URL_TEMPLATE, getModelName());
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("x-goog-api-key", geminiApiKey);
 
             // Construct contents array with bounded history
             List<Map<String, Object>> contents = new ArrayList<>();
@@ -153,8 +156,12 @@ public class GeminiService {
                     }
                 }
             }
+        } catch (HttpStatusCodeException e) {
+            log.warn("Gemini API HTTP error (status {}): {}", e.getStatusCode(), e.getStatusText());
+        } catch (ResourceAccessException e) {
+            log.warn("Gemini API connection or timeout: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("Gemini API call failed: {}", e.getMessage());
+            log.error("Gemini API call failed safely: {}", e.getClass().getSimpleName());
         }
 
         return Optional.empty();
@@ -209,10 +216,11 @@ public class GeminiService {
 
         try {
             RestTemplate restTemplate = createRestTemplate();
-            String url = String.format(GEMINI_API_URL_TEMPLATE, getModelName(), geminiApiKey);
+            String url = String.format(GEMINI_API_URL_TEMPLATE, getModelName());
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("x-goog-api-key", geminiApiKey);
 
             String base64Data = Base64.getEncoder().encodeToString(fileBytes);
 
@@ -272,8 +280,12 @@ public class GeminiService {
                     }
                 }
             }
+        } catch (HttpStatusCodeException e) {
+            log.warn("Gemini document analysis HTTP error (status {}): {}", e.getStatusCode(), e.getStatusText());
+        } catch (ResourceAccessException e) {
+            log.warn("Gemini document analysis connection or timeout: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("Gemini document analysis API call failed: {}", e.getMessage());
+            log.error("Gemini document analysis call failed safely: {}", e.getClass().getSimpleName());
         }
 
         return Optional.empty();
